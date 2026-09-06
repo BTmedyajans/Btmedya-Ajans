@@ -1,0 +1,15 @@
+{
+  "name": "BTMEDYA",
+  "short_name": "BTMEDYA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02070d",
+  "theme_color": "#02070d",
+  "icons": [
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
