@@ -1,0 +1,13 @@
+{
+  "name": "btmedya-worker",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "wrangler dev",
+    "build": "echo \"no build step\"",
+    "publish": "wrangler publish"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

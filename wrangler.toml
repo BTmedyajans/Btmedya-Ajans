@@ -1,0 +1,9 @@
+name = "btmedya-worker"
+main = "src/index.js"
+compatibility_date = "2026-09-06"
+# Replace the following account_id with a GitHub Action secret (CF_ACCOUNT_ID) or your local ~/.wrangler/config
+account_id = "YOUR_ACCOUNT_ID"
+workers_dev = true
+# If you want to bind this Worker to a specific route, uncomment and set the following:
+# zone_id = "YOUR_ZONE_ID"
+# route = "example.com/*"
