@@ -1,4 +1,7 @@
-name = "btmedya"
+# Cloudflare Workers Builds bu adı yok sayar ve daima bağlı olduğu servise
+# (btmedya-db) deploy eder. Alan adı bu Worker'a taşındığında push'lar doğrudan
+# canlı siteyi günceller.
+name = "btmedya-db"
 main = "src/worker.js"
 compatibility_date = "2026-09-02"
 

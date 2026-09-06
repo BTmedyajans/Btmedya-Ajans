@@ -39,16 +39,19 @@ Backend dosyaları `public/` dışında tutulur; bu yüzden `wrangler.toml`, `sr
 
 ## Cloudflare durumu
 
-Hesapta **5 Worker** var; bu proje `btmedya` Worker'ında yayınlanıyor:
+Hesapta **5 Worker** var:
 
 | Worker | Rol |
 |---|---|
-| `btmedya` | **Canlı site** — `www.btmedya.com.tr` buna bağlı, bu depo buraya deploy eder |
-| `btmedya-db` | Eski deneme; artık kullanılmıyor |
+| `btmedya` | `www.btmedya.com.tr` şu an buna bağlı — eski sürümü servis ediyor |
+| `btmedya-db` | **Bu depo buraya deploy eder** — güncel site burada, alan adı bekleniyor |
 | `btmedya-ajans`, `btmedya-medya`, `btmedya-agent-visibility` | Boş kurulum şablonları, kullanılmıyor |
 
-GitHub entegrasyonu `btmedya-db` servisine bağlı olsa da `wrangler.toml`
-içindeki `name = "btmedya"` sayesinde deploy canlı Worker'a gider.
+Cloudflare Workers Builds, `wrangler.toml` içindeki `name` alanını yok sayar ve
+daima bağlı olduğu servise (`btmedya-db`) deploy eder. Sitenin bu depodan canlı
+yayına girmesi için `www.btmedya.com.tr` alan adının `btmedya-db` Worker'ına
+taşınması gerekir:
+Workers & Pages > btmedya-db > Settings > Domains & Routes > Add > Custom Domain
 
 `btmedya.com.tr` (www'suz hali) şu an DNS'te tanımlı değil — sadece
 `www.btmedya.com.tr` çalışıyor.
