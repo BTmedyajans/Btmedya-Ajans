@@ -1,23 +1,38 @@
 name = "btmedya-db"
 main = "src/worker.js"
-compatibility_date = "2024-09-23"
+compatibility_date = "2026-09-02"
 
-# DNS/route bağlama bilinçli olarak burada tanımlanmıyor; alan adı
-# Cloudflare panelinden yönetiliyor (bkz. docs/CANLIYA-ALMA.md).
+[observability]
+enabled = true
 
+# Statik dosyalar public/ altında tutulur. Böylece wrangler.toml, src/ ve
+# migrations/ gibi backend dosyaları hiçbir koşulda herkese açık servis edilmez
+# (.assetsignore'a gerek kalmaz).
 [assets]
 directory = "public"
 binding = "ASSETS"
-run_worker_first = true
+
+# ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
+# www.btmedya.com.tr, "btmedya" adlı ayrı bir Worker'a Cloudflare panelinden
+# bağlanmış durumda. Bu depo ise "btmedya-db" Worker'ına deploy ediyor.
+# Routes burada açılırsa wrangler paneldeki bağlantıları EZER.
+# Alan adını bu Worker'a taşımak için: Workers & Pages > btmedya-db >
+# Settings > Domains & Routes > Add > Custom Domain
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "btmedya-media"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "btmedya-media"
 database_id = "94a980cd-62c5-4c29-b7fc-40f96ab665e4"
 
-[[r2_buckets]]
-binding = "MEDIA"
-bucket_name = "btmedya-media"
+[vars]
+MEDIA_PUBLIC_TTL = "86400"
 
-# Secrets (wrangler secret put ile ayrı tanımlanır, buraya YAZILMAZ):
-#   ADMIN_PASSWORD, ADMIN_SESSION_SECRET, MEDIA_SIGNING_SECRET, AI_READ_TOKEN (opsiyonel)
+# Secrets — bu dosyaya YAZILMAZ, `wrangler secret put` ile eklenir:
+#   ADMIN_PASSWORD        -> /admin/ giriş şifresi
+#   ADMIN_SESSION_SECRET  -> oturum çerezi imzalama anahtarı
+#   MEDIA_SIGNING_SECRET  -> /media/ imzalı bağlantı anahtarı
+#   AI_READ_TOKEN         -> (opsiyonel) salt-okunur AI erişim token'ı

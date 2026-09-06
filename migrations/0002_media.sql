@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS media (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
-
 CREATE INDEX IF NOT EXISTS idx_media_category ON media(category);
-CREATE INDEX IF NOT EXISTS idx_media_created ON media(created_at);
 CREATE INDEX IF NOT EXISTS idx_media_published ON media(published);
+CREATE INDEX IF NOT EXISTS idx_media_created ON media(created_at DESC);
+
 CREATE INDEX IF NOT EXISTS idx_media_slot ON media(slot);

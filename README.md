@@ -1,55 +1,70 @@
 # BTMEDYA — btmedya.com.tr
 
-Haber, prodüksiyon ve yapay zekâ ajansı BTMEDYA'nın web sitesi. Cloudflare Workers + D1 + R2 üzerinde çalışan site + "Media Vault" arşiv/admin paneli mimarisi.
+Haber, prodüksiyon ve yapay zekâ ajansı BTMEDYA'nın web sitesi. Cloudflare Workers + D1 + R2 üzerinde çalışan site + "Media Vault" medya arşivi ve admin paneli.
 
 ## Yapı
 
 ```
-wrangler.toml       Worker config (D1/R2/Assets binding'leri)
-migrations/          D1 şema tanımı (news, media, social_posts) — prod'da zaten uygulanmış
-src/
-  worker.js          İstek yönlendirme (routing)
-  lib/
-    auth.js          Admin oturum (cookie) doğrulama
-    crypto.js        HMAC imzalama / sabit-zamanlı karşılaştırma
-    http.js          JSON/HTML response yardımcıları
-    media.js         Medya imzalı URL üretimi, R2 key oluşturma
-    news.js          Statik + D1 haber birleştirme, sayfa render
-    layout.js         Ortak sayfa iskeleti (nav/footer)
-public/
+wrangler.toml        Worker config (D1 / R2 / Assets binding'leri)
+src/worker.js        Birleşik API: haber CMS + medya kasası + statik servis
+migrations/          D1 şeması (news, media, social_posts)
+public/              Yayınlanan her şey (assets binding bu klasörü servis eder)
   index.html         Anasayfa (V10.2 sinematik tema)
-  styles.css         Site stilleri
-  script.js          Ön yüz etkileşimleri (menü, scroll, GSAP, paket hesaplayıcı, medya hidrasyonu)
-  site.webmanifest, assets/favicon.svg
-  admin/index.html   Media Vault yönetim paneli (/admin/)
-  social-studio/index.html  İçerik→sosyal video üretim sayfası
-  data/haberler.json Statik haber arşivi (RSS'ten doğrulanmış 10 haber + 17 yer tutucu)
-  robots.txt, sitemap.xml, rss.xml
-docs/
-  CANLIYA-ALMA.md    Yayına alma kılavuzu (secrets, kontrol listesi)
-  MEDIA-VAULT.md     Media Vault modülü teknik özeti
+  styles.css, script.js
+  assets/            Görseller + videolar (logo, hero, showreel, portfolyo)
+  haberler/          27 haberin statik HTML sayfası + arşiv listesi
+  data/haberler.json Haber arşivi verisi (tam metin, kaynak, yazar)
+  admin/             Media Vault yönetim paneli (/admin/)
+  social-studio/     İçerik → sosyal video üretim sayfası
+  robots.txt, sitemap.xml, rss.xml, site.webmanifest
+docs/                Yayına alma ve Media Vault kılavuzları
 ```
 
-## Backend uçları
+Backend dosyaları `public/` dışında tutulur; bu yüzden `wrangler.toml`, `src/` ve
+`migrations/` hiçbir koşulda herkese açık servis edilmez.
+
+## API uçları
 
 | Uç | Açıklama |
 |---|---|
 | `GET /api/health` | D1/R2 bağlantı kontrolü |
-| `POST /api/login`, `GET /api/logout` | Admin oturumu (imzalı cookie) |
-| `GET/POST /api/media`, `PATCH/DELETE /api/media/:id` | Medya kaydı CRUD (admin) |
-| `PUT /api/upload/:key/part`, `POST /api/upload/:key/complete` | R2 çok parçalı yükleme (admin) |
-| `GET /api/export` | Yayınlanmış medya kataloğu (AI_READ_TOKEN varsa gerekli) |
-| `GET /api/public/media?slot=&category=` | Anasayfa için yayınlanmış medya (slot bazlı) |
-| `GET /media/:key?exp=&sig=` | Süreli imzalı medya servis |
-| `POST /api/admin/news` | D1 üzerinden canlı haber yayınlama (admin) |
-| `GET /haberler/`, `/haberler/:slug.html` | Statik JSON + D1 yayınlanmış haberlerin birleşik render'ı |
+| `GET /api/news` | D1'de yayınlanmış canlı haberler |
+| `POST /api/admin/news` | Haber yayınla/güncelle (admin) |
+| `POST /api/login`, `/api/logout` | Admin oturumu (imzalı çerez, 7 gün) |
+| `GET/POST /api/media`, `PATCH/DELETE /api/media/:id` | Medya kayıtları (admin) |
+| `PUT /api/upload/:key/part`, `POST /api/upload/:key/complete` | R2 çok parçalı yükleme |
+| `GET /api/public/media` | Yayınlanmış medya (herkese açık, imzalı URL'ler) |
+| `GET /api/export` | AI araçları için medya kataloğu (`AI_READ_TOKEN`) |
+| `GET /media/:key?exp=&sig=` | Süreli imzalı medya servisi |
 
-## Bilinen eksikler / dürüstlük notu
+## Cloudflare durumu — önemli
 
-- **17 haber** (`public/sitemap.xml`'de listelenen ama RSS akışında gerçek metni bulunmayanlar) `public/data/haberler.json` içinde `"placeholder": true` olarak işaretli ve "İçerik güncelleniyor" yazan dürüst bir bekleme sayfası gösteriyor. Uydurma haber metni **yazılmadı**. Bu haberlerin gerçek başlık/metnini paylaşırsanız hemen JSON'a işlerim.
-- `public/assets/` altında gerçek fotoğraf/video (hero görselleri, portfolyo, podcast kapağı vb.) yok — bunlar başkasının/kurucunun gerçek görselleri olduğu için tarafımca **üretilmedi**. `script.js` bu görselleri Media Vault'tan (`slot` alanına göre) canlı çekmeye çalışır; siz `/admin/` panelinden yükleyip "Siteye ekle" dediğinizde otomatik görünür. Elinizdeki gerçek dosyaları paylaşırsanız doğrudan `public/assets/` altına yerleştiririm.
-- `favicon.svg` geçici bir "BT" monogramı; gerçek logo geldiğinde değiştirilecek.
+Hesapta **5 Worker** var; ikisi bu projeyle ilgili:
 
-## Deploy
+| Worker | Rol |
+|---|---|
+| `btmedya` | `www.btmedya.com.tr` alan adı **buna** bağlı (panelden yapılmış) |
+| `btmedya-db` | **Bu depo buna** deploy ediyor (GitHub entegrasyonu) — alan adı yok |
 
-Bu repo, Cloudflare'da `btmedya-db` adlı Worker'a git entegrasyonu ile bağlı — bu branch'e her push otomatik build/deploy tetikler. Secrets (`ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET`, `MEDIA_SIGNING_SECRET`, opsiyonel `AI_READ_TOKEN`) Cloudflare panelinden/`wrangler secret put` ile ayrıca tanımlanmalı — repoya yazılmaz. Detaylar için `docs/CANLIYA-ALMA.md`.
+Diğer üçü (`btmedya-ajans`, `btmedya-medya`, `btmedya-agent-visibility`) boş
+kurulum şablonları; kullanılmıyor.
+
+Yani bu depoya yapılan her push `btmedya-db`'ye deploy olur ve **canlı siteyi
+etkilemez**. Siteyi bu depodan yayına almak için alan adının `btmedya-db`'ye
+taşınması gerekir: Workers & Pages > btmedya-db > Settings > Domains & Routes >
+Add > Custom Domain.
+
+Ayrıca `btmedya.com.tr` (www'suz hali) şu an DNS'te tanımlı değil — sadece
+`www.btmedya.com.tr` çalışıyor.
+
+## Yayına almadan önce
+
+`/admin/` panelinin ve imzalı medya bağlantılarının çalışması için üç secret
+tanımlanmalı (Cloudflare paneli > Worker > Settings > Variables and Secrets,
+ya da `wrangler secret put`):
+
+- `ADMIN_PASSWORD` — panel giriş şifresi
+- `ADMIN_SESSION_SECRET` — oturum imzalama anahtarı (rastgele uzun dizi)
+- `MEDIA_SIGNING_SECRET` — medya bağlantısı imzalama anahtarı (rastgele uzun dizi)
+
+Detaylı adımlar: `docs/CANLIYA-ALMA.md`

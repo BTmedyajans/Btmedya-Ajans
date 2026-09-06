@@ -1,247 +1,169 @@
-(() => {
-  'use strict';
+document.addEventListener('DOMContentLoaded',()=>{
+  const pre=document.getElementById('preloader');
+  setTimeout(()=>pre&&pre.classList.add('done'),450);
 
-  const $ = (s, ctx) => (ctx || document).querySelector(s);
-  const $$ = (s, ctx) => Array.from((ctx || document).querySelectorAll(s));
-
-  /* ---------- Kırık medyayı sessizce gizle ---------- */
-  function guardMedia() {
-    $$('img, video').forEach((el) => {
-      const hide = () => { el.style.opacity = '0'; el.style.pointerEvents = 'none'; };
-      el.addEventListener('error', hide, { once: true });
-      if (el.tagName === 'VIDEO') {
-        el.addEventListener('stalled', () => {}, { once: true });
-      }
-    });
-  }
-
-  /* ---------- Preloader ---------- */
-  function initPreloader() {
-    const el = $('#preloader');
-    if (!el) return;
-    const done = () => {
-      el.style.opacity = '0';
-      setTimeout(() => el.remove(), 600);
-    };
-    if (document.readyState === 'complete') done();
-    else window.addEventListener('load', done, { once: true });
-    setTimeout(done, 3500); // güvenlik ağı
-  }
-
-  /* ---------- Giriş video overlay ---------- */
-  function initIntroOverlay() {
-    const overlay = $('#introOverlay');
-    if (!overlay) return;
-    const finish = () => overlay.classList.add('done');
-    const video = $('video', overlay);
-    if (video) {
-      video.addEventListener('ended', finish, { once: true });
-      video.addEventListener('error', finish, { once: true });
+  // INTRO VIDEO ÖNİZLEME — sayfa girişinde kısa video, sonra hero'ya geçiş
+  const intro=document.getElementById('introOverlay');
+  if(intro){
+    const dismiss=()=>intro.classList.add('done');
+    const introVideo=intro.querySelector('video');
+    const t=setTimeout(dismiss,3200);
+    if(introVideo){
+      introVideo.addEventListener('ended',()=>{clearTimeout(t);dismiss();});
     }
-    overlay.addEventListener('click', finish);
-    setTimeout(finish, 4000);
+    intro.addEventListener('click',()=>{clearTimeout(t);dismiss();});
   }
 
-  /* ---------- Mobil menü ---------- */
-  function initMenu() {
-    const toggle = $('.menu-toggle');
-    const nav = $('.topbar nav');
-    if (!toggle || !nav) return;
-    toggle.addEventListener('click', () => {
-      const open = nav.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  // CURSOR LOGO — fare ile sayfa başlıkları arasında gezinen BT amblemi
+  const reduced0=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hasHover=window.matchMedia('(hover:hover)').matches;
+  if(!reduced0 && hasHover && window.innerWidth>900){
+    const logo=document.createElement('div');
+    logo.className='cursor-logo';
+    logo.textContent='BT';
+    document.body.appendChild(logo);
+    let mx=window.innerWidth/2, my=window.innerHeight/2, lx=mx, ly=my;
+    document.addEventListener('mousemove',e=>{
+      mx=e.clientX; my=e.clientY;
+      logo.classList.add('show');
     });
-    $$('nav a', nav).forEach((a) => a.addEventListener('click', () => {
-      nav.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
-    }));
+    document.addEventListener('mouseleave',()=>logo.classList.remove('show'));
+    (function loop(){
+      lx+=(mx-lx)*0.16; ly+=(my-ly)*0.16;
+      logo.style.left=lx+'px'; logo.style.top=ly+'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('h1,h2,.hero-card,.service-card,.archive-card,.category-cover,.showreel-card').forEach(el=>{
+      el.addEventListener('mouseenter',()=>logo.classList.add('magnet'));
+      el.addEventListener('mouseleave',()=>logo.classList.remove('magnet'));
+    });
   }
 
-  /* ---------- Sayfa kaydırma çubuğu ---------- */
-  function initScrollProgress() {
-    const bar = $('.page-progress > i');
-    if (!bar) return;
-    const update = () => {
-      const h = document.documentElement;
-      const scrolled = h.scrollTop || document.body.scrollTop;
-      const max = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
-      bar.style.width = max > 0 ? `${Math.min(100, (scrolled / max) * 100)}%` : '0%';
+  const menu=document.querySelector('.menu-toggle');
+  const nav=document.querySelector('.topbar nav');
+  if(menu&&nav){
+    menu.addEventListener('click',()=>{
+      const open=nav.classList.toggle('open');
+      menu.setAttribute('aria-expanded',open?'true':'false');
+      menu.setAttribute('aria-label',open?'Menüyü kapat':'Menüyü aç');
+    });
+    nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+  }
+
+  const cards=[...document.querySelectorAll('.hero-card')];
+  const stateVideo=document.getElementById('heroStateVideo');
+  const sources={
+    haber:'assets/media/web/state-haber.mp4',
+    medya:'assets/media/web/state-medya.mp4',
+    produksiyon:'assets/media/web/state-produksiyon.mp4'
+  };
+  let active='medya';
+  let stateRequest=0;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setCategory(cat,play=true){
+    if(!sources[cat]) return;
+    active=cat;
+    cards.forEach(c=>c.classList.toggle('active',c.dataset.category===cat));
+    document.documentElement.dataset.heroCategory=cat;
+    if(!stateVideo || reduced) return;
+    const request=++stateRequest;
+    stateVideo.classList.remove('ready');
+    stateVideo.style.opacity='0';
+    stateVideo.src=sources[cat];
+    stateVideo.load();
+    const reveal=()=>{
+      if(request!==stateRequest) return;
+      stateVideo.classList.add('ready');
+      stateVideo.style.opacity='1';
+      if(play) stateVideo.play().catch(()=>{});
     };
-    document.addEventListener('scroll', update, { passive: true });
-    update();
+    stateVideo.addEventListener('loadeddata',reveal,{once:true});
+    stateVideo.addEventListener('error',()=>{
+      if(request!==stateRequest) return;
+      stateVideo.style.opacity='0';
+      stateVideo.removeAttribute('src');
+    },{once:true});
   }
 
-  /* ---------- Özel imleç (BT amblemi) ---------- */
-  function initCursor() {
-    if (window.matchMedia('(hover: none), (max-width: 900px)').matches) return;
-    const cursor = document.createElement('div');
-    cursor.className = 'cursor-logo';
-    cursor.textContent = 'BT';
-    document.body.appendChild(cursor);
-    let shown = false;
-    document.addEventListener('mousemove', (e) => {
-      cursor.style.left = `${e.clientX}px`;
-      cursor.style.top = `${e.clientY}px`;
-      if (!shown) { cursor.classList.add('show'); shown = true; }
+  cards.forEach((card,i)=>{
+    const cat=card.dataset.category;
+    card.addEventListener('mouseenter',()=>setCategory(cat));
+    card.addEventListener('focus',()=>setCategory(cat,false));
+    card.addEventListener('click',()=>{
+      setCategory(cat);
+      const target=document.querySelector(card.dataset.target||'#services');
+      if(target) target.scrollIntoView({behavior:reduced?'auto':'smooth'});
     });
-    document.addEventListener('mouseleave', () => cursor.classList.remove('show'));
-    $$('a, button, input, textarea, select').forEach((el) => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('magnet'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('magnet'));
-    });
-  }
+    card.addEventListener('touchstart',()=>setCategory(cat,false),{passive:true});
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();}});
+  });
+  setCategory('medya',false);
 
-  /* ---------- Hero kartları / kategori kapakları: hedefe kaydır ---------- */
-  function initSectionNav() {
-    const scrollToTarget = (selector) => {
-      const target = selector && $(selector);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
+  const hero=document.querySelector('.hero-scroll');
+  const sceneStart=document.querySelector('.scene-still-start');
+  const sceneEnd=document.querySelector('.scene-still-end');
+  const line=document.querySelector('.scene-line i');
+  const label=document.querySelector('.scene-label');
+  const rail=document.querySelector('.service-rail');
 
-    $$('.hero-card').forEach((card) => {
-      card.addEventListener('click', () => {
-        $$('.hero-card').forEach((c) => c.classList.remove('active'));
-        card.classList.add('active');
-        scrollToTarget(card.dataset.target);
-
-        const category = card.dataset.category;
-        const stateWrap = $('.hero-video-state');
-        const stateVideo = $('#heroStateVideo');
-        if (stateWrap && stateVideo && category) {
-          const src = `/assets/media/web/state-${category}.mp4`;
-          if (stateVideo.getAttribute('src') !== src) stateVideo.setAttribute('src', src);
-          stateVideo.play().then(() => stateWrap.classList.add('ready')).catch(() => {});
+  if(!reduced && typeof gsap!=='undefined' && typeof ScrollTrigger!=='undefined'){
+    gsap.registerPlugin(ScrollTrigger);
+    if(hero){
+      ScrollTrigger.create({
+        trigger:hero,start:'top top',end:'bottom bottom',scrub:true,
+        onUpdate:self=>{
+          const p=self.progress;
+          if(sceneStart) gsap.set(sceneStart,{opacity:Math.max(0,1-p*1.7)});
+          if(sceneEnd) gsap.set(sceneEnd,{opacity:Math.max(0,(p-.45)*1.9)});
+          gsap.set('.character-wrap',{y:p*-90,scale:1+p*.1});
+          gsap.set('.hero-copy',{y:p*-80,opacity:1-Math.min(1,p*1.8)});
+          gsap.set('.focus-ring',{rotation:p*180,scale:1+p*.5});
+          if(line) line.style.width=(p*100)+'%';
+          if(label) label.textContent=p<.33?'01 / GİRİŞ':p<.66?'02 / ODAK':'03 / ÇIKIŞ';
         }
       });
-    });
-
-    $$('.category-cover').forEach((cover) => {
-      cover.addEventListener('click', (e) => {
-        e.preventDefault();
-        scrollToTarget(cover.dataset.target);
-      });
-    });
+    }
+    if(rail && window.innerWidth>900){
+      gsap.to(rail,{x:()=>-(rail.scrollWidth-window.innerWidth*.58),ease:'none',scrollTrigger:{trigger:'.services-pin',start:'top top',end:'bottom bottom',scrub:1,invalidateOnRefresh:true}});
+    }
+    gsap.from('.service-card',{y:50,opacity:0,stagger:.08,duration:.8,scrollTrigger:{trigger:'.services-stage',start:'top 75%'}});
+    gsap.from('.about-copy',{x:-50,opacity:0,duration:1,scrollTrigger:{trigger:'.about',start:'top 70%'}});
   }
 
-  /* ---------- Paket hesaplayıcı ---------- */
-  function initPackages() {
-    const inputs = $$('.package-options input[type="checkbox"]');
-    const count = $('#packageCount');
-    const text = $('#packageText');
-    const wa = $('#packageWhatsapp');
-    if (!inputs.length || !count || !text || !wa) return;
-
-    const update = () => {
-      const selected = inputs.filter((i) => i.checked).map((i) => i.dataset.package);
-      count.textContent = String(selected.length);
-      text.textContent = selected.length
-        ? selected.join(', ')
-        : 'Henüz seçim yapılmadı.';
-      const base = 'Merhaba BTMEDYA, aşağıdaki hizmetler için teklif almak istiyorum: ';
-      const msg = selected.length ? base + selected.join(', ') : 'Merhaba BTMEDYA, kendi paketimi oluşturmak istiyorum.';
-      wa.href = `https://wa.me/905416401029?text=${encodeURIComponent(msg)}`;
-    };
-
-    inputs.forEach((i) => i.addEventListener('change', update));
-    update();
-  }
-
-  /* ---------- Anasayfa haber kartları (statik arşivden) ---------- */
-  async function initNewsPreview() {
-    const grid = $('#newsGrid');
-    if (!grid) return;
-    try {
-      const res = await fetch('/data/haberler.json');
-      if (!res.ok) throw new Error('haberler.json alınamadı');
-      const items = (await res.json())
-        .filter((n) => !n.placeholder)
-        .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
-        .slice(0, 3);
-      if (!items.length) return;
-      grid.innerHTML = items.map((n) => `
+  const newsGrid=document.getElementById('newsGrid');
+  if(newsGrid){
+    fetch('data/haberler.json').then(r=>{if(!r.ok) throw new Error('news');return r.json();}).then(items=>{
+      newsGrid.innerHTML=items.slice(0,3).map(n=>`
         <article class="news-card">
-          <small>${escapeHtml(n.category || 'BTMEDYA')}</small>
-          <h3>${escapeHtml(n.title)}</h3>
-          <p>${escapeHtml((n.excerpt || '').slice(0, 140))}</p>
+          <small>${escapeHtml((n.category||'HABER').toUpperCase())}</small>
+          <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
+          <p>${escapeHtml(n.excerpt||'BTMEDYA haber arşivinden seçili içerik.')}</p>
+          <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
         </article>`).join('');
-      $$('.news-card', grid).forEach((card, idx) => {
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', () => {
-          window.location.href = `/haberler/${items[idx].slug}.html`;
-        });
-      });
-    } catch (err) {
-      /* sessizce vazgeç: yer tutucu metin kalır */
+    }).catch(()=>{});
+  }
+
+  const checks=[...document.querySelectorAll('.package-options input')];
+  const count=document.getElementById('packageCount');
+  const text=document.getElementById('packageText');
+  const wa=document.getElementById('packageWhatsapp');
+  function updatePackage(){
+    const selected=checks.filter(c=>c.checked).map(c=>c.dataset.package);
+    if(count) count.textContent=selected.length;
+    if(text) text.textContent=selected.length?selected.join(' • '):'Henüz seçim yapılmadı.';
+    if(wa){
+      const msg=selected.length?`Merhaba BTMEDYA, kendi paketimi oluşturmak istiyorum. Seçimlerim: ${selected.join(', ')}.`:'Merhaba BTMEDYA, kendi paketimi oluşturmak istiyorum.';
+      wa.href='https://wa.me/905416401029?text='+encodeURIComponent(msg);
     }
   }
+  checks.forEach(c=>c.addEventListener('change',updatePackage));
+  updatePackage();
 
-  function escapeHtml(str) {
-    return String(str || '').replace(/[&<>"']/g, (c) => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-    }[c]));
-  }
+  // PII-free intent event. No phone, name, email or message content is sent to analytics.
+  document.querySelectorAll('a[href*="wa.me"]').forEach(a=>a.addEventListener('click',()=>{
+    try{window.dispatchEvent(new CustomEvent('btmedya:whatsapp_intent',{detail:{category:active}}));}catch(e){}
+  }));
 
-  /* ---------- Slot bazlı medya hidrasyonu (Media Vault) ---------- */
-  async function hydrateSlot(selector, slot, attr = 'src') {
-    const el = $(selector);
-    if (!el) return;
-    try {
-      const res = await fetch(`/api/public/media?slot=${encodeURIComponent(slot)}&limit=1`);
-      if (!res.ok) return;
-      const { items } = await res.json();
-      if (items && items[0]) el.setAttribute(attr, items[0].url);
-    } catch {
-      /* medya henüz yüklenmemiş olabilir, sessizce geç */
-    }
-  }
-
-  function initMediaHydration() {
-    hydrateSlot('.hero-bg-video source', 'hero', 'src');
-    hydrateSlot('#characterVideo', 'karakter', 'src');
-  }
-
-  /* ---------- GSAP scrollytelling ---------- */
-  function initScrollytelling() {
-    if (!window.gsap || !window.ScrollTrigger) return;
-    gsap.registerPlugin(ScrollTrigger);
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const heroScroll = $('.hero-scroll');
-    if (heroScroll) {
-      const tl = gsap.timeline({
-        scrollTrigger: { trigger: heroScroll, start: 'top top', end: 'bottom bottom', scrub: 0.6 },
-      });
-      tl.to('.scene-still-start', { opacity: 0, ease: 'none' }, 0)
-        .to('.scene-still-end', { opacity: 1, ease: 'none' }, 0)
-        .to('.hero-copy', { opacity: 0, y: -60, ease: 'none' }, 0.15)
-        .to('.character-wrap', { scale: 1.08, ease: 'none' }, 0)
-        .to('.scene-line > i', { width: '100%', ease: 'none' }, 0)
-        .to('.focus-ring', { rotate: 45, ease: 'none' }, 0);
-    }
-
-    const rail = $('.service-rail');
-    const pin = $('.services-pin');
-    if (rail && pin && window.innerWidth > 900) {
-      const distance = () => Math.max(0, rail.scrollWidth - window.innerWidth + 100);
-      gsap.to(rail, {
-        x: () => -distance(),
-        ease: 'none',
-        scrollTrigger: { trigger: pin, start: 'top top', end: 'bottom bottom', scrub: 0.6 },
-      });
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    guardMedia();
-    initPreloader();
-    initIntroOverlay();
-    initMenu();
-    initScrollProgress();
-    initCursor();
-    initSectionNav();
-    initPackages();
-    initNewsPreview();
-    initMediaHydration();
-    initScrollytelling();
-  });
-})();
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+});
