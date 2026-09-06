@@ -37,24 +37,20 @@ Backend dosyaları `public/` dışında tutulur; bu yüzden `wrangler.toml`, `sr
 | `GET /api/export` | AI araçları için medya kataloğu (`AI_READ_TOKEN`) |
 | `GET /media/:key?exp=&sig=` | Süreli imzalı medya servisi |
 
-## Cloudflare durumu — önemli
+## Cloudflare durumu
 
-Hesapta **5 Worker** var; ikisi bu projeyle ilgili:
+Hesapta **5 Worker** var; bu proje `btmedya` Worker'ında yayınlanıyor:
 
 | Worker | Rol |
 |---|---|
-| `btmedya` | `www.btmedya.com.tr` alan adı **buna** bağlı (panelden yapılmış) |
-| `btmedya-db` | **Bu depo buna** deploy ediyor (GitHub entegrasyonu) — alan adı yok |
+| `btmedya` | **Canlı site** — `www.btmedya.com.tr` buna bağlı, bu depo buraya deploy eder |
+| `btmedya-db` | Eski deneme; artık kullanılmıyor |
+| `btmedya-ajans`, `btmedya-medya`, `btmedya-agent-visibility` | Boş kurulum şablonları, kullanılmıyor |
 
-Diğer üçü (`btmedya-ajans`, `btmedya-medya`, `btmedya-agent-visibility`) boş
-kurulum şablonları; kullanılmıyor.
+GitHub entegrasyonu `btmedya-db` servisine bağlı olsa da `wrangler.toml`
+içindeki `name = "btmedya"` sayesinde deploy canlı Worker'a gider.
 
-Yani bu depoya yapılan her push `btmedya-db`'ye deploy olur ve **canlı siteyi
-etkilemez**. Siteyi bu depodan yayına almak için alan adının `btmedya-db`'ye
-taşınması gerekir: Workers & Pages > btmedya-db > Settings > Domains & Routes >
-Add > Custom Domain.
-
-Ayrıca `btmedya.com.tr` (www'suz hali) şu an DNS'te tanımlı değil — sadece
+`btmedya.com.tr` (www'suz hali) şu an DNS'te tanımlı değil — sadece
 `www.btmedya.com.tr` çalışıyor.
 
 ## Yayına almadan önce

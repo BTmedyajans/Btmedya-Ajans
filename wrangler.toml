@@ -1,4 +1,4 @@
-name = "btmedya-db"
+name = "btmedya"
 main = "src/worker.js"
 compatibility_date = "2026-09-02"
 
@@ -13,11 +13,13 @@ directory = "public"
 binding = "ASSETS"
 
 # ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
-# www.btmedya.com.tr, "btmedya" adlı ayrı bir Worker'a Cloudflare panelinden
-# bağlanmış durumda. Bu depo ise "btmedya-db" Worker'ına deploy ediyor.
-# Routes burada açılırsa wrangler paneldeki bağlantıları EZER.
-# Alan adını bu Worker'a taşımak için: Workers & Pages > btmedya-db >
-# Settings > Domains & Routes > Add > Custom Domain
+# www.btmedya.com.tr, "btmedya" Worker'ına Cloudflare panelinden bağlanmış
+# durumda; bu yüzden deploy hedefi de "btmedya". Routes burada açılırsa
+# wrangler paneldeki alan adı bağlantılarının tek yetkilisi olur ve mevcut
+# ayarları EZER — gereksiz risk.
+#
+# Apex (btmedya.com.tr, www'suz) şu an DNS'te tanımlı değil. Eklemek için:
+# Workers & Pages > btmedya > Settings > Domains & Routes > Add > Custom Domain
 
 [[r2_buckets]]
 binding = "MEDIA"
