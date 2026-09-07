@@ -16,9 +16,9 @@
   <meta property="og:image" content="https://btmedya.com.tr/assets/hero-robot.png"/>
   <title>BTMEDYA — Haber, Medya, Prodüksiyon & AI</title>
   <meta name="description" content="BTMEDYA: haber, medya, prodüksiyon, yapay zekâ ve dönüşüm odaklı dijital deneyimler."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="icon" href="assets/favicon.png" type="image/png"/>
   <link rel="manifest" href="site.webmanifest"/>
   <link rel="stylesheet" href="styles.css"/>
@@ -46,9 +46,11 @@
   </div>
   <div class="noise" aria-hidden="true"></div>
 
+  <a class="skip-link" href="#main">İçeriğe atla</a>
+
   <!-- GİRİŞ VİDEO ÖNİZLEME -->
   <div class="intro-overlay" id="introOverlay" aria-hidden="true">
-    <video src="assets/media/web/hero-bg.mp4" muted playsinline autoplay preload="auto"></video>
+    <video data-src="assets/media/web/hero-bg.mp4" muted playsinline preload="none"></video>
     <div class="intro-mark">BT<span style="color:var(--cyan)">MEDYA</span></div>
   </div>
 
@@ -74,14 +76,12 @@
     <a class="quote" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">TEKLİF AL ↗</a>
   </header>
 
-  <main>
+  <main id="main" tabindex="-1">
     <!-- CINEMATIC HERO / 620vh -->
     <section id="hero" class="hero-scroll">
       <div class="hero-sticky">
         <div class="ambient"></div>
-        <video class="hero-bg-video" autoplay muted loop playsinline poster="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" aria-hidden="true">
-          <source src="assets/media/web/hero-bg.mp4" type="video/mp4">
-        </video>
+        <video class="hero-bg-video" muted loop playsinline preload="none" data-src="assets/media/web/hero-bg.mp4" poster="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" aria-hidden="true" tabindex="-1"></video>
         <div class="scene-still scene-still-start" aria-hidden="true">
           <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA görseli">
           <div class="scene-still-shade"></div>
@@ -182,17 +182,17 @@
     <!-- CATEGORY COVERS -->
     <section id="categories" class="category-covers">
       <a class="category-cover" data-target="#news">
-        <video src="assets/media/web/state-haber.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-haber.mp4" muted loop playsinline poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 01</small><h3>Haber</h3><p>Balıkesir ve çevresinden doğrulanmış saha haberleri.</p></div>
       </a>
       <a class="category-cover" data-target="#portfolio">
-        <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay poster="assets/btmedya-ai-network_e70bec13_b99f79b3.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-medya.mp4" muted loop playsinline poster="assets/btmedya-ai-network_e70bec13_b99f79b3.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 02</small><h3>Medya</h3><p>Sosyal içerik, marka kimliği ve dijital üretim.</p></div>
       </a>
       <a class="category-cover" data-target="#services">
-        <video src="assets/media/web/state-produksiyon.mp4" muted loop playsinline autoplay poster="assets/btmedya-production-lab_529e6715_f6731a13.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-produksiyon.mp4" muted loop playsinline poster="assets/btmedya-production-lab_529e6715_f6731a13.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 03</small><h3>Prodüksiyon</h3><p>Kamera, kurgu, renk ve final master akışı.</p></div>
       </a>
@@ -238,28 +238,28 @@
       <div class="section-head">
         <p class="eyebrow">AI LAB / SHOWREEL</p>
         <h2>Yapay zekâ ile <span>üretilmiş</span> sahneler.</h2>
-        <p>Konsept, prompt ve prodüksiyon disipliniyle üretilen kısa AI video örnekleri — reklam ve sosyal içerik referansı.</p>
+        <p>Konsept, prompt ve prodüksiyon disipliniyle üretilen kısa AI video örnekleri. Reklam ve sosyal içerik referansı.</p>
       </div>
       <div class="showreel-grid">
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-flying-reporter.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-flying-reporter.mp4" muted loop playsinline poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Balıkesir üzerinde uçuş</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-fantasy.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-fantasy.mp4" muted loop playsinline></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Sahne / karakter üretimi</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-action.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-action.mp4" muted loop playsinline></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Sinematik aksiyon kurgusu</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-medya.mp4" muted loop playsinline></video>
           <span class="sr-tag">MARKA KARAKTERİ</span>
-          <span class="sr-label">BT — yapay zekâ kimliği</span>
+          <span class="sr-label">BT yapay zekâ kimliği</span>
         </div>
       </div>
     </section>
@@ -298,10 +298,10 @@
     <!-- PODCAST STRIP -->
     <section class="v10-section" style="padding-top:0">
       <div class="podcast-strip">
-        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast kapağı">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast kapağı" loading="lazy" decoding="async">
         <div class="ps-copy">
           <p class="eyebrow">YOUTUBE / PODCAST</p>
-          <h3>Siyah Oda — sohbet ve röportaj serisi.</h3>
+          <h3>Siyah Oda: sohbet ve röportaj serisi.</h3>
           <p>Gündem, sektör ve şehir hikâyelerini konuk röportajlarıyla ekrana taşıyan BTMEDYA podcast serisi.</p>
           <a class="primary" style="display:inline-block;padding:12px 16px;text-decoration:none;font-size:11px;letter-spacing:.1em" href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YOUTUBE'DA İZLE ↗</a>
         </div>
@@ -404,8 +404,8 @@
     <span>WhatsApp</span><b>↗</b>
   </a>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
