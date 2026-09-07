@@ -133,15 +133,46 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const newsGrid=document.getElementById('newsGrid');
   if(newsGrid){
-    fetch('data/haberler.json').then(r=>{if(!r.ok) throw new Error('news');return r.json();}).then(items=>{
-      newsGrid.innerHTML=items.slice(0,3).map(n=>`
+    function catClass(cat){
+      const c=(cat||'').toLowerCase();
+      if(c.includes('ekonomi')||c.includes('emlak')||c.includes('tarim')) return 'cat-ekonomi';
+      if(c.includes('spor')||c.includes('muay')) return 'cat-spor';
+      if(c.includes('kültür')||c.includes('kultur')||c.includes('zanaat')||c.includes('moda')) return 'cat-kultur';
+      if(c.includes('sağlık')||c.includes('saglik')||c.includes('beslenme')||c.includes('bakim')) return 'cat-saglik';
+      if(c.includes('yerel')||c.includes('pazar')||c.includes('haber')||c.includes('güncel')) return 'cat-haber';
+      return 'cat-default';
+    }
+    function formatDate(d){if(!d)return '';try{return new Date(d).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});}catch(e){return '';}}
+    fetch('/api/news?limit=6').then(r=>{if(!r.ok) throw new Error('news');return r.json();}).then(data=>{
+      const items=data.items||[];
+      if(!items.length){newsGrid.innerHTML='<p style="color:#657788">Henüz yayınlanmış haber yok.</p>';return;}
+      newsGrid.innerHTML=items.map(n=>`
         <article class="news-card">
-          <small>${escapeHtml((n.category||'HABER').toUpperCase())}</small>
-          <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
-          <p>${escapeHtml(n.excerpt||'BTMEDYA haber arşivinden seçili içerik.')}</p>
-          <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
+          ${n.cover_url
+            ?`<img class="news-card-img" src="${escapeHtml(n.cover_url)}" alt="${escapeHtml(n.title)}" loading="lazy">`
+            :`<div class="news-card-placeholder ${catClass(n.category)}">BT</div>`}
+          <div class="news-card-body">
+            <small>${escapeHtml((n.category||'HABER').toUpperCase())}</small>
+            <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
+            <p>${escapeHtml(n.excerpt||'').substring(0,120)}${(n.excerpt||'').length>120?'…':''}</p>
+            <span class="news-card-date">${escapeHtml(n.author||'')}${n.author&&n.published_at?' · ':''}${formatDate(n.published_at)}</span>
+            <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
+          </div>
         </article>`).join('');
-    }).catch(()=>{});
+    }).catch(()=>{
+      fetch('data/haberler.json').then(r=>{if(!r.ok) throw new Error('fallback');return r.json();}).then(items=>{
+        newsGrid.innerHTML=items.slice(0,6).map(n=>`
+          <article class="news-card">
+            <div class="news-card-placeholder ${catClass(n.category)}">BT</div>
+            <div class="news-card-body">
+              <small>${escapeHtml((n.category||'HABER').toUpperCase())}</small>
+              <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
+              <p>${escapeHtml(n.excerpt||'').substring(0,120)}</p>
+              <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
+            </div>
+          </article>`).join('');
+      }).catch(()=>{});
+    });
   }
 
   const checks=[...document.querySelectorAll('.package-options input')];

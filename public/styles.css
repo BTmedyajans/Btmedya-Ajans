@@ -140,3 +140,77 @@
 .podcast-strip img{width:140px;height:140px;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
 .podcast-strip .ps-copy h3{margin:0 0 8px;font-family:'Space Grotesk',sans-serif}
 .podcast-strip .ps-copy p{color:#8da0b2;font-size:13px;max-width:520px;line-height:1.6;margin:0 0 14px}
+
+/* ===== HABER KAPAK GÖRSELLERİ ===== */
+.news-card{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.news-card-img{width:100%;height:180px;object-fit:cover;opacity:.8;transition:opacity .4s}
+.news-card:hover .news-card-img{opacity:1}
+.news-card-placeholder{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:28px;letter-spacing:.06em;color:rgba(255,255,255,.15)}
+.news-card-placeholder.cat-haber{background:linear-gradient(135deg,#0a1929,#132f4c)}
+.news-card-placeholder.cat-ekonomi{background:linear-gradient(135deg,#0d1f12,#1b3a20)}
+.news-card-placeholder.cat-spor{background:linear-gradient(135deg,#1a0a0a,#3a1b1b)}
+.news-card-placeholder.cat-kultur{background:linear-gradient(135deg,#1a140a,#3a2e1b)}
+.news-card-placeholder.cat-saglik{background:linear-gradient(135deg,#0a1a1a,#1b3a3a)}
+.news-card-placeholder.cat-default{background:linear-gradient(135deg,#0b1b2a,#040b12)}
+.news-card-body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column}
+.news-card-body .section-link{margin-top:auto;padding-top:12px}
+.news-card-date{color:#657788;font-size:10px;margin-top:8px}
+.news-grid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:1100px){.news-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.news-grid{grid-template-columns:1fr}}
+
+/* ARCHIVE CARD KAPAK GÖRSELLERİ */
+.archive-card{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.archive-card-img{width:100%;height:160px;object-fit:cover;opacity:.75;transition:opacity .4s}
+.archive-card:hover .archive-card-img{opacity:1}
+.archive-card-body{padding:18px 20px 20px;flex:1}
+
+/* ===== İLETİŞİM FORMU ===== */
+.contact-page{padding:140px 6vw 100px;max-width:900px;margin:0 auto}
+.contact-page h1{font-size:clamp(38px,6vw,64px);line-height:1;letter-spacing:-.04em;margin:10px 0 14px}
+.contact-page h1 span{color:var(--cyan)}
+.contact-intro{color:#879aaa;max-width:640px;line-height:1.7;margin-bottom:45px}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.contact-form{display:flex;flex-direction:column;gap:16px}
+.contact-form label{font-size:10px;letter-spacing:.12em;color:#7d91a2;display:block;margin-bottom:6px}
+.contact-form input,.contact-form textarea,.contact-form select{width:100%;background:#07111c;border:1px solid rgba(255,255,255,.12);color:var(--ink);padding:13px 16px;font:inherit;font-size:14px;transition:border-color .25s}
+.contact-form input:focus,.contact-form textarea:focus{outline:none;border-color:rgba(87,232,255,.5)}
+.contact-form textarea{min-height:140px;resize:vertical}
+.contact-form button{background:var(--cyan);color:#001017;border:none;padding:15px 24px;font-size:11px;letter-spacing:.12em;font-weight:700;cursor:pointer;transition:opacity .25s}
+.contact-form button:disabled{opacity:.5;cursor:not-allowed}
+.contact-form .form-msg{font-size:12px;min-height:20px}
+.contact-form .form-msg.ok{color:#7fe0a0}
+.contact-form .form-msg.err{color:#ff6b6b}
+.contact-info{display:flex;flex-direction:column;gap:24px}
+.contact-info-card{padding:22px;background:linear-gradient(150deg,#0b1b2a,#040b12);border:1px solid rgba(255,255,255,.08)}
+.contact-info-card h3{font-size:13px;letter-spacing:.08em;color:var(--cyan);margin:0 0 12px}
+.contact-info-card p,.contact-info-card a{color:#8da0b2;font-size:13px;line-height:1.7;text-decoration:none;display:block}
+.contact-info-card a:hover{color:var(--cyan)}
+@media(max-width:700px){.contact-grid{grid-template-columns:1fr}.contact-page{padding-top:110px}}
+
+/* ===== HAKKIMIZDA SAYFASI ===== */
+.about-page{padding:140px 6vw 100px;max-width:1100px;margin:0 auto}
+.about-page h1{font-size:clamp(38px,6vw,64px);line-height:1;letter-spacing:-.04em;margin:10px 0 14px}
+.about-page h1 span{color:var(--cyan)}
+.about-page-intro{color:#879aaa;max-width:720px;line-height:1.7;margin-bottom:55px;font-size:16px}
+.about-story{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;margin-bottom:80px}
+.about-story-text h2{font-size:clamp(28px,4vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0 0 20px}
+.about-story-text h2 span{color:var(--cyan)}
+.about-story-text p{color:#a9bac8;font-size:15px;line-height:1.8;margin:0 0 16px}
+.about-story-visual{position:relative;border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.about-story-visual img{width:100%;height:100%;min-height:350px;object-fit:cover;opacity:.8}
+.about-values{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:80px}
+.about-value{padding:30px 24px;background:linear-gradient(150deg,#0b1b2a,#040b12);border:1px solid rgba(255,255,255,.08)}
+.about-value b{display:block;color:var(--cyan);font-size:11px;letter-spacing:.14em;margin-bottom:14px}
+.about-value h3{font-size:20px;margin:0 0 12px}
+.about-value p{color:#8da0b2;font-size:13px;line-height:1.7;margin:0}
+.about-team{margin-bottom:60px}
+.about-team h2{font-size:clamp(28px,4vw,42px);line-height:1.05;letter-spacing:-.03em;margin:0 0 30px}
+.about-team h2 span{color:var(--cyan)}
+.about-team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.about-team-card{padding:24px;background:linear-gradient(150deg,#0b1b2a,#040b12);border:1px solid rgba(255,255,255,.08);text-align:center}
+.about-team-card .avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(53,214,255,.2),rgba(42,127,255,.2));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;font-weight:800;color:var(--cyan);font-family:'Space Grotesk',sans-serif}
+.about-team-card h4{font-size:16px;margin:0 0 6px}
+.about-team-card small{color:var(--cyan);font-size:10px;letter-spacing:.12em}
+.about-team-card p{color:#8da0b2;font-size:12px;line-height:1.6;margin:10px 0 0}
+@media(max-width:700px){.about-story{grid-template-columns:1fr}.about-values{grid-template-columns:1fr}.about-page{padding-top:110px}}
