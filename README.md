@@ -39,22 +39,22 @@ Backend dosyaları `public/` dışında tutulur; bu yüzden `wrangler.toml`, `sr
 
 ## Cloudflare durumu
 
-Hesapta **5 Worker** var:
-
 | Worker | Rol |
 |---|---|
-| `btmedya` | `www.btmedya.com.tr` şu an buna bağlı — eski sürümü servis ediyor |
-| `btmedya-db` | **Bu depo buraya deploy eder** — güncel site burada, alan adı bekleniyor |
-| `btmedya-ajans`, `btmedya-medya`, `btmedya-agent-visibility` | Boş kurulum şablonları, kullanılmıyor |
+| `btmedya-db` | **Bu depo buraya deploy eder** — site + API burada çalışıyor |
 
 Cloudflare Workers Builds, `wrangler.toml` içindeki `name` alanını yok sayar ve
-daima bağlı olduğu servise (`btmedya-db`) deploy eder. Sitenin bu depodan canlı
-yayına girmesi için `www.btmedya.com.tr` alan adının `btmedya-db` Worker'ına
-taşınması gerekir:
-Workers & Pages > btmedya-db > Settings > Domains & Routes > Add > Custom Domain
+daima bağlı olduğu servise (`btmedya-db`) deploy eder. `main` dalına push
+yapıldığında site otomatik güncellenir.
 
-`btmedya.com.tr` (www'suz hali) şu an DNS'te tanımlı değil — sadece
-`www.btmedya.com.tr` çalışıyor.
+### Alan adı bağlama
+
+`www.btmedya.com.tr` alan adını `btmedya-db` Worker'ına bağlamak için:
+
+1. Cloudflare paneli → **Workers & Pages** → `btmedya-db` → **Settings**
+2. **Domains & Routes** → **Add** → **Custom Domain**
+3. `www.btmedya.com.tr` yaz → **Add**
+4. İsteğe bağlı: aynı adımla `btmedya.com.tr` (apex) da eklenebilir
 
 ## Yayına almadan önce
 
