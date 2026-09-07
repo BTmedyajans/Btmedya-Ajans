@@ -1,4 +1,4 @@
-# Sinematik Scroll Sitesi — Devir Notu
+# Sinematik Scroll Sitesi, Devir Notu
 
 Bu not, `10k-websites` becerisiyle yapılacak sinematik scroll sitesi çalışmasının
 nereden devam edeceğini anlatır. Bulut oturumunda hazırlandı, masaüstü Claude Code
@@ -42,33 +42,55 @@ bir doğrulama değildir.
 - Mevcut sitenin marka ve teknik envanteri çıkarıldı (aşağıda).
 - Hiçbir kredi harcanmadı. Hiçbir görsel veya video üretilmedi.
 
-## 4. Açık kalan iki karar
+## 4. Kararlar (kapandı)
 
-Bunlar yaratıcı işten önce netleşmeli. İkisi de kullanıcının kararı.
+Her iki açık karar da kullanıcı tarafından verildi.
 
-**a) Yayın yeri: Cloudflare mi, Hostinger mı?**
+**a) Yayın yeri: Cloudflare.** Sayfa bu depoya `public/` altına girer ve mevcut
+Cloudflare Workers akışıyla yayınlanır. Alan adı yerinde kalır, ek maliyet yok.
+Becerinin Faz 10 Hostinger adımı **uygulanmaz.** Bu bilinçli bir sapmadır ve tasarım
+paketinin 0. bölümünde kayıt altındadır.
 
-Beceri Hostinger üzerinden yayına almayı şart koşuyor. Ancak BTMEDYA sitesi şu an
-Cloudflare Workers üzerinde canlı ve `btmedya.com.tr` alan adı `btmedya-db`
-Worker'ına bağlı. İki gerçek seçenek var:
+**b) Kapsam: BTMEDYA'nın yeni anasayfası.**
 
-- Sinematik sayfa bu depoya `public/` altına girer ve mevcut Cloudflare akışıyla
-  yayınlanır. Alan adı yerinde kalır, ek maliyet yok. Bu durumda becerinin Faz 10
-  Hostinger adımı uygulanmaz ve bu sapma açıkça belirtilmelidir.
-- Sinematik sayfa ayrı bir statik site olarak Hostinger'a çıkar. Bu, ayrı bir
-  adres veya alan adı taşıması demek, ve aylık hosting ücreti demek.
+Faz 2, 3, 4 ve 5 bulut oturumunda tamamlandı. Çıktı:
+**`docs/10K-TASARIM-PAKETI.md`**, masaüstü oturumunun doğrudan girdisi.
 
-Öneri: birincisi. Sebep tek cümle: alan adı ve altyapı zaten çalışıyor, ikinci bir
-hosting katmanı yeni bir sorun kaynağı olur.
+Paket şunları içerir: marka önermesi, ölçülmüş kontrast oranlarıyla palet token'ları,
+yazı tipi üçlüsü, dört bantlık bant haritası ve birebir metinler, sabit hero metni,
+sekiz kıvrım altı bölümün tamamı birebir metinleriyle, imza öğesi ve vektör katmanı
+planı, mühendislik listesi, hazır üretim istemleri ve metin kapısı.
 
-**b) Sinematik sayfa neyin sitesi olacak?**
+Alınan yaratıcı kararlar: hero konsepti **A, Sokaktan ekrana** (ıslak kaldırımdan
+su yüzeyinden geçerek ışığa iniş), Tier 1 tek çekim, hero'da kurucu yüzü yok,
+gerçek fotoğraf "Kim yapıyor" bölümünde.
 
-Netleşmedi. Üç makul seçenek:
-- Anasayfanın yerini alacak yeni bir BTMEDYA anasayfası
-- BTMEDYA'nın bir hizmet dalı için ayrı iniş sayfası (ör. AI prodüksiyon)
-- Bir müşteri işi, BTMEDYA'nın portfolyosuna girecek örnek çalışma
+**Onay bekleyen tek metin kararı:** oturma başlığı için önerilen
+"Fikir sizden. Kadraj bizden." satırı, mevcut "Dijitalde Fikir Sizden, Gerisi Bizden."
+marka satırının keskinleştirilmiş hali. Marka satırını değiştirmek kullanıcının kararı.
 
-Bu cevap Faz 2'nin ilk sorusudur ve tüm görsel planı belirler.
+## 4b. Araştırmada çıkan mevzuat bulgusu
+
+Faz 3 araştırması sırasında doğrulandı, birincil kaynaklı ve BTMEDYA'yı doğrudan
+ilgilendiriyor.
+
+Ticari Reklam ve Haksız Ticari Uygulamalar Yönetmeliği 1 Temmuz 2026 tarihli ve 33297
+sayılı Resmî Gazete ile değişti, **1 Ağustos 2026'da yürürlüğe girdi.** İki hüküm:
+
+- Reklamlarda tüketicinin ekonomik davranışını önemli ölçüde etkileyecek şekilde yapay
+  zekâ kullanılması ya da insandan ayırt edilemeyen dijital karakterlere yer verilmesi
+  halinde bunun açık, anlaşılır ve ayırt edilebilir şekilde belirtilmesi zorunlu.
+- Gerçek bir kişinin yapay zekâ ile üretilmiş dijital kopyasının bir ürünü gerçeğe
+  aykırı biçimde kullanmış ya da tavsiye etmiş gibi gösterilmesi yasak.
+
+Sonuçları: AI etiketlemesi artık tercih değil uyum konusu; bu bir satış argümanı olarak
+sitede imza bölümü haline getirildi; ve hero'da kurucu yüzünün üretilmemesi kararının
+gerekçelerinden biri bu.
+
+Kaynak: Resmî Gazete 1/7/2026 sayı 33297 · mevzuat.gov.tr güncel metin ·
+Ticaret Bakanlığı duyurusu · AA Teyit Hattı.
+
+Hukuki görüş değildir. Ticari işlerde kendi hukuk danışmanınıza teyit ettirin.
 
 ## 5. Mevcut sitenin envanteri (Faz 2 ve 3 için girdi)
 
@@ -108,12 +130,31 @@ gerektirmez, sadece ffmpeg işidir.
 
 ## 6. Masaüstünde ilk adımlar
 
+Faz 1 dışındaki tüm hazırlık bitti. Masaüstü oturumu doğrudan Faz 6'ya, yani üretime
+girebilir.
+
 1. Depoyu çekin, `claude/new-session-onanb3` dalına geçin.
 2. Claude Code'u proje klasöründe açın. Beceri `.claude/skills/` altından
    otomatik yüklenir.
 3. Faz 1 taramasını baştan çalıştırın: ffmpeg, Node.js, Higgsfield araçları,
    Higgsfield kredi bakiyesi. Her birini çalıştırarak doğrulayın.
 4. Kredi bakiyesi görüldükten sonra dürüst maliyet konuşması yapılır.
-5. Sonra Faz 2 başlar: 4b maddesindeki soru ile.
+5. `docs/10K-TASARIM-PAKETI.md` okunur. Faz 2, 3, 4 ve 5 orada tamamlanmış durumda,
+   tekrar sorulmaz.
+6. Faz 6: paketin 9. bölümündeki başlangıç karesi istemi `get_cost: true` ile
+   fiyatlanır, kullanıcıya söylenir, sonra üretilir ve incelenir.
+7. Kare onaylandıktan sonra video modeli seçimi, sonra video, sonra video kapısı.
 
-Yaratıcı işe kredi bakiyesi görülmeden başlanmaz.
+Yaratıcı işe kredi bakiyesi görülmeden başlanmaz. Video kapısını geçmemiş
+görüntünün etrafına site kurulmaz.
+
+## 7. Bulut oturumunda yapılamayanlar
+
+Dürüstlük için: aşağıdakiler yapılmadı, çünkü Higgsfield olmadan yapılamaz.
+
+- Hiçbir görsel veya video üretilmedi. Hiç kredi harcanmadı.
+- Palet token değerleri onaylanmış görüntüden örneklenmedi; paketteki değerler
+  konseptten türetilmiş başlangıç değerleridir.
+- Bant aralıkları flick testinden geçmedi; başlangıç değeridir.
+- `index.html` yazılmadı. Beceri, onaylanmamış görüntünün etrafına site kurmayı
+  yasaklıyor.
