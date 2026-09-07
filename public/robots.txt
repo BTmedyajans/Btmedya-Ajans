@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
-Sitemap: https://www.btmedya.com.tr/sitemap.xml
+Sitemap: https://btmedya.com.tr/sitemap.xml
