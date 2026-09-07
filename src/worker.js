@@ -134,6 +134,11 @@ async function mediaApi(request, env){
 export default { async fetch(request, env){
   const url = new URL(request.url);
 
+  if(url.hostname.startsWith('www.')){
+    url.hostname = url.hostname.slice(4);
+    return Response.redirect(url.toString(), 301);
+  }
+
   if(url.pathname.startsWith('/media/')){
     const key=decodeURIComponent(url.pathname.slice('/media/'.length));
     const ok=await validMediaSig(key,url.searchParams.get('exp'),url.searchParams.get('sig'),env.MEDIA_SIGNING_SECRET||env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD);

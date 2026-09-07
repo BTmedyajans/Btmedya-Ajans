@@ -49,12 +49,10 @@ yapıldığında site otomatik güncellenir.
 
 ### Alan adı bağlama
 
-`www.btmedya.com.tr` alan adını `btmedya-db` Worker'ına bağlamak için:
+`btmedya.com.tr` alan adı şu an `btmedya-db` Worker'ına bağlı ve canlı.
 
-1. Cloudflare paneli → **Workers & Pages** → `btmedya-db` → **Settings**
-2. **Domains & Routes** → **Add** → **Custom Domain**
-3. `www.btmedya.com.tr` yaz → **Add**
-4. İsteğe bağlı: aynı adımla `btmedya.com.tr` (apex) da eklenebilir
+`www.btmedya.com.tr` ile gelen istekler Worker tarafından otomatik olarak
+`btmedya.com.tr` adresine 301 yönlendirilir.
 
 ## Yayına almadan önce
 

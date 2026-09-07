@@ -57,7 +57,7 @@ hesabını görmelisiniz. Başka hesap çıkarsa `npx wrangler logout` yapıp te
 npx wrangler deploy
 ```
 
-Siteyi `www.btmedya.com.tr` adresine yükler.
+Siteyi `btmedya.com.tr` adresine yükler.
 
 > Worker'daki mevcut dosyaların üzerine yazar. Alan adı/DNS ayarlarına dokunmaz —
 > `wrangler.toml` içindeki routes bloğu bilerek kapalı bırakıldı.
@@ -105,14 +105,14 @@ npx wrangler secret put AI_READ_TOKEN
 
 Deploy sonrası sırayla açın:
 
-- [ ] `https://www.btmedya.com.tr` — giriş videosu ve hero açılıyor mu?
-- [ ] `https://www.btmedya.com.tr/haberler/` — 27 haber listeleniyor mu?
+- [ ] `https://btmedya.com.tr` — giriş videosu ve hero açılıyor mu?
+- [ ] `https://btmedya.com.tr/haberler/` — 27 haber listeleniyor mu?
 - [ ] Bir habere tıklayın — yazı açılıyor mu?
-- [ ] `https://www.btmedya.com.tr/api/health` — şunu döndürmeli:
+- [ ] `https://btmedya.com.tr/api/health` — şunu döndürmeli:
       `{"ok":true,"service":"btmedya","cms":true,"r2":true}`
       `cms` veya `r2` **false** ise bağlantılar oturmamış, haber verin.
-- [ ] `https://www.btmedya.com.tr/admin/` — şifrenizle giriş yapabiliyor musunuz?
-- [ ] `https://www.btmedya.com.tr/wrangler.toml` — **404 vermeli.**
+- [ ] `https://btmedya.com.tr/admin/` — şifrenizle giriş yapabiliyor musunuz?
+- [ ] `https://btmedya.com.tr/wrangler.toml` — **404 vermeli.**
       İçerik görünüyorsa `.assetsignore` çalışmamış demektir; **hemen haber verin**,
       bu backend kodunuzun herkese açık olması anlamına gelir.
 
