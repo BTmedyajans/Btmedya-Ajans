@@ -173,6 +173,10 @@ Araştırmanın en keskin acısına doğrudan cevap: müşteri işi yapanla konu
   kurguyu teslim eden de aynı kişi. Arada müşteri temsilcisi yok, brief kaybolmuyor,
   işin nerede olduğunu her zaman söyleyebilecek biri var."
 - Görsel: **gerçek fotoğraf.** AI üretimi değil. Etiketi: `GERÇEK ÇEKİM`.
+- Bağlantı: "BTMEDYA'yı daha yakından tanıyın" → `/hakkimizda/`
+
+Bu bölüm `/hakkimizda/` sayfasının kopyası değil, kancasıdır. Anasayfa tek acıyı
+çözer (işi yapanla konuşmak), detay sayfada durur.
 
 ### 6.2 Nasıl çalışıyoruz
 
@@ -242,17 +246,31 @@ Araştırmada çıkan gerçek itirazlar, alıcının kendi diliyle.
 - Üst etiket: `TEK ADIM`
 - Başlık: "Projeyi anlatın, kadrajı kuralım."
 - Metin: "Ne yapmak istediğinizi yazın, aynı gün dönüş yapalım."
-- Buton: "WhatsApp'tan konuşalım" → `https://wa.me/905416401029`
-- İkincil: "+90 541 640 10 29"
 
-**Form kararı ve dürüst durum.** Sitenin tek dönüşüm noktası WhatsApp. Ziyaretçinin
-mesajı doğrudan BTMEDYA'nın WhatsApp hattına gider, aradan hiçbir servis geçmez.
-Bu yüzden sayfada form yok, ve bu bilinçli: çalışmayan bir form, olmayan bir formdan
-kötüdür.
+**Form kararı, doğrulanmış gerçek duruma göre.** Depoda çalışan bir form altyapısı
+zaten var ve canlıda doğrulandı: `POST /api/contact` ucu ad, e-posta ve mesaj alanlarını
+doğruluyor, honeypot ile spam eliyor, mesajı D1 üzerindeki `contact_messages` tablosuna
+yazıyor, ve `/admin/` panelinden okunuyor. Tablo üretim veritabanında mevcut.
 
-Yükseltme seçeneği, gerektiğinde: bu depoda zaten bir Cloudflare Worker ve D1
-veritabanı var. Gerçek bir iletişim formu `/api/lead` ucu ve yeni bir D1 tablosuyla
-eklenebilir. Bu paketin kapsamında değil, ama mümkün olduğu kayda geçsin.
+Bu yüzden anasayfa gerçek bir form taşır. Ziyaretçinin mesajı gerçekten bir yere gider,
+ve başarı durumu bu gerçeği söyler.
+
+Tek dönüşüm anı korunur, iki tamamlama yolu olur:
+
+- **Birincil:** sayfa içi form, `POST /api/contact` ucuna gider.
+  - Alanlar: Ad Soyad, E-posta, Telefon (opsiyonel), Konu (opsiyonel), Mesaj
+  - Gizli honeypot alanı: `_honey`
+  - Buton: "Mesajı gönder"
+  - Başarı durumu: "Mesajınız bize ulaştı. Aynı gün dönüş yapacağız."
+  - Hata durumu: ucun döndürdüğü Türkçe hata metni aynen gösterilir, uydurulmaz.
+- **İkincil, aynı blok içinde:** "WhatsApp'tan yaz" → `https://wa.me/905416401029`
+  ve "+90 541 640 10 29".
+
+İki ayrı çağrı değil bu. Tek dönüşüm bloğu, içinde bir hızlı geçiş şeridi.
+WhatsApp hemen konuşmak isteyen için, form yazıp bırakmak isteyen için.
+
+Ayrıntılı iletişim sayfası `/iletisim/` adresinde zaten var; anasayfadaki blok
+onun kısa hali olur, kopyası değil.
 
 ### 6.8 Alt bilgi
 
@@ -380,6 +398,30 @@ olarak okur.
 **Marka tutarlılığı denetimi.** Her üretilen görsel şunlara karşı denetlenir:
 gerçek marka işaretleri sızmış mı, anatomi bozuk mu, palet BTMEDYA'nın kendi
 renklerinde mi, ve kompozisyon metin alanını koruyor mu.
+
+---
+
+## 9b. Depoda hazır bulunan ve kullanılacak altyapı
+
+Bu paket yazıldıktan sonra `main` dalı birleştirildi ve aşağıdakiler doğrulandı.
+Yeniden yazılmayacak, mevcut olan kullanılacak.
+
+| Uç / sayfa | Durum | Anasayfada kullanımı |
+|---|---|---|
+| `POST /api/contact` | Canlı, doğrulandı | 6.7'deki formun gittiği yer |
+| `contact_messages` D1 tablosu | Üretimde mevcut, doğrulandı | Formun deposu |
+| `GET /api/news` | Canlı | Haber bölümü canlı veriyle beslenir |
+| `/hakkimizda/` | Yayında | 6.1'den bağlantı verilir |
+| `/iletisim/` | Yayında | 6.7'nin uzun hali |
+
+**Ayrıca not:** `migrations/` altında iki dosya da `0003` numarasını taşıyor
+(`0003_contact.sql` ve `0003_social_posts.sql`). Üretim veritabanındaki
+`d1_migrations` kaydı yalnızca `0001` ve `0002`'yi uygulanmış gösteriyor, yani
+`social_posts` ve `contact_messages` tabloları migration sisteminin dışında
+oluşturulmuş. İkisi de `CREATE TABLE IF NOT EXISTS` kullandığı için şu an bir
+risk yok, tekrar uygulanırsa zararsız çalışır. Yine de bir sonraki migration
+yazılmadan önce numaralandırma düzeltilmeli. Bu anasayfa işinin kapsamında değil,
+kaybolmasın diye buraya yazıldı.
 
 ---
 
