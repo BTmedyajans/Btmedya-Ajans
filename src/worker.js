@@ -31,7 +31,8 @@ async function newsApi(request, env, url){
   if(url.pathname==='/api/health') return json({ok:true,service:'btmedya',cms:!!env.DB,r2:!!env.MEDIA});
   if(url.pathname==='/api/news' && request.method==='GET'){
     if(!env.DB) return json({ok:true,source:'static',items:[]});
-    const rows=await env.DB.prepare("SELECT id,slug,title,excerpt,body,category,author,cover_url,video_url,status,published_at,updated_at FROM news WHERE status='published' ORDER BY published_at DESC LIMIT 100").all();
+    const limit=Math.min(Number(url.searchParams.get('limit'))||100,100);
+    const rows=await env.DB.prepare("SELECT id,slug,title,excerpt,body,category,author,cover_url,video_url,status,published_at,updated_at FROM news WHERE status='published' ORDER BY published_at DESC LIMIT ?").bind(limit).all();
     return json({ok:true,items:rows.results});
   }
   if(url.pathname==='/api/admin/news' && request.method==='POST'){
@@ -45,6 +46,33 @@ async function newsApi(request, env, url){
       VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(slug) DO UPDATE SET title=excluded.title,excerpt=excluded.excerpt,body=excluded.body,category=excluded.category,author=excluded.author,cover_url=excluded.cover_url,video_url=excluded.video_url,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at`)
       .bind(b.slug,b.title,b.excerpt||'',b.body||'',b.category||'',b.author||'',b.cover_url||'',b.video_url||'',status,status==='published'?(b.published_at||now):null,now).run();
     return json({ok:true,slug:b.slug,status});
+  }
+  return null;
+}
+
+/* ---------- İletişim Formu API ---------- */
+async function contactApi(request, env, url){
+  if(url.pathname==='/api/contact' && request.method==='POST'){
+    if(!env.DB) return json({ok:false,error:'Veritabanı yapılandırılmadı'},503);
+    const b=await request.json().catch(()=>({}));
+    if(!b.name||!b.email||!b.message) return json({ok:false,error:'Ad, e-posta ve mesaj zorunludur'},400);
+    if(b.message.length>5000) return json({ok:false,error:'Mesaj çok uzun'},400);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email)) return json({ok:false,error:'Geçersiz e-posta adresi'},400);
+    if(b._honey) return json({ok:true});
+    await env.DB.prepare('INSERT INTO contact_messages(name,email,phone,subject,message) VALUES(?,?,?,?,?)')
+      .bind(b.name,b.email,b.phone||'',b.subject||'',b.message).run();
+    return json({ok:true,message:'Mesajınız alındı, teşekkürler!'});
+  }
+  if(url.pathname==='/api/admin/contact' && request.method==='GET'){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    const rows=await env.DB.prepare('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 200').all();
+    return json({ok:true,items:rows.results});
+  }
+  const markRead=url.pathname.match(/^\/api\/admin\/contact\/(\d+)$/);
+  if(markRead && request.method==='PATCH'){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    await env.DB.prepare('UPDATE contact_messages SET read=1 WHERE id=?').bind(Number(markRead[1])).run();
+    return json({ok:true});
   }
   return null;
 }
@@ -151,6 +179,10 @@ export default { async fetch(request, env){
   if(url.pathname.startsWith('/api/')){
     const r1 = await newsApi(request, env, url);
     if(r1) return r1;
+    if(env.DB){
+      const rc = await contactApi(request, env, url);
+      if(rc) return rc;
+    }
     if(env.DB && env.MEDIA){
       const r2 = await mediaApi(request, env);
       if(r2) return r2;
