@@ -251,6 +251,29 @@ section.sec.alt{background:var(--panel)}
 .in .line-pulse::after{animation:pulse 5.5s var(--ease-soft) -1.9s infinite}
 @keyframes pulse{0%,100%{opacity:0;transform:scale(.6)}45%{opacity:.16;transform:scale(1)}}
 
+/* Sahadan: canlı haber akışı */
+.news{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:52px 0 34px}
+.news-item{display:block;text-decoration:none;color:inherit;background:var(--panel-2);
+  border:1px solid var(--line);padding:24px;min-height:190px;
+  display:flex;flex-direction:column;gap:12px;
+  transition:border-color .4s var(--ease),transform .4s var(--ease)}
+.news-item:hover{border-color:var(--accent-muted);transform:translateY(-4px)}
+.news-item .kat{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--accent)}
+.news-item h3{font-size:19px;line-height:1.16}
+.news-item p{color:var(--text-secondary);font-size:13.5px;line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-item time{margin-top:auto;font-family:var(--mono);font-size:10.5px;color:var(--text-secondary);opacity:.8}
+.news-item.has-cover{padding:0;overflow:hidden}
+.news-item.has-cover .news-cover{width:100%;aspect-ratio:16/9;object-fit:cover;opacity:.82;
+  transition:opacity .5s var(--ease)}
+.news-item.has-cover:hover .news-cover{opacity:1}
+.news-item.has-cover .kat,.news-item.has-cover h3,
+.news-item.has-cover p,.news-item.has-cover time{margin-left:22px;margin-right:22px}
+.news-item.has-cover .kat{margin-top:20px}
+.news-item.has-cover time{margin-bottom:20px}
+@media (max-width:1080px){.news{grid-template-columns:1fr 1fr}}
+@media (max-width:720px){.news{grid-template-columns:1fr}}
+
 /* 6.4 Portföy */
 .works{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:56px}
 .work{position:relative;overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
@@ -352,7 +375,7 @@ footer{position:relative;z-index:2;padding:52px var(--pad) 40px;border-top:1px s
   align-items:center;padding:120px var(--pad) 80px;background-size:cover;background-position:center;
   /* Video üretildiğinde burası assets/hero-ending.jpg olacak.
      O ana kadar mevcut marka görseli duruyor ki sayfa şimdi de eksiksiz görünsün. */
-  background-image:url("../assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp")}
+  background-image:url("assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp")}
 .static-hero .inner{position:relative;max-width:min(720px,92vw)}
 .static-hero h1{font-size:clamp(34px,8vw,64px);line-height:1.03;text-shadow:var(--tshadow)}
 .static-hero .sub{margin-top:20px;color:var(--text-secondary);font-size:16px;text-shadow:var(--tshadow)}

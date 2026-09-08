@@ -9,7 +9,7 @@
   var POSTER_URL  = 'assets/hero-poster.jpg';
   // Video henüz üretilmedi. Üretilene kadar hero mevcut bir marka görselini
   // poster olarak kullanır, böylece sayfa şimdi de eksiksiz görünür.
-  var POSTER_FALLBACK = '../assets/btmedya-ai-network_e70bec13_b99f79b3.webp';
+  var POSTER_FALLBACK = 'assets/btmedya-ai-network_e70bec13_b99f79b3.webp';
   var VIDEO_BYTES = 5200000;   // gerçek bayt boyutu video geldiğinde yazılacak
 
   /* Beş sabit hero kapısı. Bu dizeler style.css içindeki media sorgularıyla
@@ -322,12 +322,13 @@
   else if (rmq.addListener) rmq.addListener(onRM);
 
   /* ---------------- Giriş koreografisi ---------------- */
+  var newsObserver = null;
   function setupEntrances() {
     if (!('IntersectionObserver' in window)) {
       $$('.sec').forEach(function (s) { s.classList.add('in', 'done'); });
       return;
     }
-    var io = new IntersectionObserver(function (entries) {
+    var io = newsObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
         var s = en.target;
@@ -494,6 +495,77 @@
     });
   }
 
+  /* ---------------- Sahadan: canlı haber akışı ---------------- */
+  function esc(t) {
+    return String(t == null ? '' : t)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  var AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
+               'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+
+  /* İki kaynak iki biçim veriyor: /api/news ISO tarih, data/haberler.json
+     ise zaten "04 Ekim 2024" gibi hazır metin. İkisini de doğru okur. */
+  function tarih(v) {
+    if (!v) return '';
+    var t = String(v).trim();
+    for (var i = 0; i < AYLAR.length; i++) {
+      if (t.indexOf(AYLAR[i]) !== -1) return t;   /* zaten Türkçe biçimde */
+    }
+    var d = new Date(t.replace(' ', 'T'));
+    if (isNaN(d.getTime())) return '';
+    return d.getDate() + ' ' + AYLAR[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  function altSatir(n) {
+    var yazar = n.author ? esc(n.author) : '';
+    var t = esc(tarih(n.published_at || n.original_date || n.created_at));
+    return yazar && t ? yazar + ' · ' + t : (yazar || t);
+  }
+
+  function haberKarti(n) {
+    var slug = n.slug ? '/haberler/' + encodeURIComponent(n.slug) + '.html' : '/haberler/';
+    var kapak = n.cover_url
+      ? '<img class="news-cover" src="' + esc(n.cover_url) + '" alt="" aria-hidden="true" loading="lazy">'
+      : '';
+    return '<a class="news-item' + (kapak ? ' has-cover' : '') + ' rise" href="' + slug + '">' +
+           kapak +
+           '<span class="kat">' + esc(n.category || 'HABER').toUpperCase() + '</span>' +
+           '<h3>' + esc(n.title || 'Başlıksız haber') + '</h3>' +
+           (n.excerpt ? '<p>' + esc(n.excerpt) + '</p>' : '') +
+           '<time>' + altSatir(n) + '</time>' +
+           '</a>';
+  }
+
+  function haberleriGoster(items, sec, grid) {
+    if (!items || !items.length) return;         /* haber yoksa bölüm gizli kalır */
+    grid.innerHTML = items.slice(0, 6).map(haberKarti).join('');
+    sec.hidden = false;
+    /* Bölüm sonradan geldi: giriş koreografisi onu da görsün */
+    if (newsObserver) newsObserver.observe(sec);
+    else { sec.classList.add('in'); setTimeout(function () { sec.classList.add('done'); }, 1400); }
+    if (document.body.classList.contains('rm')) sec.classList.add('in', 'done');
+  }
+
+  function setupNews() {
+    var sec = $('#haber'), grid = $('#news-grid');
+    if (!sec || !grid) return;
+
+    fetch('/api/news?limit=6')
+      .then(function (r) { if (!r.ok) throw new Error('news'); return r.json(); })
+      .then(function (j) {
+        if (!j || !j.ok || !j.items || !j.items.length) throw new Error('bos');
+        haberleriGoster(j.items, sec, grid);
+      })
+      .catch(function () {
+        /* API ulaşılamadı ya da boş: statik arşiv dosyasına düş */
+        fetch('data/haberler.json')
+          .then(function (r) { if (!r.ok) throw new Error('yedek'); return r.json(); })
+          .then(function (items) { haberleriGoster(items, sec, grid); })
+          .catch(function () { /* ikisi de yok: bölüm gizli kalır, sayfa eksiksiz */ });
+      });
+  }
+
   /* ---------------- Menü ---------------- */
   function setupMenu() {
     var btn = $('.menu-btn'), nav = $('#ana-menu');
@@ -521,6 +593,7 @@
   drawKadraj();
   setupEntrances();
   setupViewer();
+  setupNews();
   setupForm();
   setupMenu();
   applyHeroMode();

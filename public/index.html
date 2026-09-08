@@ -1,422 +1,385 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="theme-color" content="#02070d"/>
-  <link rel="canonical" href="https://btmedya.com.tr/"/>
-  <meta property="og:title" content="BTMEDYA — Haber, Prodüksiyon, Yapay Zekâ"/>
-  <meta property="og:description" content="Dijitalde Fikir Sizden, Gerisi Bizden."/>
-  <meta property="og:url" content="https://btmedya.com.tr/"/>
-  <meta property="og:type" content="website"/>
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="BTMEDYA — Haber, Medya, Prodüksiyon & AI"/>
-  <meta name="twitter:description" content="Haber, medya, prodüksiyon, yapay zekâ ve dijital deneyimler."/>
-  <meta name="twitter:image" content="https://btmedya.com.tr/assets/btmedya-social-profile.png"/>
-  <meta property="og:image" content="https://btmedya.com.tr/assets/btmedya-social-profile.png"/>
-  <meta property="og:image:width" content="1200"/>
-  <meta property="og:image:height" content="630"/>
-  <title>BTMEDYA — Haber, Medya, Prodüksiyon & AI</title>
-  <meta name="description" content="BTMEDYA: haber, medya, prodüksiyon, yapay zekâ ve dönüşüm odaklı dijital deneyimler."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="assets/favicon.png" type="image/png"/>
-  <link rel="manifest" href="site.webmanifest"/>
-  <link rel="stylesheet" href="styles.css"/>
-<script type="application/ld+json">
-{
-  "@context":"https://schema.org",
-  "@type":"Organization",
-  "name":"BTMEDYA",
-  "legalName":"BTMEDYA Medya Ajansı",
-  "url":"https://btmedya.com.tr/",
-  "logo":"https://btmedya.com.tr/assets/btmedya-emblem-derived.png",
-  "image":"https://btmedya.com.tr/assets/btmedya-social-profile.png",
-  "description":"Balıkesir merkezli haber, medya prodüksiyon ve yapay zekâ ajansı. Doğrulanmış haber üretimi, sinematik video prodüksiyonu ve AI destekli içerik çözümleri.",
-  "areaServed":{"@type":"City","name":"Balıkesir","addressCountry":"TR"},
-  "address":{"@type":"PostalAddress","addressLocality":"Balıkesir","addressCountry":"TR"},
-  "contactPoint":{"@type":"ContactPoint","telephone":"+90-541-640-10-29","contactType":"customer service","availableLanguage":"Turkish"},
-  "sameAs":["https://www.instagram.com/btmedya10/","https://www.youtube.com/@BTmedyaAjans","https://www.tiktok.com/@btcraft10"],
-  "foundingLocation":{"@type":"City","name":"Balıkesir"}
-}
-</script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"BTMEDYA","alternateName":"BT Medya","url":"https://btmedya.com.tr/","potentialAction":{"@type":"SearchAction","target":"https://btmedya.com.tr/haberler/?q={search_term_string}","query-input":"required name=search_term_string"}}
-</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070C12">
+<title>BTMEDYA · Haber, prodüksiyon ve yapay zekâ</title>
+<meta name="description" content="Haberi kovalayan el kamerayı da tutuyor. BTMEDYA; haber, prodüksiyon ve yapay zekâ üretimini Balıkesir'den tek ekiple yürütür.">
+<link rel="canonical" href="https://btmedya.com.tr/">
+
+<!-- og etiketleri mutlak adresle yamalandı: sayfa artık btmedya.com.tr anasayfası. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="BTMEDYA · Haber, prodüksiyon ve yapay zekâ">
+<meta property="og:description" content="Fikir sizden. Kadraj bizden.">
+<meta property="og:url" content="https://btmedya.com.tr/">
+<meta property="og:image" content="https://btmedya.com.tr/assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070C12'/%3E%3Cg fill='none' stroke='%2335D6FF' stroke-width='2'%3E%3Cpath d='M5 11V5h6'/%3E%3Cpath d='M27 11V5h-6'/%3E%3Cpath d='M5 21v6h6'/%3E%3Cpath d='M27 21v6h-6'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fontlar render engellemeden yuklenir. Beklemede kalan bir stil dosyasi
+     klasik script'lerin calismasini durdurur; o zaman hero hic baslamaz.
+     media="print" + onload hilesi bunu tamamen onler, font-display:swap ile
+     metin once yedek yuzle cizilir. -->
+<link rel="stylesheet" href="anasayfa.css">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      media="print" onload="this.media='all';this.onload=null">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 </head>
 <body>
-  <div class="preloader" id="preloader" aria-hidden="true">
-    <div class="preloader-inner">
-      <div class="preloader-mark">BT</div>
-      <div class="preloader-line"><i></i></div>
-      <span>BTMEDYA YÜKLENİYOR</span>
-    </div>
-  </div>
-  <div class="noise" aria-hidden="true"></div>
 
-  <!-- GİRİŞ VİDEO ÖNİZLEME -->
-  <div class="intro-overlay" id="introOverlay" aria-hidden="true">
-    <video src="assets/media/web/hero-bg.mp4" muted playsinline autoplay preload="auto"></video>
-    <div class="intro-mark">BT<span style="color:var(--cyan)">MEDYA</span></div>
-  </div>
+<a class="skip" href="#main">İçeriğe atla</a>
 
-  <div class="page-progress" aria-hidden="true"><i></i></div>
-  <header class="topbar">
-    <a class="brand" href="https://btmedya.com.tr/" aria-label="BTMEDYA ana sayfa">
-      <img src="assets/btmedya-emblem-derived.png" alt="BTMEDYA" class="brand-emblem">
-      <span class="brand-mark">BT</span><span class="brand-word">MEDYA</span>
-    </a>
+<div class="env" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
 
-    <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false">☰</button>
-    <nav>
-      <a href="#hero">Ana Sayfa</a>
-      <a href="#services">Hizmetler</a>
-      <a href="#portfolio">Portföy</a>
-      <a href="#ai-lab">AI LAB</a>
-      <a href="#packages">Paketler</a>
-      <a href="/haberler/">Haberler</a>
-      <a href="/hakkimizda/">Hakkımızda</a>
-      <a href="/iletisim/">İletişim</a>
-    </nav>
-
-    <a class="quote" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">TEKLİF AL ↗</a>
-  </header>
-
-  <main>
-    <!-- CINEMATIC HERO / 620vh -->
-    <section id="hero" class="hero-scroll">
-      <div class="hero-sticky">
-        <div class="ambient"></div>
-        <video class="hero-bg-video" autoplay muted loop playsinline poster="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" aria-hidden="true">
-          <source src="assets/media/web/hero-bg.mp4" type="video/mp4">
-        </video>
-        <div class="scene-still scene-still-start" aria-hidden="true">
-          <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA görseli">
-          <div class="scene-still-shade"></div>
-        </div>
-        <div class="scene-still scene-still-end" aria-hidden="true">
-          <img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="BTMEDYA görseli">
-          <div class="scene-still-shade"></div>
-        </div>
-        <div class="beam"></div>
-        <div class="grid-floor"></div>
-        <div class="fog fog-a"></div>
-        <div class="fog fog-b"></div>
-
-        <div class="logo-gate" aria-hidden="true">
-          <div class="gate gate-left"></div>
-          <div class="gate gate-right"></div>
-        </div>
-
-        <div class="wordmark" aria-hidden="true">
-          <span>BT</span><span>MEDYA</span>
-        </div>
-
-        <div class="hero-copy">
-          <p class="eyebrow">BTMEDYA AJANS / YENİ NESİL MEDYA</p>
-          <h1>Dijitalde Fikir Sizden,<br><strong>Gerisi Bizden.</strong></h1>
-          <p class="hero-sub">Haber, prodüksiyon ve yapay zekâyı tek yaratıcı akışta buluşturan yeni nesil medya deneyimi.</p>
-        </div>
-
-        <div class="character-wrap">
-          <div class="character-glow"></div>
-          <img id="characterVideo" class="character-video" src="assets/hero-robot.png" alt="BTMEDYA yapay zekâ karakteri">
-          <div class="character-vignette"></div>
-          <div class="character-scan"></div>
-        </div>
-
-        <div class="focus-ring" aria-hidden="true">
-          <span></span><span></span><span></span><span></span>
-        </div>
-
-        <div class="hero-video-state" aria-hidden="true">
-          <video id="heroStateVideo" muted playsinline preload="metadata" poster="assets/hero-robot.png"></video>
-        </div>
-        <div class="hero-cards" id="heroCards">
-          <button class="hero-card" data-category="haber" data-look="-1" data-target="#news">
-            <span class="icon">▤</span>
-            <span><b>HABER</b><small>Gündemi görünür kıl.</small></span>
-          </button>
-          <button class="hero-card active" data-category="medya" data-look="0" data-target="#portfolio">
-            <span class="icon">◉</span>
-            <span><b>MEDYA</b><small>Etkini büyüt.</small></span>
-          </button>
-          <button class="hero-card" data-category="produksiyon" data-look="1" data-target="#services">
-            <span class="icon">⌘</span>
-            <span><b>PRODÜKSİYON</b><small>Fikri sahneye taşı.</small></span>
-          </button>
-        </div>
-
-        <div class="scene-progress" aria-hidden="true">
-          <div class="scene-meta">
-            <span class="scene-label">01 / GİRİŞ</span>
-            <small class="scene-caption">BTMEDYA</small>
-          </div>
-          <div class="scene-line"><i></i></div>
-        </div>
-
-        <div class="scroll-hint">
-          <span>KAYDIR</span><i></i>
-        </div>
-      </div>
-    </section>
-
-    <div class="hero-exit" aria-hidden="true">
-      <span></span><span></span><span></span>
-    </div>
-
-    <!-- HORIZONTAL SERVICES -->
-    <section id="services" class="services-pin">
-      <div class="services-stage">
-        <div class="services-intro">
-          <p class="eyebrow">HİZMETLERİMİZ</p>
-          <h2>Markanızı güçlendiren<br><span>sekiz yaratıcı çözüm.</span></h2>
-          <p>Kaydırdıkça hizmetler yatay olarak ilerler.</p>
-        </div>
-
-        <div class="service-rail">
-          <article class="service-card"><em>01</em><h3>Sosyal Medya</h3><p>İçerik üretimi, yönetim, kreatif kampanya.</p><span>→</span></article>
-          <article class="service-card"><em>02</em><h3>Tanıtım Filmi</h3><p>Reklam, marka filmi ve prodüksiyon.</p><span>→</span></article>
-          <article class="service-card"><em>03</em><h3>Yapay Zekâ</h3><p>İşletmelere özel AI çözümleri ve üretim.</p><span>→</span></article>
-          <article class="service-card"><em>04</em><h3>Web Sitesi</h3><p>Modern, etkileşimli ve dönüşüm odaklı web.</p><span>→</span></article>
-          <article class="service-card"><em>05</em><h3>Haber & Röportaj</h3><p>Yerel ve ulusal yayın, röportaj, haber prodüksiyonu.</p><span>→</span></article>
-          <article class="service-card"><em>06</em><h3>Özel Gün</h3><p>Düğün, etkinlik ve anı filmi.</p><span>→</span></article>
-          <article class="service-card"><em>07</em><h3>Kurumsal Kimlik</h3><p>Logo, renk sistemi, sosyal medya görsel dili.</p><span>→</span></article>
-          <article class="service-card"><em>08</em><h3>Klip</h3><p>Müzik klibi ve sosyal video içerikleri.</p><span>→</span></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- CATEGORY COVERS -->
-    <section id="categories" class="category-covers">
-      <a class="category-cover" data-target="#news">
-        <video src="assets/media/web/state-haber.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
-        <div class="shade"></div>
-        <div class="cc-copy"><small>KATEGORİ 01</small><h3>Haber</h3><p>Balıkesir ve çevresinden doğrulanmış saha haberleri.</p></div>
-      </a>
-      <a class="category-cover" data-target="#portfolio">
-        <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay poster="assets/btmedya-ai-network_e70bec13_b99f79b3.webp"></video>
-        <div class="shade"></div>
-        <div class="cc-copy"><small>KATEGORİ 02</small><h3>Medya</h3><p>Sosyal içerik, marka kimliği ve dijital üretim.</p></div>
-      </a>
-      <a class="category-cover" data-target="#services">
-        <video src="assets/media/web/state-produksiyon.mp4" muted loop playsinline autoplay poster="assets/btmedya-production-lab_529e6715_f6731a13.webp"></video>
-        <div class="shade"></div>
-        <div class="cc-copy"><small>KATEGORİ 03</small><h3>Prodüksiyon</h3><p>Kamera, kurgu, renk ve final master akışı.</p></div>
-      </a>
-    </section>
-
-    <!-- NEWS PREVIEW — Canlı D1 haber akışı -->
-    <section id="news" class="v10-section news-preview">
-      <div class="section-head">
-        <p class="eyebrow">GÜNCEL / ARŞİV</p>
-        <h2>Haberin <span>ritmi</span> burada.</h2>
-        <a class="section-link" href="/haberler/">TÜM HABER ARŞİVİ ↗</a>
-      </div>
-      <div class="news-grid" id="newsGrid">
-        <article class="news-card"><div class="news-card-placeholder cat-default">BT</div><div class="news-card-body"><small>BTMEDYA</small><h3>Haberler yükleniyor...</h3><p>Canlı haber akışı hazırlanıyor.</p></div></article>
-      </div>
-    </section>
-
-    <!-- PORTFOLIO -->
-    <section id="portfolio" class="v10-section portfolio">
-      <div class="section-head">
-        <p class="eyebrow">GERÇEK ÜRETİM / PORTFÖY</p>
-        <h2>Fikirden <span>görüntüye.</span></h2>
-        <p>BTMEDYA'nın medya, prodüksiyon ve dijital üretim yüzünü tek akışta gösteren seçki.</p>
-      </div>
-      <div class="portfolio-grid">
-        <article class="portfolio-card portfolio-wide">
-          <img src="assets/hizmetler-katalog.png" alt="BTMEDYA 8 hizmet kataloğu" loading="lazy">
-          <div><small>01 / HİZMET EKOSİSTEMİ</small><h3>8 yaratıcı üretim hattı</h3></div>
-        </article>
-        <article class="portfolio-card">
-          <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA sinematik marka görseli" loading="lazy">
-          <div><small>02 / VISUAL IDENTITY</small><h3>Sinematik marka dili</h3></div>
-        </article>
-        <article class="portfolio-card">
-          <img src="assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp" alt="Buse Tuncay medya kapağı" loading="lazy">
-          <div><small>03 / MUHABİR / SUNUCU</small><h3>Buse Tuncay ile haber</h3></div>
-        </article>
-      </div>
-    </section>
-
-    <!-- AI SHOWREEL -->
-    <section id="ai-showreel" class="v10-section">
-      <div class="section-head">
-        <p class="eyebrow">AI LAB / SHOWREEL</p>
-        <h2>Yapay zekâ ile <span>üretilmiş</span> sahneler.</h2>
-        <p>Konsept, prompt ve prodüksiyon disipliniyle üretilen kısa AI video örnekleri — reklam ve sosyal içerik referansı.</p>
-      </div>
-      <div class="showreel-grid">
-        <div class="showreel-card">
-          <video src="assets/media/web/showreel-flying-reporter.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
-          <span class="sr-tag">AI REKLAM</span>
-          <span class="sr-label">Balıkesir üzerinde uçuş</span>
-        </div>
-        <div class="showreel-card">
-          <video src="assets/media/web/showreel-fantasy.mp4" muted loop playsinline autoplay></video>
-          <span class="sr-tag">AI REKLAM</span>
-          <span class="sr-label">Sahne / karakter üretimi</span>
-        </div>
-        <div class="showreel-card">
-          <video src="assets/media/web/showreel-action.mp4" muted loop playsinline autoplay></video>
-          <span class="sr-tag">AI REKLAM</span>
-          <span class="sr-label">Sinematik aksiyon kurgusu</span>
-        </div>
-        <div class="showreel-card">
-          <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay></video>
-          <span class="sr-tag">MARKA KARAKTERİ</span>
-          <span class="sr-label">BT — yapay zekâ kimliği</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- REFERANSLAR / TANITIM KLİPLERİ -->
-    <section id="referanslar" class="v10-section">
-      <div class="section-head">
-        <p class="eyebrow">PORTFÖY / REFERANSLAR</p>
-        <h2>Gerçek <span>üretimler,</span> gerçek müşteriler.</h2>
-        <p>Düğün, açılış, kurumsal tanıtım ve sokak röportajlarından seçili kareler.</p>
-      </div>
-      <div class="ref-grid">
-        <article class="ref-card">
-          <img src="assets/btmedya-wedding_a62ba536.jpg" alt="Düğün prodüksiyonu" loading="lazy">
-          <div class="shade"></div>
-          <div class="rc-copy"><small>ÖZEL GÜN</small><h4>Düğün & anı filmi</h4></div>
-        </article>
-        <article class="ref-card">
-          <img src="assets/btmedya-street_2fffe55e.jpg" alt="Sokak röportajı" loading="lazy">
-          <div class="shade"></div>
-          <div class="rc-copy"><small>HALK RÖPORTAJI</small><h4>Sokak röportajları</h4></div>
-        </article>
-        <article class="ref-card">
-          <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="Kurumsal / firma tanıtımı" loading="lazy">
-          <div class="shade"></div>
-          <div class="rc-copy"><small>KURUMSAL</small><h4>Firma tanıtım filmi</h4></div>
-        </article>
-        <article class="ref-card">
-          <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast" loading="lazy">
-          <div class="shade"></div>
-          <div class="rc-copy"><small>PODCAST</small><h4>Siyah Oda</h4></div>
-        </article>
-      </div>
-    </section>
-
-    <!-- PODCAST STRIP -->
-    <section class="v10-section" style="padding-top:0">
-      <div class="podcast-strip">
-        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast kapağı">
-        <div class="ps-copy">
-          <p class="eyebrow">YOUTUBE / PODCAST</p>
-          <h3>Siyah Oda — sohbet ve röportaj serisi.</h3>
-          <p>Gündem, sektör ve şehir hikâyelerini konuk röportajlarıyla ekrana taşıyan BTMEDYA podcast serisi.</p>
-          <a class="primary" style="display:inline-block;padding:12px 16px;text-decoration:none;font-size:11px;letter-spacing:.1em" href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YOUTUBE'DA İZLE ↗</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI LAB -->
-    <section id="ai-lab" class="v10-section ai-lab">
-      <div class="ai-panel">
-        <div>
-          <p class="eyebrow">BTMEDYA / AI LAB</p>
-          <h2>Yapay zekâyı<br><span>üretim hattına</span> bağlıyoruz.</h2>
-          <p>AI video, AI görsel, reklam kreatifi, içerik sprintleri ve dönüşüm odaklı dijital deneyimleri gerçek prodüksiyon akışıyla birleştiren laboratuvar.</p>
-        </div>
-        <div class="ai-grid">
-          <div><b>AI VIDEO</b><span>Konsept → sahne → kısa video</span></div>
-          <div><b>AI VISUAL</b><span>Marka görseli ve kampanya varyasyonları</span></div>
-          <div><b>AI AUTOMATION</b><span>İçerik ve teklif akışlarını hızlandırma</span></div>
-          <div><b>AI WEB</b><span>Akıllı ve dönüşüm odaklı deneyimler</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PACKAGES -->
-    <section id="packages" class="v10-section packages">
-      <div class="section-head">
-        <p class="eyebrow">TEKLİF MİMARİSİ</p>
-        <h2>Kendi <span>paketini</span> oluştur.</h2>
-        <p>İhtiyacını seç, seçtiğin hizmet kapsamını gör ve bağlamlı bir WhatsApp teklif konuşması başlat.</p>
-      </div>
-      <div class="package-layout">
-        <div class="package-options">
-          <label><input type="checkbox" data-package="Kreatif yön" data-price="0"> Kreatif yön</label>
-          <label><input type="checkbox" data-package="Sosyal akış" data-price="0"> Sosyal akış</label>
-          <label><input type="checkbox" data-package="Prodüksiyon" data-price="0"> Prodüksiyon</label>
-          <label><input type="checkbox" data-package="AI sprinti" data-price="0"> AI sprinti</label>
-          <label><input type="checkbox" data-package="Web deneyimi" data-price="0"> Web deneyimi</label>
-          <label><input type="checkbox" data-package="Reklam lansmanı" data-price="0"> Reklam lansmanı</label>
-        </div>
-        <div class="package-summary">
-          <small>SEÇİLİ HİZMETLER</small>
-          <strong id="packageCount">0</strong>
-          <p id="packageText">Henüz seçim yapılmadı.</p>
-          <a id="packageWhatsapp" class="primary" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20kendi%20paketimi%20olu%C5%9Fturmak%20istiyorum." target="_blank" rel="noopener">WHATSAPP'TA TEKLİFİ BAŞLAT ↗</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about" class="about">
-      <div class="about-index">BT / 2026</div>
-      <div class="about-copy">
-        <p class="eyebrow">BTMEDYA</p>
-        <h2>Haberin hızını,<br>prodüksiyonun gücünü,<br><span>yapay zekânın geleceğini</span> birleştiriyoruz.</h2>
-        <p style="color:#8da0b2;line-height:1.7;margin-top:20px;max-width:580px">Balıkesir merkezli haber, medya prodüksiyon ve yapay zekâ ajansı. Doğrulanmış haber üretiminden sinematik video prodüksiyonuna, AI destekli içerik üretiminden dijital medya çözümlerine kadar geniş bir yelpazede hizmet veriyoruz.</p>
-        <a class="section-link" href="/hakkimizda/" style="display:inline-block;margin-top:18px">BTMEDYA HAKKINDA ↗</a>
-      </div>
-      <div class="about-data">
-        <div><b>01</b><span>Haber</span></div>
-        <div><b>02</b><span>Prodüksiyon</span></div>
-        <div><b>03</b><span>AI</span></div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section id="cta" class="cta">
-      <div class="cta-glow"></div>
-      <p>FİKRİNİZ VAR MI?</p>
-      <h2>Gerisini <span>BTMEDYA</span>'ya bırakın.</h2>
-      <p class="cta-sub">Projenizi anlatın; hedefinize uygun medya, tasarım ve yapay zekâ çözümünü birlikte kuralım.</p>
-      <div class="cta-row">
-        <a class="primary" href="/iletisim/">BİZE YAZIN ↗</a>
-        <a class="secondary" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">WHATSAPP'TAN TEKLİF AL →</a>
-      </div>
-    </section>
-
-    <footer class="final-footer">
-      <div class="footer-brand">
-        <img src="assets/btmedya-emblem-derived.png" alt="BTMEDYA">
-        <div>
-          <strong>BTMEDYA</strong>
-          <span>Dijitalde Fikir Sizden, Gerisi Bizden.</span>
-        </div>
-      </div>
-
-      <div class="footer-contact">
-        <a href="tel:+905416401029">+90 541 640 10 29</a>
-        <a href="https://btmedya.com.tr/">btmedya.com</a>
-      </div>
-
-      <div class="footer-social">
-        <a href="https://www.instagram.com/btmedya10/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
-        <a href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
-        <a href="https://www.tiktok.com/@btcraft10" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
-        <a href="https://wa.me/905416401029" target="_blank" rel="noopener" aria-label="WhatsApp">WhatsApp</a>
-      </div>
-
-      <div class="footer-legal">© 2026 BTMEDYA · Balıkesir, Türkiye</div>
-    </footer>
-  </main>
-  <a class="floating-whatsapp" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA" target="_blank" rel="noopener" aria-label="BTMEDYA WhatsApp">
-    <span>WhatsApp</span><b>↗</b>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="BTMEDYA ana sayfa">
+    <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true">
+    <b>BT</b><span>MEDYA</span>
   </a>
+  <button class="menu-btn" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="ana-menu">☰</button>
+  <nav id="ana-menu" aria-label="Ana menü">
+    <a href="#kim">Kim yapıyor</a>
+    <a href="#nasil">Nasıl</a>
+    <a href="#hatlar">Ne üretiyoruz</a>
+    <a href="#isler">İşler</a>
+    <a href="#durustluk">AI ve dürüstlük</a>
+    <a href="/haberler/">Haberler</a>
+    <a href="#iletisim">İletişim</a>
+  </nav>
+  <a class="nav-cta" href="#iletisim">PROJEYİ ANLAT</a>
+</header>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-  <script src="script.js"></script>
+<!-- ============ HERO: kaydırma ile sarmalı video ============ -->
+<section class="hero" id="hero" aria-label="Giriş">
+  <div class="stage" id="stage">
+    <div class="poster" id="poster" aria-hidden="true"></div>
+    <video id="hero-video" preload="none" muted playsinline aria-hidden="true" tabindex="-1"></video>
+    <div class="scrim" aria-hidden="true"></div>
+    <div class="scrim-2" aria-hidden="true"></div>
+
+    <svg class="ring" id="ring" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-dasharray="126" style="stroke-dashoffset:var(--ld,126)"/>
+    </svg>
+
+    <div class="bands" id="bands">
+      <div class="band band-1 e-drift" data-a="0" data-b="0.22">
+        <span class="kicker">BTMEDYA</span>
+        <p class="line" data-split="word">Her şey bir kareyle başlar.</p>
+      </div>
+
+      <div class="band band-2 e-snap" data-a="0.26" data-b="0.50" data-spread="0.5">
+        <p class="line" data-split="char">Haberi kovalayan el, kamerayı da tutuyor.</p>
+      </div>
+
+      <div class="band band-3 e-punch" data-a="0.54" data-b="0.76">
+        <p class="line" data-split="word" data-em="tampon">Arada tampon yok.</p>
+      </div>
+
+      <div class="band band-4 e-settle" data-a="0.80" data-b="1">
+        <p class="line" data-split="word">Fikir sizden. Kadraj bizden.</p>
+        <p class="sub">Haber, prodüksiyon ve yapay zekâ. Tek ekip, tek akış.</p>
+        <div class="band-cta">
+          <a class="btn btn-primary" href="#iletisim">PROJEYİ ANLAT</a>
+          <a class="btn btn-ghost" href="https://wa.me/905416401029" target="_blank" rel="noopener">WHATSAPP'TAN YAZ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SABİT HERO: telefon ve azaltılmış hareket ============ -->
+<section class="static-hero" id="static-hero" aria-label="Giriş">
+  <div class="sh-scrim" aria-hidden="true"></div>
+  <div class="inner">
+    <span class="eyebrow">BTMEDYA</span>
+    <h1>Fikir sizden.<br>Kadraj bizden.</h1>
+    <p class="sub">Haber, prodüksiyon ve yapay zekâ. Balıkesir'den, tek ekiple.</p>
+    <div class="band-cta">
+      <a class="btn btn-primary" href="#iletisim">PROJEYİ ANLAT</a>
+      <a class="btn btn-ghost" href="https://wa.me/905416401029" target="_blank" rel="noopener">WHATSAPP'TAN YAZ</a>
+    </div>
+  </div>
+</section>
+
+<main id="main" tabindex="-1">
+
+  <!-- ============ 6.1 KİM YAPIYOR ============ -->
+  <section class="sec" id="kim">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <div class="who">
+      <div>
+        <span class="eyebrow rise">KİM YAPIYOR</span>
+        <h2 class="rise">İşi yapan kişiyle konuşuyorsunuz.</h2>
+        <p class="lede rise">BTMEDYA'yı Buse Tuncay kurdu. Gazeteci. Sahada mikrofonu tutan da, kurguyu teslim eden de aynı kişi. Arada müşteri temsilcisi yok, brief kaybolmuyor, işin nerede olduğunu her zaman söyleyebilecek biri var.</p>
+        <a class="inline-link rise" href="/hakkimizda/">BTMEDYA'yı daha yakından tanıyın →</a>
+      </div>
+      <div class="who-photo rise kadraj">
+        <!-- GERÇEK FOTOĞRAF İLE DEĞİŞTİRİLECEK: bu bölüm tasarım paketine göre
+             gerçek bir portre ister. Elde yalnızca AI üretimi kapak var, o yüzden
+             şimdilik dürüstçe AI olarak etiketlendi. -->
+        <img src="assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp"
+             alt="Buse Tuncay, BTMEDYA kurucusu ve gazeteci" loading="lazy" width="1600" height="900">
+        <span class="tag ai">AI ÜRETİMİ</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.2 NASIL ÇALIŞIYORUZ ============ -->
+  <section class="sec alt" id="nasil">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">NASIL ÇALIŞIYORUZ</span>
+    <h2 class="rise">Üç adım, sürpriz yok.</h2>
+    <div class="steps">
+      <article class="step rise">
+        <img src="assets/btmedya-street_2fffe55e.jpg" alt="" aria-hidden="true" loading="lazy">
+        <div class="step-body">
+          <span class="step-no">01</span>
+          <h3>Konuşuyoruz</h3>
+          <p>Ne istediğinizi anlatıyorsunuz. Bütçeyi ve tarihi ilk konuşmada söylüyoruz. Sonradan çıkan kalem yok.</p>
+        </div>
+      </article>
+      <article class="step rise">
+        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="" aria-hidden="true" loading="lazy">
+        <div class="step-body">
+          <span class="step-no">02</span>
+          <h3>Çekiyoruz</h3>
+          <p>Saha, stüdyo ya da yapay zekâ. Hangisinin işinizi göreceğini biz söylüyoruz, hepsini birden satmıyoruz.</p>
+        </div>
+      </article>
+      <article class="step rise">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="" aria-hidden="true" loading="lazy">
+        <div class="step-body">
+          <span class="step-no">03</span>
+          <h3>Teslim ediyoruz</h3>
+          <p>Söylediğimiz tarihte. Ham kayıtlar da sizin, master da.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 6.3 ÜÇ ÜRETİM HATTI ============ -->
+  <section class="sec" id="hatlar">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">ÜÇ ÜRETİM HATTI</span>
+    <h2 class="rise">Üç hat, tek ekip.</h2>
+    <div class="lines">
+      <article class="line-card rise">
+        <span class="line-pulse" aria-hidden="true"></span>
+        <h3>Haber</h3>
+        <ul>
+          <li>Saha haberi ve röportaj</li>
+          <li>Halk röportajları</li>
+          <li>Yayın arşivi</li>
+        </ul>
+      </article>
+      <article class="line-card rise">
+        <span class="line-pulse" aria-hidden="true"></span>
+        <h3>Prodüksiyon</h3>
+        <ul>
+          <li>Tanıtım filmi</li>
+          <li>Klip ve sosyal video</li>
+          <li>Özel gün ve anı filmi</li>
+          <li>Kurumsal kimlik</li>
+        </ul>
+      </article>
+      <article class="line-card rise">
+        <span class="line-pulse" aria-hidden="true"></span>
+        <h3>Yapay zekâ</h3>
+        <ul>
+          <li>AI video ve AI görsel</li>
+          <li>Reklam kreatifi</li>
+          <li>Web deneyimi</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 6.3b SAHADAN: canlı haber akışı ============
+       Eski anasayfadan gelen özellik. /api/news üzerinden canlı D1 verisi.
+       API ulaşılamazsa bölüm sessizce gizlenir; sayfa yine eksiksiz kalır. -->
+  <section class="sec" id="haber" hidden>
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">SAHADAN</span>
+    <h2 class="rise">Haber üretmeye devam ediyoruz.</h2>
+    <p class="lede rise">Balıkesir ve çevresinden doğrulanmış saha haberleri. Arşiv herkese açık.</p>
+    <div class="news" id="news-grid"></div>
+    <a class="inline-link rise" href="/haberler/">TÜM HABER ARŞİVİ →</a>
+  </section>
+
+  <!-- ============ 6.4 GERÇEK İŞLER ============ -->
+  <section class="sec alt" id="isler">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">PORTFÖY</span>
+    <h2 class="rise">Ne gerçek, ne üretilmiş. Hepsi yazıyor.</h2>
+    <div class="works">
+      <!-- ETİKETLERİ DOĞRULA: aşağıdaki kareler elde bulunan görsellerle dolduruldu
+           ve muhafazakâr biçimde AI olarak etiketlendi. Gerçek çekimler geldiğinde
+           hem görsel hem etiket değişecek. -->
+      <figure class="work rise">
+        <img src="assets/btmedya-street_2fffe55e.jpg" alt="Sokak röportajı sırasında esnafla konuşma" loading="lazy">
+        <span class="tag ai">AI ÜRETİMİ</span>
+        <figcaption class="work-cap"><small>HALK RÖPORTAJI</small><h4>Sokakta, mikrofon elde</h4></figcaption>
+      </figure>
+      <figure class="work rise">
+        <img src="assets/btmedya-wedding_a62ba536.jpg" alt="Düğün prodüksiyonundan bir kare" loading="lazy">
+        <span class="tag ai">AI ÜRETİMİ</span>
+        <figcaption class="work-cap"><small>ÖZEL GÜN</small><h4>Düğün ve anı filmi</h4></figcaption>
+      </figure>
+      <figure class="work rise">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast stüdyosu" loading="lazy">
+        <span class="tag ai">AI ÜRETİMİ</span>
+        <figcaption class="work-cap"><small>PODCAST</small><h4>Siyah Oda</h4></figcaption>
+      </figure>
+      <figure class="work rise">
+        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="Kurumsal tanıtım prodüksiyonu" loading="lazy">
+        <span class="tag ai">AI ÜRETİMİ</span>
+        <figcaption class="work-cap"><small>KURUMSAL</small><h4>Firma tanıtım filmi</h4></figcaption>
+      </figure>
+      <figure class="work rise">
+        <img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy">
+        <span class="tag ai">AI ÜRETİMİ</span>
+        <figcaption class="work-cap"><small>AI REKLAM</small><h4>Üretilmiş sahne</h4></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 6.5 AI VE DÜRÜSTLÜK (imza bölümü) ============ -->
+  <section class="sec" id="durustluk">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <div class="honest">
+      <div>
+        <span class="eyebrow rise">AI VE DÜRÜSTLÜK</span>
+        <h2 class="rise">Yapay zekâ kullanıyoruz. Nerede kullandığımızı yazıyoruz.</h2>
+        <p class="lede rise">1 Ağustos 2026'da yürürlüğe giren Ticari Reklam ve Haksız Ticari Uygulamalar Yönetmeliği, reklamlarda yapay zekâ kullanımının açıkça belirtilmesini zorunlu kıldı. Biz bunu zorunluluk olduğu için değil, haber üreten bir ekip olduğumuz için zaten yapıyorduk. Sizin için ürettiğimiz her işte de aynısını yapıyoruz.</p>
+        <p class="punch rise">Yapay zekâ hızı veriyor. Neyin gerçek olduğunu söylemek bize kalıyor.</p>
+        <p class="law rise"><b>Ne değişti:</b> tüketicinin kararını etkileyecek şekilde yapay zekâ kullanılan reklamlarda bu durum açıkça belirtilmek zorunda. Gerçek kişilerin yapay zekâ ile üretilmiş kopyalarının ürün tavsiye eder gibi gösterilmesi ise tamamen yasak.</p>
+      </div>
+
+      <div class="rise">
+        <div class="viewer" id="viewer">
+          <div class="strip">
+            <figure data-kaynak="ai"><img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy"></figure>
+            <figure data-kaynak="ai"><img src="assets/btmedya-podcast_471e525f.jpg" alt="Podcast stüdyosu" loading="lazy"></figure>
+            <!-- GERÇEK ÇEKİM YUVASI: gerçek bir kare geldiğinde bu figure bir <img>
+                 ile değişecek ve data-kaynak="gercek" olacak. Etiket kendiliğinden
+                 GERÇEK ÇEKİM'e döner. -->
+            <figure data-kaynak="bos" class="slot"><span>GERÇEK<br>ÇEKİM<br>YUVASI</span></figure>
+          </div>
+          <div class="frame" id="frame" aria-hidden="true">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+              <path d="M0 14 V0 H14"/><path d="M86 0 H100 V14"/>
+              <path d="M100 86 V100 H86"/><path d="M14 100 H0 V86"/>
+            </svg>
+          </div>
+        </div>
+        <div class="readout">
+          <span class="lbl">KADRAJDAKİ KARE</span>
+          <span class="val ai" id="readout" role="status" aria-live="polite">AI ÜRETİMİ</span>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+        <p class="hint" id="hint">KADRAJI BASILI TUTUP SÜRÜKLEYİN</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6.6 SIK SORULANLAR ============ -->
+  <section class="sec alt" id="sss">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">SIK SORULANLAR</span>
+    <h2 class="rise">En çok sorulan beş şey.</h2>
+    <div class="faq rise">
+      <details>
+        <summary>Fiyat sonradan değişir mi?</summary>
+        <p class="ans">Hayır. İlk konuşmada verdiğimiz rakam teslimde de aynı. Kapsam siz değiştirirseniz değişir, biz değiştirmeyiz.</p>
+      </details>
+      <details>
+        <summary>İşi kim yapacak?</summary>
+        <p class="ans">Buse Tuncay ve BTMEDYA ekibi. Konuştuğunuz kişi işi yapan kişi.</p>
+      </details>
+      <details>
+        <summary>Ne zaman teslim edersiniz?</summary>
+        <p class="ans">Tarihi ilk gün veriyoruz. Gecikme olacaksa siz sormadan haber veriyoruz.</p>
+      </details>
+      <details>
+        <summary>Yapay zekâ ile yapılan iş yapay durmuyor mu?</summary>
+        <p class="ans">Kötü kullanıldığında duruyor. Biz yapay zekâyı prodüksiyon disipliniyle kullanıyoruz: kadraj, ışık, süreklilik ve kurgu insan işi. Nerede AI kullandığımızı da yazıyoruz.</p>
+      </details>
+      <details>
+        <summary>Sadece Balıkesir'de mi çalışıyorsunuz?</summary>
+        <p class="ans">Saha işleri Balıkesir ve çevresinde. Yapay zekâ, kurgu ve web işleri her yerden.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ 6.7 TEK ÇAĞRI ============ -->
+  <section class="sec" id="iletisim">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <div class="contact">
+      <div>
+        <span class="eyebrow rise">TEK ADIM</span>
+        <h2 class="rise">Projeyi anlatın, kadrajı kuralım.</h2>
+        <p class="lede rise">Ne yapmak istediğinizi yazın, aynı gün dönüş yapalım.</p>
+        <div class="direct rise">
+          <a href="https://wa.me/905416401029" target="_blank" rel="noopener">WHATSAPP'TAN YAZ ↗</a>
+          <a href="tel:+905416401029">+90 541 640 10 29</a>
+          <a href="/iletisim/">AYRINTILI İLETİŞİM SAYFASI ↗</a>
+        </div>
+      </div>
+
+      <form id="lead-form" class="rise" novalidate>
+        <div class="row">
+          <label>Ad Soyad
+            <input type="text" name="name" required autocomplete="name">
+          </label>
+          <label>E-posta
+            <input type="email" name="email" required autocomplete="email">
+          </label>
+        </div>
+        <div class="row">
+          <label>Telefon (opsiyonel)
+            <input type="tel" name="phone" autocomplete="tel">
+          </label>
+          <label>Konu (opsiyonel)
+            <input type="text" name="subject">
+          </label>
+        </div>
+        <label>Mesaj
+          <textarea name="message" required></textarea>
+        </label>
+        <input class="honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn-primary" type="submit" id="submit-btn">MESAJI GÖNDER</button>
+        <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+        <p class="form-note">Mesajınız doğrudan BTMEDYA'ya ulaşır. Aracı bir servis yok.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-top">
+    <a class="brand" href="/" aria-label="BTMEDYA ana sayfa">
+      <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true">
+      <b>BT</b><span>MEDYA</span>
+    </a>
+    <div class="foot-social">
+      <a href="https://www.instagram.com/btmedya10/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.tiktok.com/@btcraft10" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://wa.me/905416401029" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="/haberler/">Haberler</a>
+    </div>
+  </div>
+  <p class="disclosure">Bu sitedeki bazı görseller yapay zekâ ile üretilmiştir ve <b>AI ÜRETİMİ</b> etiketiyle işaretlenmiştir. Gerçek çekimler <b>GERÇEK ÇEKİM</b> etiketi taşır.</p>
+  <p class="legal">© 2026 BTMEDYA · Balıkesir, Türkiye</p>
+</footer>
+
+<script src="anasayfa.js"></script>
 </body>
 </html>
