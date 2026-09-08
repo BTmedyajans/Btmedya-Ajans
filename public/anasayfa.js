@@ -461,6 +461,52 @@
     setFramePos(0.5);
   }
 
+  /* ---------------- Medya kasası: portföy bölümünü besler ----------------
+     /admin/ panelinden yüklenen, yayınlanan ve "portfoy" yuvasına atanan
+     medya buraya düşer. Kasa boşsa sayfadaki mevcut kareler kalır, yani
+     bölüm hiçbir koşulda boşalmaz. */
+  function kasaEtiketi(x) {
+    var t = (x.tags || []).map(function (v) { return String(v).toLowerCase(); });
+    var gercek = t.indexOf('gercek') !== -1 || t.indexOf('gerçek') !== -1 ||
+                 t.indexOf('gercek-cekim') !== -1 || (x.category || '') === 'gercek';
+    return gercek ? { sinif: 'real', metin: 'GERÇEK ÇEKİM' } : { sinif: 'ai', metin: 'AI ÜRETİMİ' };
+  }
+
+  function kasaKarti(x) {
+    var e = kasaEtiketi(x);
+    var video = /^video\//.test(x.mime || '');
+    var baslik = esc(x.title || x.original_name || '');
+    var ust = esc((x.category || 'PORTFÖY').toUpperCase());
+    var gorsel = video
+      ? '<video src="' + esc(x.url) + '" muted loop playsinline preload="metadata"></video>'
+      : '<img src="' + esc(x.url) + '" alt="' + esc(x.alt_text || x.title || '') + '" loading="lazy">';
+    return '<figure class="work rise" data-parallax="0.05">' + gorsel +
+           '<span class="tag ' + e.sinif + '">' + e.metin + '</span>' +
+           '<figcaption class="work-cap"><small>' + ust + '</small><h4>' + baslik + '</h4></figcaption>' +
+           '</figure>';
+  }
+
+  function setupKasa() {
+    var grid = $('#isler .works');
+    if (!grid) return;
+
+    fetch('/api/public/media')
+      .then(function (r) { if (!r.ok) throw new Error('kasa'); return r.json(); })
+      .then(function (j) {
+        var hepsi = (j && j.items) ? j.items : [];
+        var yuva = hepsi.filter(function (x) { return (x.slot || '') === 'portfoy'; });
+        if (!yuva.length) return;                 /* yuvada bir şey yoksa mevcut kareler kalır */
+        yuva.sort(function (a, b) { return (a.sort_order || 0) - (b.sort_order || 0); });
+        grid.innerHTML = yuva.slice(0, 6).map(kasaKarti).join('');
+        collectParallax();
+        var sec = $('#isler');
+        if (sec.classList.contains('in')) {
+          $$('.rise', sec).forEach(function (el) { el.style.opacity = 1; el.style.transform = 'none'; });
+        }
+      })
+      .catch(function () { /* kasa yoksa sayfa mevcut karelerle eksiksiz kalır */ });
+  }
+
   /* ---------------- Showreel oynatıcı ----------------
      Otomatik oynatma yok. Ziyaretçi bastığında başlar, tekrar bastığında durur.
      Bir video başlayınca diğerleri durur; ekran dışına çıkan da durur. */
@@ -700,6 +746,7 @@
   setupEntrances();
   setupViewer();
   setupReels();
+  setupKasa();
   setupNews();
   setupForm();
   if (!rmq.matches) parallaxAc();
