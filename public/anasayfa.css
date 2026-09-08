@@ -94,7 +94,7 @@ button{font:inherit;color:inherit}
 .menu-btn{display:none;background:none;border:1px solid var(--line-strong);padding:8px 11px;cursor:pointer}
 
 /* ---------- Hero ---------- */
-.hero{position:relative;z-index:2;height:600vh}
+.hero{position:relative;z-index:2;height:900vh}
 .stage{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--canvas)}
 
 .poster{position:absolute;inset:0;background-size:cover;background-position:center;
@@ -109,7 +109,7 @@ button{font:inherit;color:inherit}
 .scrim{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 120% 90% at 42% 45%,rgba(7,12,18,0) 34%,rgba(7,12,18,.66) 100%)}
 .scrim-2{position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(90deg,rgba(7,12,18,.72) 0%,rgba(7,12,18,.28) 46%,rgba(7,12,18,0) 68%)}
+  background:linear-gradient(90deg,rgba(7,12,18,.62) 0%,rgba(7,12,18,.20) 44%,rgba(7,12,18,0) 64%)}
 
 /* Yükleme halkası */
 .ring{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);width:34px;height:34px;
@@ -126,21 +126,38 @@ button{font:inherit;color:inherit}
 
 /* Bantlar */
 .bands{position:absolute;inset:0;pointer-events:none}
-.band{position:absolute;left:var(--pad);top:50%;transform:translateY(-50%);
-  max-width:min(560px,52vw);opacity:0;text-shadow:var(--tshadow)}
-.band::before{content:"";position:absolute;inset:-14% -18%;pointer-events:none;z-index:-1;
-  opacity:calc(.25 + .75*var(--k,1));
-  background:radial-gradient(ellipse 74% 62% at 42% 50%,rgba(4,7,12,.68) 0%,rgba(4,7,12,.46) 46%,rgba(4,7,12,0) 76%)}
+/* isolation, perdenin z-index:-1 degerini bandin icinde tutar.
+   Onsuz, opaklik 1 iken band yigin baglami olusturmuyor ve perde
+   videonun arkasina dusuyor: okunabilirlik sistemi sessizce etkisiz kaliyor. */
+.band{position:absolute;opacity:0;text-shadow:var(--tshadow);isolation:isolate}
+.band::before{content:"";position:absolute;pointer-events:none;z-index:-1;
+  opacity:calc(.25 + .75*var(--k,1))}
+
+/* Sol şerit: özne sağda, sol üçtebir boş (0 - 2.5 sn) */
+.band-left{left:var(--pad);top:46%;transform:translateY(-50%);max-width:min(560px,48vw)}
+.band-left::before{inset:-26% -30%;
+  background:radial-gradient(ellipse 82% 72% at 40% 50%,rgba(4,7,12,.76) 0%,rgba(4,7,12,.50) 48%,rgba(4,7,12,0) 80%)}
+
+/* Alt şerit: gömülü yazı orta yükseklikte olduğu için metin aşağı iner */
+.band-bottom{left:var(--pad);right:var(--pad);bottom:15vh;text-align:left;max-width:min(900px,74vw)}
+.band-bottom::before{left:-16%;right:-14%;bottom:-160%;top:-240%;
+  background:linear-gradient(to top,rgba(4,7,12,.90) 0%,rgba(4,7,12,.84) 40%,rgba(4,7,12,.62) 66%,
+    rgba(4,7,12,.24) 84%,rgba(4,7,12,0) 100%)}
+
+/* Oturma bandı: temiz stüdyo karesi, özne tam ortada, metin alta yaslanır */
+.band-settle{left:var(--pad);right:var(--pad);bottom:11vh;text-align:center}
+.band-settle::before{left:-20%;right:-20%;bottom:-180%;top:-150%;
+  background:linear-gradient(to top,rgba(4,7,12,.93) 0%,rgba(4,7,12,.88) 42%,rgba(4,7,12,.66) 68%,
+    rgba(4,7,12,.26) 86%,rgba(4,7,12,0) 100%)}
+.band-settle .sub{margin-left:auto;margin-right:auto}
 .band .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);
   text-transform:uppercase;margin-bottom:16px;display:block}
 .band h2,.band .line{font-family:var(--display);font-weight:800;
   font-size:clamp(30px,4.6vw,62px);line-height:1.02;letter-spacing:-.035em}
+.band-bottom .line{font-size:clamp(24px,3.4vw,46px)}
+.band-settle .line{font-size:clamp(30px,5vw,68px)}
 .band p.sub{margin-top:18px;color:var(--text-secondary);font-size:clamp(14px,1.2vw,17px);max-width:46ch}
 
-/* Bant 4 ortada */
-.band-4{left:50%;transform:translate(-50%,-50%);text-align:center;max-width:min(760px,86vw)}
-.band-4::before{background:radial-gradient(ellipse 86% 70% at 50% 46%,rgba(4,7,12,.7) 0%,rgba(4,7,12,.46) 48%,rgba(4,7,12,0) 78%)}
-.band-4 .sub{margin-left:auto;margin-right:auto}
 
 /* Karakter ve kelime kapsayıcıları */
 .w{display:inline-block;white-space:pre}
@@ -286,6 +303,33 @@ section.sec.alt{background:var(--panel)}
 .work-cap h4{font-size:19px;margin-bottom:6px}
 .work-cap small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-secondary)}
 
+/* Showreel: tasarlanmış oynatıcı, otomatik oynatma yok */
+.reels{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:52px}
+.reel{position:relative;margin:0;overflow:hidden;border:1px solid var(--line);
+  background:var(--panel-2);transition:border-color .45s var(--ease)}
+.reel:hover{border-color:var(--accent-muted)}
+.reel video{width:100%;aspect-ratio:9/14;object-fit:cover;display:block;background:#050A10;
+  opacity:.86;transition:opacity .5s var(--ease)}
+.reel.playing video{opacity:1}
+.reel-btn{position:absolute;inset:0;width:100%;border:0;background:transparent;cursor:pointer;
+  display:grid;place-items:center;transition:background .4s var(--ease)}
+.reel-btn:hover{background:rgba(7,12,18,.22)}
+.reel-btn .tri{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(7,12,18,.58);border:1px solid var(--accent-muted);backdrop-filter:blur(8px);
+  transition:transform .4s var(--ease),background .4s var(--ease)}
+.reel-btn .tri::after{content:"";border-style:solid;border-width:9px 0 9px 15px;
+  border-color:transparent transparent transparent var(--accent);margin-left:4px}
+.reel-btn:hover .tri{transform:scale(1.1);background:rgba(7,12,18,.78)}
+.reel.playing .reel-btn .tri{opacity:0;transform:scale(.8)}
+.reel figcaption{position:absolute;left:0;right:0;bottom:0;padding:46px 18px 16px;
+  pointer-events:none;background:linear-gradient(transparent,rgba(7,12,18,.94))}
+.reel figcaption small{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;color:var(--accent)}
+.reel figcaption h3{font-size:17px;line-height:1.15;margin-top:6px}
+.reel .tag{top:12px;left:auto;right:12px;bottom:auto}
+@media (pointer:coarse){.reel-btn{min-height:44px}}
+@media (max-width:1080px){.reels{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.reels{grid-template-columns:1fr}}
+
 /* 6.5 İmza bölümü */
 .honest{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,70px);align-items:start}
 .honest .law{margin-top:26px;padding:22px 24px;border-left:2px solid var(--amber);
@@ -420,6 +464,7 @@ footer{position:relative;z-index:2;padding:52px var(--pad) 40px;border-top:1px s
   *,*::before,*::after{animation:none!important;transition:none!important}
   .sec .rise{opacity:1!important;transform:none!important}
   .in .kadraj svg path,.kadraj svg path{stroke-dashoffset:0!important}
+  [data-parallax]{transform:none!important}
   .scan i{width:100%!important}
   .env::before,.env::after{transform:none!important}
 }
@@ -428,6 +473,7 @@ body.rm *,body.rm *::before,body.rm *::after{animation:none!important;transition
 body.rm .sec .rise{opacity:1!important;transform:none!important}
 body.rm .kadraj svg path{stroke-dashoffset:0!important}
 body.rm .scan i{width:100%!important}
+body.rm [data-parallax]{transform:none!important}
 
 /* Sekme gizliyken ya da bölüm ekran dışındayken durdur */
 body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}

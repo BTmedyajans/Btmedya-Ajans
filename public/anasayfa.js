@@ -5,12 +5,29 @@
   'use strict';
 
   /* ---------------- Yapılandırma ---------------- */
-  var VIDEO_URL   = 'assets/hero-scrub.mp4';
   var POSTER_URL  = 'assets/hero-poster.jpg';
-  // Video henüz üretilmedi. Üretilene kadar hero mevcut bir marka görselini
-  // poster olarak kullanır, böylece sayfa şimdi de eksiksiz görünür.
+  // Poster gerçek videonun ilk karesi. Yedek, poster hiç yüklenmezse devreye girer.
   var POSTER_FALLBACK = 'assets/btmedya-ai-network_e70bec13_b99f79b3.webp';
-  var VIDEO_BYTES = 5200000;   // gerçek bayt boyutu video geldiğinde yazılacak
+
+  /* Hero iki formatta yayınlanır. Tarayıcı hangisini gerçekten çözebiliyorsa
+     yalnızca onu indirir; iki dosya birden hiçbir zaman inmez.
+     WebM/VP9 daha küçük, H.264 evrensel yedek. */
+  var KAYNAKLAR = [
+    { url: 'assets/hero-scrub.webm', tip: 'video/webm; codecs="vp9"', bayt: 6936563 },
+    { url: 'assets/hero-scrub.mp4',  tip: 'video/mp4; codecs="avc1.42E01E"', bayt: 8695277 }
+  ];
+
+  function kaynakSec() {
+    var test = document.createElement('video');
+    for (var i = 0; i < KAYNAKLAR.length; i++) {
+      if (test.canPlayType(KAYNAKLAR[i].tip)) return KAYNAKLAR[i];
+    }
+    return KAYNAKLAR[KAYNAKLAR.length - 1];   // hiçbiri raporlamıyorsa mp4 dene
+  }
+
+  var SECILEN = kaynakSec();
+  var VIDEO_URL   = SECILEN.url;
+  var VIDEO_BYTES = SECILEN.bayt;
 
   /* Beş sabit hero kapısı. Bu dizeler style.css içindeki media sorgularıyla
      BİREBİR aynı olmak zorunda. */
@@ -247,7 +264,7 @@
       return pump().then(function () {
         clearTimeout(watchdog);
         ring.style.setProperty('--ld', 0);
-        video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+        video.src = URL.createObjectURL(new Blob(chunks, { type: SECILEN.tip.split(';')[0] }));
         video.load();
         video.addEventListener('canplay', function () {
           requestSeek(heroProgress() * video.duration);
@@ -308,6 +325,7 @@
     $$('.sec').forEach(function (s) { s.classList.add('in', 'done'); });
     $$('.scan i').forEach(function (i) { i.style.width = '100%'; });
     viewerFinalState();
+    parallaxKapat();
     disableScrub();
   }
   function unpinFinalStates() {
@@ -316,7 +334,7 @@
   }
   function onRM(e) {
     if (e.matches) pinToFinalStates();
-    else { unpinFinalStates(); applyHeroMode(); }
+    else { unpinFinalStates(); applyHeroMode(); parallaxAc(); }
   }
   if (rmq.addEventListener) rmq.addEventListener('change', onRM);
   else if (rmq.addListener) rmq.addListener(onRM);
@@ -443,6 +461,48 @@
     setFramePos(0.5);
   }
 
+  /* ---------------- Showreel oynatıcı ----------------
+     Otomatik oynatma yok. Ziyaretçi bastığında başlar, tekrar bastığında durur.
+     Bir video başlayınca diğerleri durur; ekran dışına çıkan da durur. */
+  function setupReels() {
+    var reels = $$('.reel');
+    if (!reels.length) return;
+
+    function durdur(fig) {
+      var v = $('video', fig);
+      if (!v) return;
+      v.pause();
+      fig.classList.remove('playing');
+      var b = $('.reel-btn', fig);
+      if (b) b.setAttribute('aria-label', b.getAttribute('aria-label').replace('durdur', 'oynat'));
+    }
+
+    reels.forEach(function (fig) {
+      var v = $('video', fig), btn = $('.reel-btn', fig);
+      if (!v || !btn) return;
+      btn.addEventListener('click', function () {
+        if (fig.classList.contains('playing')) { durdur(fig); return; }
+        reels.forEach(function (o) { if (o !== fig) durdur(o); });
+        v.play().then(function () {
+          fig.classList.add('playing');
+          btn.setAttribute('aria-label', btn.getAttribute('aria-label').replace('oynat', 'durdur'));
+        }).catch(function () { /* oynatma engellendi: kart sessizce durur */ });
+      });
+    });
+
+    /* Ekran dışına çıkan video durur, boşuna kod çözülmez */
+    if ('IntersectionObserver' in window) {
+      var io2 = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (!e.isIntersecting) durdur(e.target); });
+      }, { threshold: 0.15 });
+      reels.forEach(function (f) { io2.observe(f); });
+    }
+    /* Sekme gizlenince hepsi durur */
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) reels.forEach(durdur);
+    });
+  }
+
   /* ---------------- Form ---------------- */
   function setupForm() {
     var form = $('#lead-form'), msg = $('#form-msg'), btn = $('#submit-btn');
@@ -493,6 +553,52 @@
       })
       .then(function () { btn.disabled = false; btn.textContent = original; });
     });
+  }
+
+  /* ---------------- Parallax: kıvrım altı derinlik ----------------
+     Sadece transform kullanır, tek bir rAF içinde toplanır, ekran dışındaki
+     öğelere dokunmaz. Azaltılmış hareket tercihinde tamamen kapanır. */
+  var pxItems = [], pxRaf = null, pxOn = false;
+
+  function collectParallax() {
+    pxItems = $$('[data-parallax]').map(function (el) {
+      return { el: el, hiz: parseFloat(el.getAttribute('data-parallax')) || 0.12, son: null };
+    });
+  }
+
+  function pxDraw() {
+    pxRaf = null;
+    var vh = window.innerHeight;
+    for (var i = 0; i < pxItems.length; i++) {
+      var it = pxItems[i];
+      var r = it.el.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > vh + 200) continue;      /* ekran dışı: atla */
+      var merkez = r.top + r.height / 2;
+      var kayma = (merkez - vh / 2) * -it.hiz;
+      var yuvarlak = Math.round(kayma * 10) / 10;
+      if (yuvarlak === it.son) continue;                       /* değişmediyse yazma */
+      it.son = yuvarlak;
+      it.el.style.transform = 'translate3d(0,' + yuvarlak + 'px,0)';
+    }
+  }
+
+  function pxTick() { if (pxRaf === null && pxOn) pxRaf = requestAnimationFrame(pxDraw); }
+
+  function parallaxAc() {
+    if (pxOn) return;
+    pxOn = true;
+    collectParallax();
+    window.addEventListener('scroll', pxTick, { passive: true });
+    window.addEventListener('resize', pxTick, { passive: true });
+    pxDraw();
+  }
+  function parallaxKapat() {
+    if (!pxOn) return;
+    pxOn = false;
+    window.removeEventListener('scroll', pxTick);
+    window.removeEventListener('resize', pxTick);
+    if (pxRaf !== null) { cancelAnimationFrame(pxRaf); pxRaf = null; }
+    pxItems.forEach(function (it) { it.el.style.transform = ''; it.son = null; });
   }
 
   /* ---------------- Sahadan: canlı haber akışı ---------------- */
@@ -593,8 +699,10 @@
   drawKadraj();
   setupEntrances();
   setupViewer();
+  setupReels();
   setupNews();
   setupForm();
+  if (!rmq.matches) parallaxAc();
   setupMenu();
   applyHeroMode();
   if (rmq.matches) pinToFinalStates();

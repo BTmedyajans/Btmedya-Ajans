@@ -68,20 +68,30 @@
     </svg>
 
     <div class="bands" id="bands">
-      <div class="band band-1 e-drift" data-a="0" data-b="0.22">
+      <!-- Bant yerleşimi gerçek görüntüden türetildi.
+           0 - 2.5 sn  : özne sağda, sol üçtebir boş  -> sol şerit, büyük başlık
+           2.5 - 12.3sn: gömülü HABER/MEDYA/PRODÜKSİYON yazıları orta yükseklikte
+                         -> metinler alta çekildi, çakışma yok
+           12.3 - 15.5 : stüdyo açılıyor, gömülü yazı yok -> oturma bandı -->
+
+      <div class="band band-left e-drift" data-a="0" data-b="0.14">
         <span class="kicker">BTMEDYA</span>
         <p class="line" data-split="word">Her şey bir kareyle başlar.</p>
       </div>
 
-      <div class="band band-2 e-snap" data-a="0.26" data-b="0.50" data-spread="0.5">
+      <div class="band band-bottom e-snap" data-a="0.18" data-b="0.36" data-spread="0.5">
         <p class="line" data-split="char">Haberi kovalayan el, kamerayı da tutuyor.</p>
       </div>
 
-      <div class="band band-3 e-punch" data-a="0.54" data-b="0.76">
+      <div class="band band-bottom e-punch" data-a="0.40" data-b="0.58">
         <p class="line" data-split="word" data-em="tampon">Arada tampon yok.</p>
       </div>
 
-      <div class="band band-4 e-settle" data-a="0.80" data-b="1">
+      <div class="band band-bottom e-drift" data-a="0.62" data-b="0.76">
+        <p class="line" data-split="word">Ham kayıttan yayına, aynı elden.</p>
+      </div>
+
+      <div class="band band-settle e-settle" data-a="0.80" data-b="1">
         <p class="line" data-split="word">Fikir sizden. Kadraj bizden.</p>
         <p class="sub">Haber, prodüksiyon ve yapay zekâ. Tek ekip, tek akış.</p>
         <div class="band-cta">
@@ -119,7 +129,7 @@
         <p class="lede rise">BTMEDYA'yı Buse Tuncay kurdu. Gazeteci. Sahada mikrofonu tutan da, kurguyu teslim eden de aynı kişi. Arada müşteri temsilcisi yok, brief kaybolmuyor, işin nerede olduğunu her zaman söyleyebilecek biri var.</p>
         <a class="inline-link rise" href="/hakkimizda/">BTMEDYA'yı daha yakından tanıyın →</a>
       </div>
-      <div class="who-photo rise kadraj">
+      <div class="who-photo rise kadraj" data-parallax="0.07">
         <!-- GERÇEK FOTOĞRAF İLE DEĞİŞTİRİLECEK: bu bölüm tasarım paketine göre
              gerçek bir portre ister. Elde yalnızca AI üretimi kapak var, o yüzden
              şimdilik dürüstçe AI olarak etiketlendi. -->
@@ -221,30 +231,86 @@
       <!-- ETİKETLERİ DOĞRULA: aşağıdaki kareler elde bulunan görsellerle dolduruldu
            ve muhafazakâr biçimde AI olarak etiketlendi. Gerçek çekimler geldiğinde
            hem görsel hem etiket değişecek. -->
-      <figure class="work rise">
+      <figure class="work rise" data-parallax="0.05">
         <img src="assets/btmedya-street_2fffe55e.jpg" alt="Sokak röportajı sırasında esnafla konuşma" loading="lazy">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>HALK RÖPORTAJI</small><h4>Sokakta, mikrofon elde</h4></figcaption>
       </figure>
-      <figure class="work rise">
+      <figure class="work rise" data-parallax="0.05">
         <img src="assets/btmedya-wedding_a62ba536.jpg" alt="Düğün prodüksiyonundan bir kare" loading="lazy">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>ÖZEL GÜN</small><h4>Düğün ve anı filmi</h4></figcaption>
       </figure>
-      <figure class="work rise">
+      <figure class="work rise" data-parallax="0.05">
         <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast stüdyosu" loading="lazy">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>PODCAST</small><h4>Siyah Oda</h4></figcaption>
       </figure>
-      <figure class="work rise">
+      <figure class="work rise" data-parallax="0.05">
         <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="Kurumsal tanıtım prodüksiyonu" loading="lazy">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>KURUMSAL</small><h4>Firma tanıtım filmi</h4></figcaption>
       </figure>
-      <figure class="work rise">
+      <figure class="work rise" data-parallax="0.05">
         <img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>AI REKLAM</small><h4>Üretilmiş sahne</h4></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 6.4b SHOWREEL: gerçek üretimler, tasarlanmış oynatıcı ============
+       Beceri kuralı: kanıt izlenen bir şeyse gömülü oynatıcıyla verilir.
+       Otomatik oynatma yok, ziyaretçi isteyince başlar. -->
+  <section class="sec" id="showreel">
+    <div class="scan" aria-hidden="true"><i></i></div>
+    <span class="eyebrow rise">SHOWREEL</span>
+    <h2 class="rise">Anlatmak yerine göstermek.</h2>
+    <p class="lede rise">Dördü de BTMEDYA üretimi. Oynatmak için karenin üstüne dokunun.</p>
+    <div class="reels">
+      <figure class="reel rise" data-parallax="0.05">
+        <video preload="none" playsinline muted loop poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp">
+          <source src="assets/media/web/showreel-flying-reporter.webm" type="video/webm">
+          <source src="assets/media/web/showreel-flying-reporter.mp4" type="video/mp4">
+        </video>
+        <button class="reel-btn" type="button" aria-label="Balıkesir üzerinde uçuş videosunu oynat">
+          <span class="tri" aria-hidden="true"></span>
+        </button>
+        <figcaption><small>AI REKLAM</small><h3>Balıkesir üzerinde uçuş</h3></figcaption>
+        <span class="tag ai">AI ÜRETİMİ</span>
+      </figure>
+      <figure class="reel rise" data-parallax="0.09">
+        <video preload="none" playsinline muted loop>
+          <source src="assets/media/web/showreel-action.webm" type="video/webm">
+          <source src="assets/media/web/showreel-action.mp4" type="video/mp4">
+        </video>
+        <button class="reel-btn" type="button" aria-label="Sinematik aksiyon videosunu oynat">
+          <span class="tri" aria-hidden="true"></span>
+        </button>
+        <figcaption><small>AI REKLAM</small><h3>Sinematik aksiyon</h3></figcaption>
+        <span class="tag ai">AI ÜRETİMİ</span>
+      </figure>
+      <figure class="reel rise" data-parallax="0.05">
+        <video preload="none" playsinline muted loop>
+          <source src="assets/media/web/showreel-07.webm" type="video/webm">
+          <source src="assets/media/web/showreel-07.mp4" type="video/mp4">
+        </video>
+        <button class="reel-btn" type="button" aria-label="Sahne ve karakter üretimi videosunu oynat">
+          <span class="tri" aria-hidden="true"></span>
+        </button>
+        <figcaption><small>SAHNE ÜRETİMİ</small><h3>Karakter ve sahne</h3></figcaption>
+        <span class="tag ai">AI ÜRETİMİ</span>
+      </figure>
+      <figure class="reel rise" data-parallax="0.09">
+        <video preload="none" playsinline muted loop>
+          <source src="assets/media/web/showreel-fantasy.webm" type="video/webm">
+          <source src="assets/media/web/showreel-fantasy.mp4" type="video/mp4">
+        </video>
+        <button class="reel-btn" type="button" aria-label="Fantastik sahne videosunu oynat">
+          <span class="tri" aria-hidden="true"></span>
+        </button>
+        <figcaption><small>AI REKLAM</small><h3>Fantastik sahne</h3></figcaption>
+        <span class="tag ai">AI ÜRETİMİ</span>
       </figure>
     </div>
   </section>
