@@ -350,7 +350,7 @@ section.sec.alt{background:var(--panel)}
 .strip figure.slot{display:grid;place-items:center;background:
   repeating-linear-gradient(135deg,rgba(146,163,178,.05) 0 9px,transparent 9px 18px),var(--panel-2);
   aspect-ratio:3/4;border-left:1px solid var(--line)}
-.strip figure.slot span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;line-height:2;
+.strip figure.slot span{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;line-height:1.9;
   color:var(--text-secondary);text-align:center}
 .frame{position:absolute;top:8%;height:84%;width:31%;pointer-events:none;
   transition:transform .12s linear}
@@ -420,7 +420,7 @@ footer{position:relative;z-index:2;padding:52px var(--pad) 40px;border-top:1px s
   align-items:center;padding:120px var(--pad) 80px;background-size:cover;background-position:center;
   /* Video üretildiğinde burası assets/hero-ending.jpg olacak.
      O ana kadar mevcut marka görseli duruyor ki sayfa şimdi de eksiksiz görünsün. */
-  background-image:url("assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp")}
+  background-image:url("assets/hero-ending.jpg")}
 .static-hero .inner{position:relative;max-width:min(720px,92vw)}
 .static-hero h1{font-size:clamp(34px,8vw,64px);line-height:1.03;text-shadow:var(--tshadow)}
 .static-hero .sub{margin-top:20px;color:var(--text-secondary);font-size:16px;text-shadow:var(--tshadow)}
@@ -478,3 +478,25 @@ body.rm [data-parallax]{transform:none!important}
 
 /* Sekme gizliyken ya da bölüm ekran dışındayken durdur */
 body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+/* ---------- Mobil dokunma ve okunabilirlik ---------- */
+@media (pointer:coarse){
+  /* 44px alti hedefler buyutuldu: parmakla isabet edilebilsin */
+  .brand{min-height:44px}
+  .inline-link{min-height:44px;display:inline-flex;align-items:center}
+  .direct a{min-height:44px;display:flex;align-items:center}
+  .foot-social a{min-height:44px;display:inline-flex;align-items:center}
+  .topbar nav a{min-height:44px;display:flex;align-items:center}
+  .menu-btn{min-width:44px;min-height:44px}
+  .news-item{min-height:44px}
+}
+@media (max-width:720px){
+  /* 10px etiketler telefonda okunmuyordu */
+  .tag,.work-cap small,.step-no,.readout .lbl,.hint,.legal,
+  .news-item .kat,.reel figcaption small{font-size:11.5px}
+  .eyebrow{font-size:11.5px}
+  .band .kicker{font-size:11.5px}
+  .foot-social a{font-size:12.5px}
+  .disclosure{font-size:13px}
+  .topbar nav a,.nav-cta{font-size:12px}
+}
