@@ -414,14 +414,16 @@ Yeniden yazılmayacak, mevcut olan kullanılacak.
 | `/hakkimizda/` | Yayında | 6.1'den bağlantı verilir |
 | `/iletisim/` | Yayında | 6.7'nin uzun hali |
 
-**Ayrıca not:** `migrations/` altında iki dosya da `0003` numarasını taşıyor
-(`0003_contact.sql` ve `0003_social_posts.sql`). Üretim veritabanındaki
-`d1_migrations` kaydı yalnızca `0001` ve `0002`'yi uygulanmış gösteriyor, yani
-`social_posts` ve `contact_messages` tabloları migration sisteminin dışında
-oluşturulmuş. İkisi de `CREATE TABLE IF NOT EXISTS` kullandığı için şu an bir
-risk yok, tekrar uygulanırsa zararsız çalışır. Yine de bir sonraki migration
-yazılmadan önce numaralandırma düzeltilmeli. Bu anasayfa işinin kapsamında değil,
-kaybolmasın diye buraya yazıldı.
+**Ayrıca not, kapatıldı:** `migrations/` altında iki dosya da `0003` numarasını
+taşıyordu. `0003_social_posts.sql` dosyası `0004_social_posts.sql` olarak
+yeniden numaralandırıldı.
+
+Üretim veritabanındaki `d1_migrations` kaydı yalnızca `0001` ve `0002`'yi
+uygulanmış gösteriyor, yani `social_posts` ve `contact_messages` tabloları
+migration sisteminin dışında oluşturulmuş. İkisi de `CREATE TABLE IF NOT EXISTS`
+kullandığı için yeniden numaralama üretimi etkilemiyor; dosyalar bir gün
+uygulanırsa mevcut tabloların üstüne zararsız çalışır. Doğrulandı: üretimde
+`news`, `media`, `contact_messages` ve `social_posts` tabloları mevcut.
 
 ---
 
