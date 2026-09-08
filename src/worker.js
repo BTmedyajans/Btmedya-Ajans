@@ -167,6 +167,12 @@ export default { async fetch(request, env){
     return Response.redirect(url.toString(), 301);
   }
 
+  // Eski haber URL'lerini mevcut statik haber sayfalarına taşı; eski backlink ve indeks sinyalleri kaybolmasın.
+  if(url.pathname.startsWith('/haber/') && url.pathname.length > 7){
+    const slug = url.pathname.slice('/haber/'.length).replace(/\/$/, '');
+    return Response.redirect(`${url.origin}/haberler/${slug}.html${url.search}`, 301);
+  }
+
   if(url.pathname.startsWith('/media/')){
     const key=decodeURIComponent(url.pathname.slice('/media/'.length));
     const ok=await validMediaSig(key,url.searchParams.get('exp'),url.searchParams.get('sig'),env.MEDIA_SIGNING_SECRET||env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD);
