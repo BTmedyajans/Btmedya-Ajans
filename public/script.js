@@ -197,4 +197,28 @@ document.addEventListener('DOMContentLoaded',()=>{
   }));
 
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
+  // PERF: döngüsel videoları ekran dışındayken ve sekme gizliyken duraklat.
+  // Sürekli oynayan arka plan/kategori/showreel videoları kaynak yakar; sadece
+  // görünür olanlar oynar. (10k-websites mühendislik tabanı)
+  (function(){
+    const vids=[...document.querySelectorAll('video[autoplay]')].filter(v=>!v.closest('.intro-overlay'));
+    if(!vids.length)return;
+    const visible=new WeakSet();
+    const io=('IntersectionObserver' in window)?new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){visible.add(e.target);if(!document.hidden)e.target.play().catch(()=>{});}
+        else{visible.delete(e.target);e.target.pause();}
+      });
+    },{rootMargin:'200px'}):null;
+    if(io){vids.forEach(v=>io.observe(v));}else{vids.forEach(v=>visible.add(v));}
+    document.addEventListener('visibilitychange',()=>{
+      const hidden=document.hidden;
+      document.body.classList.toggle('paused',hidden);
+      vids.forEach(v=>{
+        if(hidden)v.pause();
+        else if(!io||visible.has(v))v.play().catch(()=>{});
+      });
+    });
+  })();
 });
