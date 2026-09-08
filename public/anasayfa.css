@@ -367,6 +367,63 @@ section.sec.alt{background:var(--panel)}
 .meter{height:2px;background:var(--line);margin-top:12px}
 .meter i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s var(--ease)}
 
+/* ---------- Bölüm başlığı biçimleri ----------
+   Beceri kuralı: iki komşu bölüm aynı iskeleti paylaşmaz. Dört ayrı
+   başlık biçimi sırayla dağıtıldı, sayfa şablon gibi durmasın. */
+
+/* (a) Yan: asimetrik iki sütun, başlık solda dar, gövde sağda geniş.
+   Yapışkanlık bölüm ekrandan uzun olduğunda devreye girer, kısa olduğunda
+   sessizce etkisizdir. Bölümü ayıran şey yapışkanlık değil, bu iskelet. */
+.bas-yan .yan{display:grid;grid-template-columns:minmax(240px,.72fr) 1.28fr;gap:clamp(28px,5vw,80px);align-items:start}
+.bas-yan .yan-bas{position:sticky;top:110px}
+.bas-yan .yan-bas h2{font-size:clamp(28px,3.6vw,50px)}
+
+/* Numaralı adımlar: kart değil, yatay satır */
+.adim{display:grid;grid-template-columns:auto 1fr 132px;gap:24px;align-items:center;
+  padding:26px 0;border-top:1px solid var(--line)}
+.adim:last-child{border-bottom:1px solid var(--line)}
+.adim-no{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--accent);
+  align-self:start;padding-top:5px}
+.adim h3{font-size:24px;margin-bottom:10px}
+.adim p{color:var(--text-secondary);font-size:14.5px;line-height:1.65;max-width:52ch}
+.adim img{width:132px;height:88px;object-fit:cover;border:1px solid var(--line);opacity:.72;
+  transition:opacity .5s var(--ease)}
+.adim:hover img{opacity:1}
+
+/* Yapışkan başlığın altındaki demir: sol sütun boş kalmasın */
+.yan-not{margin-top:22px;color:var(--text-secondary);font-size:14.5px;line-height:1.7;max-width:34ch}
+.yan-bag{display:inline-flex;align-items:center;gap:10px;margin-top:20px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--accent);
+  text-decoration:none;padding-bottom:5px;border-bottom:1px solid var(--accent-muted);
+  transition:border-color .4s var(--ease),color .4s var(--ease)}
+.yan-bag span{transition:transform .4s var(--ease)}
+.yan-bag:hover{color:var(--accent-hover);border-bottom-color:var(--accent)}
+.yan-bag:hover span{transform:translateX(5px)}
+
+/* (b) Satır: başlık ve üst etiket tek satırda, taban çizgisinde hizalı */
+.satir-bas{display:flex;align-items:baseline;justify-content:space-between;gap:28px;
+  flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:26px}
+.satir-bas h2{font-size:clamp(30px,4.4vw,58px)}
+.satir-bas .eyebrow{margin-bottom:0}
+.satir-not{color:var(--text-secondary);font-size:14px;line-height:1.6;text-align:right;max-width:34ch}
+@media (max-width:860px){.satir-not{text-align:left}}
+
+/* (c) Sağ: başlık sağa yaslanır */
+.bas-sag .sag-bas{text-align:right;margin-left:auto;max-width:min(760px,90%)}
+.bas-sag .sag-bas .eyebrow{display:block}
+
+/* (d) Orta: başlık ortalanır */
+.bas-orta .orta-bas{text-align:center;max-width:min(720px,92%);margin:0 auto}
+.bas-orta .orta-bas h2{margin-left:auto;margin-right:auto}
+
+@media (max-width:1080px){
+  .bas-yan .yan{grid-template-columns:1fr;gap:34px}
+  .bas-yan .yan-bas{position:static}
+  .bas-sag .sag-bas{text-align:left;max-width:none}
+  .adim{grid-template-columns:auto 1fr;gap:18px}
+  .adim img{display:none}
+}
+
 /* Çalışma alanları */
 .alanlar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:52px;
   background:var(--line);border:1px solid var(--line)}
@@ -406,6 +463,7 @@ section.sec.alt{background:var(--panel)}
 
 /* 6.6 SSS */
 .faq{margin-top:52px;border-top:1px solid var(--line)}
+.bas-yan .faq{margin-top:0;border-top:0}
 .faq details{border-bottom:1px solid var(--line)}
 .faq summary{list-style:none;cursor:pointer;padding:24px 44px 24px 0;position:relative;
   font-family:var(--display);font-weight:700;font-size:clamp(17px,1.7vw,22px);letter-spacing:-.02em;
