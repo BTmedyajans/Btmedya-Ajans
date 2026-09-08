@@ -549,6 +549,38 @@
     });
   }
 
+  /* ---------------- Paket seçici ----------------
+     Fiyat hesaplamaz. Seçilen kapsamı toplar ve WhatsApp mesajına yazar,
+     böylece konuşma sıfırdan başlamaz. */
+  function setupPaket() {
+    var kutu = $('#paket'), sayi = $('#paket-sayi'), metin = $('#paket-metin'), wa = $('#paket-wa');
+    if (!kutu || !sayi || !metin || !wa) return;
+    var kutucuklar = $$('input[type=checkbox]', kutu);
+    var TEL = '905416401029';
+
+    function guncelle() {
+      var secili = kutucuklar.filter(function (k) { return k.checked; })
+                             .map(function (k) { return k.value; });
+      sayi.textContent = secili.length;
+
+      if (!secili.length) {
+        metin.textContent = 'Henüz seçim yapılmadı. Yukarıdan ihtiyacınız olanları işaretleyin.';
+        wa.href = 'https://wa.me/' + TEL + '?text=' +
+          encodeURIComponent('Merhaba BTMEDYA, bir proje için teklif almak istiyorum.');
+        return;
+      }
+
+      metin.textContent = secili.join(', ') + '.';
+      var mesaj = 'Merhaba BTMEDYA, şunlar için teklif almak istiyorum:\n\n' +
+                  secili.map(function (x) { return '• ' + x; }).join('\n') +
+                  '\n\nProjeyi kısaca anlatayım:';
+      wa.href = 'https://wa.me/' + TEL + '?text=' + encodeURIComponent(mesaj);
+    }
+
+    kutucuklar.forEach(function (k) { k.addEventListener('change', guncelle); });
+    guncelle();
+  }
+
   /* ---------------- Form ---------------- */
   function setupForm() {
     var form = $('#lead-form'), msg = $('#form-msg'), btn = $('#submit-btn');
@@ -747,6 +779,7 @@
   setupViewer();
   setupReels();
   setupKasa();
+  setupPaket();
   setupNews();
   setupForm();
   if (!rmq.matches) parallaxAc();
