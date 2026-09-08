@@ -40,3 +40,6 @@ MEDIA_PUBLIC_TTL = "86400"
 #   ADMIN_SESSION_SECRET  -> oturum çerezi imzalama anahtarı
 #   MEDIA_SIGNING_SECRET  -> /media/ imzalı bağlantı anahtarı
 #   AI_READ_TOKEN         -> (opsiyonel) salt-okunur AI erişim token'ı
+#   RESEND_API_KEY        -> (opsiyonel) Resend e-posta bildirimi API anahtarı
+#   RESEND_TO             -> (opsiyonel) bildirim alıcı adresi (varsayılan: busetuncay1029@gmail.com)
+#   RESEND_FROM           -> (opsiyonel) gönderici adresi (varsayılan: BTMEDYA <noreply@btmedya.com.tr>)
