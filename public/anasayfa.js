@@ -60,6 +60,15 @@
     return function () { return (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; };
   }
 
+  /* ---------------- Fontları devreye al ----------------
+     Font stil dosyası media="print" ile gelir, böylece beklerken sayfayı
+     kilitlemez. Devreye almayı burada yapıyoruz; satır içi onload
+     kullanılamaz, çünkü içerik güvenlik politikası onu engelliyor. */
+  (function () {
+    var f = document.getElementById('fontlar');
+    if (f && f.media !== 'all') f.media = 'all';
+  })();
+
   /* ---------------- Metin bölme (yüklemede bir kez) ---------------- */
   function splitLines() {
     $$('#bands .line').forEach(function (el, bandIndex) {

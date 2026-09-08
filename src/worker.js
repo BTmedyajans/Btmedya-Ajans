@@ -190,5 +190,63 @@ export default { async fetch(request, env){
     return json({ok:false,error:'Not found'},404);
   }
 
-  return env.ASSETS.fetch(request);
+  return servisEt(request, env);
 } };
+
+/* ---------- Statik servis: güvenlik başlıkları ve özel 404 ---------- */
+
+/* Sitenin ihtiyacı olan kaynaklar dışında hiçbir şeye izin verilmez.
+   Google Fonts stil ve font dosyaları, kendi medya alan adımız ve
+   WhatsApp bağlantıları açık; başka her şey kapalı. */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob:",
+  "media-src 'self' blob:",
+  "connect-src 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "upgrade-insecure-requests"
+].join('; ');
+
+const GUVENLIK = {
+  'content-security-policy': CSP,
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'permissions-policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  'strict-transport-security': 'max-age=31536000; includeSubDomains',
+  'cross-origin-opener-policy': 'same-origin'
+};
+
+/* Uzun ömürlü varlıklar uzun önbelleğe, HTML kısa önbelleğe.
+   HTML kısa tutulur ki içerik güncellemesi hemen görünsün. */
+function onbellek(pathname) {
+  if (/\.(?:mp4|webm|jpg|jpeg|png|webp|gif|svg|woff2?|ico)$/i.test(pathname))
+    return 'public, max-age=31536000, immutable';
+  if (/\.(?:css|js)$/i.test(pathname))
+    return 'public, max-age=3600, must-revalidate';
+  return 'public, max-age=300, must-revalidate';
+}
+
+async function servisEt(request, env) {
+  const url = new URL(request.url);
+  let res = await env.ASSETS.fetch(request);
+
+  /* Bilinmeyen adres: kendi 404 sayfamızı, doğru durum koduyla ver */
+  if (res.status === 404 && request.method === 'GET' &&
+      (request.headers.get('accept') || '').includes('text/html')) {
+    const ozel = await env.ASSETS.fetch(new Request(new URL('/404.html', url), request));
+    if (ozel.ok) res = new Response(ozel.body, { status: 404, headers: ozel.headers });
+  }
+
+  const h = new Headers(res.headers);
+  for (const [k, v] of Object.entries(GUVENLIK)) h.set(k, v);
+  if (!h.has('cache-control') || res.status === 404) h.set('cache-control', onbellek(url.pathname));
+  else h.set('cache-control', onbellek(url.pathname));
+
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}

@@ -90,9 +90,9 @@
      media="print" + onload hilesi bunu tamamen onler, font-display:swap ile
      metin once yedek yuzle cizilir. -->
 <link rel="stylesheet" href="anasayfa.css">
-<link rel="stylesheet"
+<link id="fontlar" rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      media="print" onload="this.media='all';this.onload=null">
+      media="print">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 </head>
 <body>
@@ -104,7 +104,7 @@
 
 <header class="topbar">
   <a class="brand" href="/" aria-label="BTMEDYA ana sayfa">
-    <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true">
+    <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true" width="233" height="151">
     <b>BT</b><span>MEDYA</span>
   </a>
   <button class="menu-btn" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="ana-menu">☰</button>
@@ -214,7 +214,7 @@
     <h2 class="rise">Üç adım, sürpriz yok.</h2>
     <div class="steps">
       <article class="step rise">
-        <img src="assets/btmedya-street_2fffe55e.jpg" alt="" aria-hidden="true" loading="lazy">
+        <img src="assets/btmedya-street_2fffe55e.jpg" alt="" aria-hidden="true" loading="lazy" width="1536" height="1920">
         <div class="step-body">
           <span class="step-no">01</span>
           <h3>Konuşuyoruz</h3>
@@ -222,7 +222,7 @@
         </div>
       </article>
       <article class="step rise">
-        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="" aria-hidden="true" loading="lazy">
+        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="" aria-hidden="true" loading="lazy" width="2304" height="1536">
         <div class="step-body">
           <span class="step-no">02</span>
           <h3>Çekiyoruz</h3>
@@ -230,7 +230,7 @@
         </div>
       </article>
       <article class="step rise">
-        <img src="assets/btmedya-podcast_471e525f.jpg" alt="" aria-hidden="true" loading="lazy">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="" aria-hidden="true" loading="lazy" width="1536" height="1920">
         <div class="step-body">
           <span class="step-no">03</span>
           <h3>Teslim ediyoruz</h3>
@@ -299,27 +299,27 @@
            ve muhafazakâr biçimde AI olarak etiketlendi. Gerçek çekimler geldiğinde
            hem görsel hem etiket değişecek. -->
       <figure class="work rise" data-parallax="0.05">
-        <img src="assets/btmedya-street_2fffe55e.jpg" alt="Sokak röportajı sırasında esnafla konuşma" loading="lazy">
+        <img src="assets/btmedya-street_2fffe55e.jpg" alt="Sokak röportajı sırasında esnafla konuşma" loading="lazy" width="1536" height="1920">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>HALK RÖPORTAJI</small><h4>Sokakta, mikrofon elde</h4></figcaption>
       </figure>
       <figure class="work rise" data-parallax="0.05">
-        <img src="assets/btmedya-wedding_a62ba536.jpg" alt="Düğün prodüksiyonundan bir kare" loading="lazy">
+        <img src="assets/btmedya-wedding_a62ba536.jpg" alt="Düğün prodüksiyonundan bir kare" loading="lazy" width="1536" height="1920">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>ÖZEL GÜN</small><h4>Düğün ve anı filmi</h4></figcaption>
       </figure>
       <figure class="work rise" data-parallax="0.05">
-        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast stüdyosu" loading="lazy">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast stüdyosu" loading="lazy" width="1536" height="1920">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>PODCAST</small><h4>Siyah Oda</h4></figcaption>
       </figure>
       <figure class="work rise" data-parallax="0.05">
-        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="Kurumsal tanıtım prodüksiyonu" loading="lazy">
+        <img src="assets/btmedya-production-lab_529e6715_f6731a13.webp" alt="Kurumsal tanıtım prodüksiyonu" loading="lazy" width="2304" height="1536">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>KURUMSAL</small><h4>Firma tanıtım filmi</h4></figcaption>
       </figure>
       <figure class="work rise" data-parallax="0.05">
-        <img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy">
+        <img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy" width="1664" height="2080">
         <span class="tag ai">AI ÜRETİMİ</span>
         <figcaption class="work-cap"><small>AI REKLAM</small><h4>Üretilmiş sahne</h4></figcaption>
       </figure>
@@ -397,8 +397,8 @@
       <div class="rise">
         <div class="viewer" id="viewer">
           <div class="strip">
-            <figure data-kaynak="ai"><img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy"></figure>
-            <figure data-kaynak="ai"><img src="assets/btmedya-podcast_471e525f.jpg" alt="Podcast stüdyosu" loading="lazy"></figure>
+            <figure data-kaynak="ai"><img src="assets/btmedya-ai-network_e70bec13_b99f79b3.webp" alt="Yapay zekâ ile üretilmiş sahne" loading="lazy" width="1664" height="2080"></figure>
+            <figure data-kaynak="ai"><img src="assets/btmedya-podcast_471e525f.jpg" alt="Podcast stüdyosu" loading="lazy" width="1536" height="1920"></figure>
             <!-- GERÇEK ÇEKİM YUVASI: gerçek bir kare geldiğinde bu figure bir <img>
                  ile değişecek ve data-kaynak="gercek" olacak. Etiket kendiliğinden
                  GERÇEK ÇEKİM'e döner. -->
@@ -559,7 +559,7 @@
 <footer>
   <div class="foot-top">
     <a class="brand" href="/" aria-label="BTMEDYA ana sayfa">
-      <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true">
+      <img src="assets/btmedya-emblem-derived.png" alt="" aria-hidden="true" width="233" height="151">
       <b>BT</b><span>MEDYA</span>
     </a>
     <div class="foot-social">
