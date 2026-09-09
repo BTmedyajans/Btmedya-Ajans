@@ -1,0 +1,8 @@
+# CODEOWNERS
+# This file defines code owners for different paths in the repository.
+
+# Use GitHub usernames or teams. Adjust owners as appropriate for your org.
+
+/docs/ @BTmedyajans
+/scripts/ @BTmedyajans
+/src/ @BTmedyajans

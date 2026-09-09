@@ -1,5 +1,8 @@
 # BTMEDYA — btmedya.com.tr
 
+BTMEDYA — News, production and AI agency website running on Cloudflare Workers (D1 + R2).
+Homepage: https://btmedya.com.tr
+
 Haber, prodüksiyon ve yapay zekâ ajansı BTMEDYA'nın web sitesi. Cloudflare Workers + D1 + R2 üzerinde çalışan site + "Media Vault" medya arşivi ve admin paneli.
 
 ## Yapı
@@ -58,7 +61,7 @@ yapıldığında site otomatik güncellenir.
 
 `/admin/` panelinin ve imzalı medya bağlantılarının çalışması için üç secret
 tanımlanmalı (Cloudflare paneli > Worker > Settings > Variables and Secrets,
-ya da `wrangler secret put`):
+ya da `wrangler secret put` ile):
 
 - `ADMIN_PASSWORD` — panel giriş şifresi
 - `ADMIN_SESSION_SECRET` — oturum imzalama anahtarı (rastgele uzun dizi)
