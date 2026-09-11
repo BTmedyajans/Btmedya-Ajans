@@ -63,20 +63,140 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   }
 
-  // HERO ARKA PLAN VIDEOSU: ayni kapidan gecer, poster her kosulda ayakta kalir.
-  const heroBg=document.querySelector('.hero-bg-video');
-  function applyHeroBgGate(){
-    if(!heroBg) return;
-    if(heavyMediaBlocked()){ heroBg.pause(); return; }
-    loadVideo(heroBg);
-    heroBg.play().catch(()=>{});
-  }
-  if(heroBg){
-    heroBg.addEventListener('error',()=>{heroBg.style.display='none';},{once:true});
-    HEAVY_MEDIA_GATES.map(q=>window.matchMedia(q))
-      .forEach(m=>m.addEventListener('change',applyHeroBgGate));
-    applyHeroBgGate();
-  }
+  // HERO HIKAYE VIDEOSU -------------------------------------------------
+  // Tek cekim, kesmesiz 9.4 saniyelik film. Masaustunde kaydirma ile kare
+  // kare surulur; mobilde normal oynatilir. Her iki durumda da bolum metni
+  // videonun zamanina baglidir, slogan videonun uzerinde durur.
+  // Video hic inmezse poster ve 01 bolumu oldugu gibi kalir.
+  (function(){
+    const v=document.getElementById('heroStoryVideo');
+    const heroSec=document.querySelector('.hero-scroll');
+    const sticky=document.querySelector('.hero-sticky');
+    if(!v||!heroSec||!sticky) return;
+
+    const idxEl=document.querySelector('.hero-chapter-idx');
+    const textEl=document.querySelector('.hero-chapter-text');
+
+    // Bolumler, kurgudaki gercek anlara denk gelir (bkz. hero master kurgusu).
+    const CH=[
+      [0.00,'01','Her şey sahadaki bir insanla başlar.'],
+      [1.15,'02','Hikâye gücünü oradan alır.'],
+      [3.35,'03','Prodüksiyon ona biçim verir.'],
+      [5.25,'04','Yapay zekâ ölçeğini büyütür.'],
+      [6.90,'05','Ve hikâye yayına çıkar.']
+    ];
+
+    const mqReduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isSmall=()=>window.innerWidth<=900;
+
+    // Sayaci olcuye vurulmus baglanti: veri tasarrufu ve yavas sebekede inmez.
+    function connectionPoor(){
+      const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+      if(!c) return false;
+      if(c.saveData) return true;
+      return /^(slow-2g|2g|3g)$/.test(c.effectiveType||'');
+    }
+    const lowMemory=()=>(navigator.deviceMemory||8)<4;
+    const allowed=()=>!mqReduce.matches && !connectionPoor() && !lowMemory();
+
+    let started=false, raf=0, current=0, last=0, seeking=false, chapter=0;
+
+    // Delta kapisi: bolum degismediyse DOM'a hic yazilmaz.
+    function paintChapter(t){
+      let i=0;
+      for(let k=0;k<CH.length;k++) if(t>=CH[k][0]) i=k;
+      if(i===chapter) return;
+      chapter=i;
+      if(idxEl) idxEl.textContent=CH[i][1];
+      if(!textEl) return;
+      textEl.classList.remove('in');
+      textEl.textContent=CH[i][2];
+      void textEl.offsetWidth;
+      textEl.classList.add('in');
+    }
+
+    function progress(){
+      const span=heroSec.offsetHeight-sticky.offsetHeight;
+      if(span<=0) return 0;
+      const top=heroSec.getBoundingClientRect().top;
+      return Math.min(1,Math.max(0,-top/span));
+    }
+
+    function tick(now){
+      raf=0;
+      const dur=v.duration;
+      if(!dur||!isFinite(dur)){ last=0; return; }
+      const dt=last?Math.min(0.1,(now-last)/1000):1/60;
+      last=now;
+      const target=progress()*dur;
+      current+=(target-current)*(1-Math.pow(0.0001,dt)); // dt ile normalize edilmis yumusatma
+      paintChapter(current);
+      // Aramayi kapila: yalnizca yarim kareden buyuk fark varsa ve onceki arama bittiyse.
+      if(!seeking && Math.abs(current-v.currentTime)>1/48){
+        seeking=true;
+        try{ v.currentTime=current; }catch(e){ seeking=false; }
+      }
+      if(Math.abs(target-current)>0.003) schedule(); else last=0;
+    }
+    function schedule(){ if(!raf) raf=requestAnimationFrame(tick); }
+
+    v.addEventListener('seeked',()=>{seeking=false;});
+    v.addEventListener('error',()=>{heroSec.classList.remove('hero-story-on');},{once:true});
+
+    function begin(){
+      if(started||!allowed()) return;
+      started=true;
+      const small=isSmall();
+      const src=(small&&v.dataset.srcMobile)?v.dataset.srcMobile:v.dataset.src;
+      // preload="none" mirasi kalirsa load() veri cozmez ve loadeddata hic gelmez.
+      const attach=url=>{ v.preload='auto'; v.src=url; v.dataset.loaded='1'; v.load(); };
+
+      if(small){
+        // Mobilde suruklemek guvenilir degil: video normal oynar, metin zamana bakar.
+        v.loop=true;
+        v.addEventListener('loadeddata',()=>{
+          heroSec.classList.add('hero-story-on');
+          v.play().catch(()=>{});
+        },{once:true});
+        v.addEventListener('timeupdate',()=>paintChapter(v.currentTime));
+        attach(src);
+        return;
+      }
+
+      // Masaustunde Blob olarak indirilir; boylece her arama agi beklemez.
+      v.addEventListener('loadeddata',()=>{
+        heroSec.classList.add('hero-story-on');
+        current=0; last=0;
+        try{ v.currentTime=0.001; }catch(e){}
+        schedule();
+      },{once:true});
+      fetch(src,{credentials:'same-origin'})
+        .then(r=>r.ok?r.blob():Promise.reject(r.status))
+        .then(b=>attach(URL.createObjectURL(b)))
+        .catch(()=>attach(src));
+
+      window.addEventListener('scroll',schedule,{passive:true});
+      window.addEventListener('resize',()=>{last=0;schedule();},{passive:true});
+    }
+
+    // Karakter gorseli ve sahne fotograflari yalnizca video devreye girmezse
+    // gorunur. Video acikken hepsi gizli oldugu icin bosuna indirilmesinler.
+    const fallbackArt=[document.getElementById('characterVideo'),
+                       ...document.querySelectorAll('.scene-img')].filter(Boolean);
+    function loadFallbackArt(){
+      fallbackArt.forEach(el=>{ if(!el.src && el.dataset.src) el.src=el.dataset.src; });
+    }
+    v.addEventListener('error',loadFallbackArt,{once:true});
+
+    function applyGate(){
+      if(allowed()){ begin(); }
+      else{ heroSec.classList.remove('hero-story-on'); loadFallbackArt(); }
+    }
+    mqReduce.addEventListener('change',applyGate);
+    applyGate();
+    // Video makul surede acilmadiysa eski sahne kurulumuna don.
+    setTimeout(()=>{ if(!heroSec.classList.contains('hero-story-on')) loadFallbackArt(); },4000);
+  })();
 
   // ALT BOLUM VIDEOLARI: gorunur olunca iner ve oynar, ekrandan cikinca durur.
   const lazyVideos=[...document.querySelectorAll('video.lazy-video')];
@@ -204,7 +324,8 @@ document.addEventListener('DOMContentLoaded',()=>{
           if(sceneStart) gsap.set(sceneStart,{opacity:Math.max(0,1-p*1.7)});
           if(sceneEnd) gsap.set(sceneEnd,{opacity:Math.max(0,(p-.45)*1.9)});
           gsap.set('.character-wrap',{y:p*-90,scale:1+p*.1});
-          gsap.set('.hero-copy',{y:p*-80,opacity:1-Math.min(1,p*1.8)});
+          // Slogan video boyunca ustte durur, yalnizca son %18'de cekilir.
+          gsap.set('.hero-copy',{y:p*-46,opacity:1-Math.min(1,Math.max(0,(p-.82)/.18))});
           gsap.set('.focus-ring',{rotation:p*180,scale:1+p*.5});
           if(line) line.style.width=(p*100)+'%';
           if(label) label.textContent=p<.33?'01 / GİRİŞ':p<.66?'02 / ODAK':'03 / ÇIKIŞ';
@@ -414,8 +535,9 @@ document.addEventListener('DOMContentLoaded',()=>{
       document.body.classList.toggle('paused',hidden);
       playable().forEach(v=>{
         if(hidden){ v.pause(); return; }
-        if(v.classList.contains('hero-bg-video')){
-          if(!heavyMediaBlocked()) v.play().catch(()=>{});
+        // Kaydirma ile surulen hero videosu kendi zamanina bagli: oynatilmaz.
+        if(v.dataset.scrub){
+          if(v.loop && !matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(()=>{});
           return;
         }
         if(inView(v) && !matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(()=>{});
