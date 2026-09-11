@@ -481,7 +481,12 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 @keyframes env-drift-a{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(6vw,4vh,0) scale(1.12)}}
 @keyframes env-drift-b{0%,100%{transform:translate3d(0,0,0) scale(1.08)}50%{transform:translate3d(-5vw,-6vh,0) scale(1)}}
 @keyframes env-drift-c{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(4vw,-5vh,0) scale(1.18)}}
-body>*:not(.env){position:relative;z-index:1}
+/* .env sabit arka plan katmani (z-index:0) uzerinde kalmalari icin diger body
+   cocuklari yukseltilir. ANCAK kendi konumlandirmasi olan sabit katmanlar bu
+   kuralin disinda tutulmalidir: aksi halde position:fixed ezilir, ust bar
+   yapiskanligini kaybeder ve kapanmis perdeler akista yer kaplamaya devam
+   ederek sayfanin tepesinde ~210px gorunmez bos alan birakir. */
+body>*:not(.env):not(.topbar):not(.preloader):not(.intro-overlay):not(.page-progress):not(.floating-whatsapp):not(.skip-link){position:relative;z-index:1}
 
 /* =====================================================================
    ETKILESIMLI AN
