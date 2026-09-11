@@ -172,6 +172,23 @@ async function mediaApi(request, env){
   /* DEPO PLANI — her dosyanin teknik ozelligi, onerilen hedefler, secilen
      hedefler ve kalici public baglantisi tek listede. Sohbetten okunup
      Metricool'a gonderim buradan planlanir. */
+  /* SITE DURUMU — hangi yuva dolu, hangisi bos, ne yuklenmeli. */
+  if(path==='/api/site/slots' && request.method==='GET'){
+    const origin=new URL(request.url).origin;
+    const r=await env.DB.prepare("SELECT * FROM media WHERE slot!='' ").all();
+    const bySlot={}; for(const x of (r.results||[])) bySlot[x.slot]=x;
+    const yuvalar=SITE_SLOTS.map(([slug,bolum,tur,oran,olcu,not])=>{
+      const m=bySlot[slug];
+      return {slug,bolum,tur,oran,onerilenOlcu:olcu,not,
+        dolu:!!m,
+        dosya:m?{id:m.id,ad:m.title||m.original_name,olcu:(m.width&&m.height)?`${m.width}x${m.height}`:'',
+                 enBoy:m.aspect,saniye:m.duration_s,yapayZeka:!!m.ai_generated,
+                 url:m.published?`${origin}/pub/${encodeURIComponent(m.key)}`:null}:null};
+    });
+    const eksik=yuvalar.filter(y=>!y.dolu);
+    return json({ozet:{toplam:yuvalar.length,dolu:yuvalar.length-eksik.length,eksik:eksik.length},yuvalar});
+  }
+
   if(path==='/api/vault/plan' && request.method==='GET'){
     const origin=new URL(request.url).origin;
     const r=await env.DB.prepare('SELECT * FROM media ORDER BY created_at DESC LIMIT 300').all();
@@ -273,6 +290,29 @@ async function mediaApi(request, env){
  * SINIRLAR DEGISIR: platform kuralini degistirdiginde yalnizca bu tabloyu
  * guncelle, gerisi kendiliginden uyum saglar.
  */
+/* ===================== SITE YUVALARI =====================
+ * Sitedeki her medya yerinin tek dogruluk kaynagi: ne oldugu, hangi oranda
+ * ve hangi olcude olmasi gerektigi, su an neyle dolu oldugu.
+ * Panel bu listeyi okuyup eksikleri kendisi gosterir; elle takip gerekmez.
+ * Yeni bir yuva acilacaksa yalnizca buraya eklenir.
+ */
+const SITE_SLOTS=[
+  // slug              bolum                       tur     oran    onerilen      notu
+  ['hero-video',      'Giriş filmi',              'video','16:9','1920x1080','En fazla 30 sn. Sayfanın ilk gördüğü şey.'],
+  ['hero-poster',     'Giriş kapak karesi',       'image','16:9','1920x1080','Video inmeden önce görünen kare.'],
+  ['portre-buse',     'Buse Tuncay portresi',     'image','4:5', '1200x1500','Gerçek fotoğraf. Şu anki görsel yapay zekâ üretimi.'],
+  ['saha-buse',       'Sahada çalışırken kare',   'image','16:9','1600x900', 'Mikrofonlu, iş başında. Muhabir kimliğini taşır.'],
+  ['hizmet-haber',    'Haber & Röportaj kartı',   'image','16:9','1600x900', 'Çekim sırasından kare.'],
+  ['hizmet-belgesel', 'Belgesel & Kısa Film',     'image','16:9','1600x900', 'Set ya da kamera arkası.'],
+  ['hizmet-tanitim',  'Tanıtım Filmi kartı',      'image','16:9','1600x900', 'Yayınlanmış bir işten kare.'],
+  ['hizmet-dugun',    'Düğün & Özel Gün kartı',   'image','16:9','1600x900', 'İzin alınmış bir çekimden.'],
+  ['siyah-oda',       'Siyah Oda kapağı',         'image','16:9','1600x900', 'Gerçek stüdyo. Şu anki görsel yapay zekâ konsepti.'],
+  ['kategori-haber',  'Kategori: Haber',          'video','9:16','1080x1920','Saha görüntüsü. Şu an yapay zekâ videosu var.'],
+  ['kategori-medya',  'Kategori: Medya',          'video','9:16','1080x1920','Sosyal içerik üretiminden.'],
+  ['kategori-prod',   'Kategori: Prodüksiyon',    'video','9:16','1080x1920','Kamera, kurgu, set.'],
+  ['og-image',        'Sosyal paylaşım görseli',  'image','16:9','1200x630', 'WhatsApp ve X paylaşımında görünen kapak.'],
+];
+
 const PLATFORM_RULES=[
   // slug              etiket                 kind    en-boy        max sn   ses
   ['instagram-reel',  'Instagram Reels',     'video', ['9:16'],      180,  true ],

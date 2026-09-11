@@ -73,7 +73,8 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
 <header>
   <strong>BTMEDYA / ADMIN</strong>
   <div class="tabs" id="tabBar" style="display:none">
-    <button class="tab active" data-tab="media">Medya Kasası</button>
+    <button class="tab active" data-tab="durum">Site Durumu</button>
+    <button class="tab" data-tab="media">Medya Kasası</button>
     <button class="tab" data-tab="news">Haberler</button>
     <button class="tab" data-tab="messages">Gelen Mesajlar <span class="badge hidden" id="unreadBadge">0</span></button>
   </div>
@@ -95,7 +96,16 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
 <div id="appSection" style="display:none">
 
   <!-- TAB: MEDYA KASASI -->
-  <div class="tab-content active" id="tab-media">
+  <div class="tab-content active" id="tab-durum">
+    <div class="panel">
+      <h2>Sitede ne eksik</h2>
+      <p class="status" id="durumOzet">Yükleniyor…</p>
+      <p class="status">Her satır sitedeki bir yeri gösterir. Eksik olanı doldurmak için dosyayı Medya Kasası'na yükleyip aşağıdan o yuvaya bağlayın.</p>
+    </div>
+    <div class="panel"><div id="slotList"></div></div>
+  </div>
+
+  <div class="tab-content" id="tab-media">
     <div class="panel">
       <h2>Toplu medya yükle</h2>
       <div class="drop" id="drop">Dosyaları buraya bırak ya da seç — <input id="files" type="file" multiple accept="image/*,video/*,audio/*,.pdf"></div>
@@ -244,6 +254,7 @@ function showApp(){
   $('#appSection').style.display='block';
   $('#tabBar').style.display='flex';
   $('#logoutBtn').style.display='block';
+  loadSlots();   // giriste once "sitede ne eksik" gorunur
   loadMedia();
 }
 async function init(){
@@ -263,6 +274,7 @@ function showTab(name){
   document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
   $('#tab-'+name).classList.add('active');
   document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
+  if(name==='durum'){loadSlots()}
   if(name==='news'){loadNewsList()}
   if(name==='messages'){loadMessages()}
 }
@@ -366,6 +378,42 @@ async function loadMedia(){
     </article>`}).join('');
 }
 let vaultPlan={items:[]};
+/* ---- Site Durumu: yuvalari ve eksikleri gosterir ---- */
+async function loadSlots(){
+  const d=await req('/api/site/slots');
+  $('#durumOzet').innerHTML=`<b>${d.ozet.toplam}</b> yer var, <b style="color:#5fba8c">${d.ozet.dolu}</b> dolu, <b style="color:#e0a45c">${d.ozet.eksik}</b> eksik.`;
+  const all=await req('/api/media?').catch(()=>({items:[]}));
+  const secenek=(all.items||[]).map(m=>`<option value="${escStr(m.id)}">${escStr((m.title||m.original_name).slice(0,54))}</option>`).join('');
+  $('#slotList').innerHTML=d.yuvalar.map(y=>`
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:14px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div>
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+          <b style="font-size:14px">${escStr(y.bolum)}</b>
+          <span style="font-size:9.5px;letter-spacing:.1em;padding:2px 7px;border:1px solid ${y.dolu?'rgba(95,186,140,.5)':'rgba(224,164,92,.5)'};color:${y.dolu?'#5fba8c':'#e0a45c'}">${y.dolu?'DOLU':'EKSİK'}</span>
+          ${y.dosya&&y.dosya.yapayZeka?'<span style="font-size:9.5px;letter-spacing:.1em;padding:2px 7px;border:1px solid rgba(63,201,232,.45);color:#3fc9e8">YAPAY ZEKÂ</span>':''}
+        </div>
+        <div class="muted" style="margin-top:5px;font-size:12px">${escStr(y.not)}</div>
+        <div class="muted" style="margin-top:4px;font-size:11px;font-family:ui-monospace,monospace">
+          ${escStr(y.tur==='video'?'video':'görsel')} · ${escStr(y.oran)} · önerilen ${escStr(y.onerilenOlcu)}
+          ${y.dosya&&y.dosya.olcu?` · yüklenen ${escStr(y.dosya.olcu)}`:''}
+        </div>
+      </div>
+      <div>
+        <select id="sel-${escStr(y.slug)}" style="width:100%;margin-bottom:6px"><option value="">— dosya seç —</option>${secenek}</select>
+        <button class="btn sm" style="width:100%" onclick="assignSlot('${escStr(y.slug)}')">Bu yere bağla</button>
+        ${y.dolu?`<button class="btn sm" style="width:100%;margin-top:5px" onclick="clearSlot('${escStr(y.dosya.id)}')">Bağlantıyı kaldır</button>`:''}
+      </div>
+    </div>`).join('');
+}
+async function assignSlot(slug){
+  const id=$('#sel-'+slug).value; if(!id){alert('Önce bir dosya seçin');return}
+  await req('/api/media/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({slot:slug,published:1})});
+  loadSlots();
+}
+async function clearSlot(id){
+  await req('/api/media/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({slot:''})});
+  loadSlots();
+}
 /* Hedef secimi: kullanici oneriyi degistirebilir, secim kaydedilir. */
 async function toggleTarget(id,slug){
   const it=(vaultPlan.items||[]).find(i=>i.id===id); if(!it)return;
