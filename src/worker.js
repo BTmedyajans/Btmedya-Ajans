@@ -43,7 +43,7 @@ async function sendContactEmail(env, msg){
 
 /* ---------- Haber CMS API ---------- */
 async function newsApi(request, env, url){
-  if(url.pathname==='/api/health') return json({ok:true,service:'btmedya',cms:!!env.DB,r2:!!env.MEDIA});
+  if(url.pathname==='/api/health') return json({ok:true,service:'btmedya',cms:!!env.DB,r2:!!env.MEDIA,admin:!!env.ADMIN_PASSWORD,mail:!!env.RESEND_API_KEY});
 
   /* Public: haber listesi */
   if(url.pathname==='/api/news' && request.method==='GET'){
