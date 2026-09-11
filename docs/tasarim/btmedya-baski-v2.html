@@ -1,4 +1,5 @@
 <title>BTMEDYA Baskı</title>
+<meta name="robots" content="noindex,nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,400&display=swap">
@@ -344,7 +345,11 @@
       </ul>
     </div>
   </div>
-  <form onsubmit="event.preventDefault();var d=document.getElementById('brief-ok');d.hidden=false;d.scrollIntoView({block:'nearest'});">
+  <form id="brief-form" novalidate>
+    <div class="cift">
+      <div><label for="bf-ad">Ad soyad</label><input id="bf-ad" name="ad" placeholder="Adınız ve soyadınız" required></div>
+      <div><label for="bf-eposta">E-posta</label><input id="bf-eposta" name="eposta" type="email" placeholder="ornek@mail.com" required></div>
+    </div>
     <div class="cift">
       <div><label for="bf-isletme">İşletme adı</label><input id="bf-isletme" name="isletme" placeholder="Örn. Baykal Kalaycılık" required></div>
       <div><label for="bf-sektor">Sektör</label><input id="bf-sektor" name="sektor" placeholder="Örn. perakende, hukuk, sağlık" required></div>
@@ -366,8 +371,8 @@
       <div><label for="bf-baglanti">Site veya sosyal bağlantı</label><input id="bf-baglanti" name="baglanti" placeholder="site.com / @hesap"></div>
     </div>
     <div><label for="bf-mesaj">Kısaca ne yapmak istiyorsunuz</label><textarea id="bf-mesaj" name="mesaj" placeholder="Projenizi birkaç cümleyle anlatın…"></textarea></div>
-    <button class="gonder" type="submit">Brief'i gönder</button>
-    <p id="brief-ok" hidden class="mono" style="color:var(--gold)">Taslak önizleme — bu formda gönderim kapalı.</p>
+    <button class="gonder" type="submit" id="brief-btn">Brief'i gönder</button>
+    <p id="brief-durum" hidden class="mono" aria-live="polite"></p>
   </form>
 </div></div></section>
 
@@ -400,3 +405,68 @@
   <span class="mono sag">Baskı / v2</span>
 </div></div>
 </footer>
+
+<script>
+/* Brief formu sitenin mevcut /api/contact ucuna gider. O uç ad, e-posta ve
+   mesajı zorunlu tutuyor; brief alanları tek bir mesaj gövdesine derlenir,
+   böylece kayıt /admin/ panelinde bütün halinde görünür. */
+(function(){
+  var f = document.getElementById('brief-form');
+  if(!f) return;
+  var btn = document.getElementById('brief-btn');
+  var durum = document.getElementById('brief-durum');
+  function yaz(metin, renk){
+    durum.textContent = metin;
+    durum.style.color = renk;
+    durum.hidden = false;
+  }
+  function v(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  f.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var ad = v('bf-ad'), eposta = v('bf-eposta');
+    if(!ad || !eposta){ yaz('Ad soyad ve e-posta zorunlu.', 'var(--flag)'); return; }
+    /* /api/contact yalnızca sitenin kendi kökeninde var. Taslak başka bir
+       adreste açılıyorsa istek baştan yapılmaz; kırık gibi görünmesin. */
+    var h = location.hostname;
+    if(!/(^|\.)btmedya\.com\.tr$/.test(h) && !/\.workers\.dev$/.test(h)){
+      yaz('Taslak önizlemesi — gönderim yalnızca site üzerinde çalışır.', 'var(--ink-2)');
+      return;
+    }
+    var satirlar = [
+      ['İşletme', v('bf-isletme')],
+      ['Sektör', v('bf-sektor')],
+      ['İlgilenilen hizmet', v('bf-hizmet')],
+      ['Aktif platformlar', v('bf-platform')],
+      ['Tahmini hacim', v('bf-hacim')],
+      ['Başlangıç', v('bf-tarih')],
+      ['Bağlantı', v('bf-baglanti')]
+    ].filter(function(s){ return s[1]; }).map(function(s){ return s[0] + ': ' + s[1]; });
+    var aciklama = v('bf-mesaj');
+    if(aciklama){ satirlar.push(''); satirlar.push(aciklama); }
+    btn.disabled = true;
+    yaz('Gönderiliyor…', 'var(--ink-2)');
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify({
+        name: ad,
+        email: eposta,
+        subject: 'Brief — ' + (v('bf-hizmet') || 'genel'),
+        message: satirlar.join('\n') || 'Brief formu gönderildi.'
+      })
+    })
+    .then(function(r){ return r.json().catch(function(){ return {ok:false}; }); })
+    .then(function(d){
+      if(d && d.ok){
+        f.reset();
+        yaz('Brief alındı. En kısa sürede dönüş yapılacak.', 'var(--gold)');
+      } else {
+        yaz((d && d.error) ? d.error : 'Gönderilemedi. Lütfen tekrar deneyin.', 'var(--flag)');
+      }
+    })
+    .catch(function(){ yaz('Bağlantı kurulamadı. Lütfen tekrar deneyin.', 'var(--flag)'); })
+    .then(function(){ btn.disabled = false; });
+  });
+})();
+</script>
+
