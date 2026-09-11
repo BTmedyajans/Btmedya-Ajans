@@ -109,8 +109,12 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
           <option value="web">Web Sitesi</option>
           <option value="sosyal">Sosyal Medya</option>
         </select>
+        <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9fb2c2">
+          <input type="checkbox" id="aiFlag"> Yapay zekâ ile üretildi
+        </label>
         <button class="btn primary" id="uploadBtn">Yüklemeyi başlat</button>
       </div>
+      <p class="status" style="margin-top:6px">Dosyanın en-boy oranı ve süresi yüklenirken ölçülür; hangi platforma uygun olduğu buna göre önerilir.</p>
       <p id="uploadStatus" class="status"></p>
     </div>
     <div class="panel">
@@ -268,13 +272,45 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showTab(t.dataset.tab
 $('#files').onchange=e=>{selectedFiles=[...e.target.files];$('#drop').querySelector('input').after(document.createTextNode(` (${selectedFiles.length} dosya seçildi)`))};
 $('#drop').ondragover=e=>e.preventDefault();
 $('#drop').ondrop=e=>{e.preventDefault();selectedFiles=[...e.dataTransfer.files];$('#uploadStatus').textContent=`${selectedFiles.length} dosya seçildi`};
+/* Dosyanin en-boy orani ve suresi tarayicida okunur: Worker'da ffmpeg yok.
+   Ses tespiti tarayiciya gore degisir, bu yuzden kesin degil, yalnizca ipucu. */
+function readMeta(file){
+  return new Promise(resolve=>{
+    const url=URL.createObjectURL(file);
+    const done=m=>{URL.revokeObjectURL(url);resolve(m)};
+    if((file.type||'').startsWith('video/')){
+      const v=document.createElement('video');
+      v.preload='metadata'; v.muted=true;
+      v.onloadedmetadata=()=>done({
+        width:v.videoWidth,height:v.videoHeight,
+        duration_s:isFinite(v.duration)?+v.duration.toFixed(2):0,
+        has_audio:(v.mozHasAudio||!!v.webkitAudioDecodedByteCount||!!(v.audioTracks&&v.audioTracks.length))?1:0
+      });
+      v.onerror=()=>done({});
+      v.src=url;
+    }else if((file.type||'').startsWith('image/')){
+      const i=new Image();
+      i.onload=()=>done({width:i.naturalWidth,height:i.naturalHeight});
+      i.onerror=()=>done({});
+      i.src=url;
+    }else done({});
+  });
+}
+const PLAT_LABEL={'instagram-reel':'IG Reels','instagram-story':'IG Hikaye','instagram-post':'IG Gonderi',
+  'tiktok':'TikTok','youtube-short':'YT Shorts','youtube':'YouTube','facebook-reel':'FB Reels',
+  'site-showreel':'Site showreel','site-gorsel':'Site gorsel'};
+
 $('#uploadBtn').onclick=async()=>{
   if(!selectedFiles.length)return;
   const cat=$('#category').value;
+  const ai=$('#aiFlag').checked?1:0;
   for(let i=0;i<selectedFiles.length;i++){
     const f=selectedFiles[i];
+    $('#uploadStatus').textContent=`${i+1}/${selectedFiles.length}: ${f.name} — ölçülüyor…`;
+    const mm=await readMeta(f);
     $('#uploadStatus').textContent=`${i+1}/${selectedFiles.length}: ${f.name}`;
-    const meta=await req('/api/media',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({original_name:f.name,mime:f.type||'application/octet-stream',size:f.size,category:cat})});
+    const meta=await req('/api/media',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({original_name:f.name,mime:f.type||'application/octet-stream',size:f.size,category:cat,ai_generated:ai,...mm})});
+    if(meta.plan&&meta.plan.siteUyarisi) $('#uploadStatus').textContent=`${f.name} — ${meta.plan.siteUyarisi}`;
     const part=10*1024*1024,parts=[];
     for(let off=0,n=1;off<f.size;off+=part,n++){
       const blob=f.slice(off,Math.min(off+part,f.size));
@@ -292,22 +328,55 @@ async function loadMedia(){
   if($('#q').value)qs.set('q',$('#q').value);
   if($('#filter').value)qs.set('category',$('#filter').value);
   const d=await req('/api/media?'+qs);
-  $('#mediaGrid').innerHTML=d.items.map(x=>`
+  vaultPlan=await req('/api/vault/plan').catch(()=>({items:[]}));
+  const planOf=id=>(vaultPlan.items||[]).find(i=>i.id===id)||{};
+  $('#mediaGrid').innerHTML=d.items.map(x=>{
+    const pl=planOf(x.id);
+    const sec=new Set(pl.secilen&&pl.secilen.length?pl.secilen:(pl.onerilen||[]));
+    const hedefler=[...new Set([...(pl.onerilen||[]),...(pl.secilen||[])])];
+    const sure=pl.saniye?`${Math.floor(pl.saniye/60)}:${String(Math.round(pl.saniye%60)).padStart(2,'0')}`:'';
+    const olcu=[pl.olcu,pl.enBoy,sure].filter(Boolean).join(' · ');
+    const gonderilmis=new Set((pl.gonderildi||[]).map(g=>g.platform));
+    return `
     <article class="card">
       ${x.mime.startsWith('video/')
-        ?`<video class="thumb" src="${escStr(x.url)}" controls></video>`
+        ?`<video class="thumb" src="${escStr(x.url)}" controls preload="metadata"></video>`
         :`<img class="thumb" src="${escStr(x.url)}" alt="${escStr(x.alt_text||x.original_name)}">`}
       <div class="meta">
         <b style="font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escStr(x.title||x.original_name)}</b>
-        <div class="muted">${escStr(x.category)} · ${(x.size/1024/1024).toFixed(1)} MB</div>
-        <div class="row" style="margin-top:8px">
+        <div class="muted">${escStr(x.category)} · ${(x.size/1024/1024).toFixed(1)} MB${olcu?' · '+escStr(olcu):''}${pl.yapayZeka?' · YZ':''}</div>
+        ${pl.siteUyarisi?`<div style="margin-top:7px;font-size:11px;line-height:1.45;color:#e0a45c;border-left:2px solid #e0a45c;padding-left:8px">${escStr(pl.siteUyarisi)}</div>`:''}
+        ${hedefler.length?`<div style="margin-top:9px">
+          <div class="muted" style="font-size:10px;letter-spacing:.1em;margin-bottom:5px">NEREYE GİDECEK</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${hedefler.map(t=>`<button class="btn sm" style="padding:3px 8px;font-size:10px;${sec.has(t)?'border-color:#d6a84a;color:#e8c06a':'opacity:.5'}"
+               onclick="toggleTarget('${escStr(x.id)}','${escStr(t)}')">${gonderilmis.has(t)?'✓ ':''}${escStr(PLAT_LABEL[t]||t)}</button>`).join('')}
+          </div>
+        </div>`:''}
+        ${(pl.uygunsuz&&pl.uygunsuz.length)?`<details style="margin-top:7px"><summary class="muted" style="font-size:10px;cursor:pointer">uymayan ${pl.uygunsuz.length} platform</summary>
+          <div class="muted" style="font-size:10.5px;line-height:1.5;margin-top:4px">${pl.uygunsuz.map(u=>escStr((PLAT_LABEL[u.slug]||u.slug)+': '+u.neden)).join('<br>')}</div></details>`:''}
+        <div class="row" style="margin-top:9px">
           <button class="btn sm" onclick="togglePub('${escStr(x.id)}',${x.published})">${x.published?'Yayından çıkar':'Siteye ekle'}</button>
           <button class="btn sm" onclick='editMedia("${escStr(x.id)}",${JSON.stringify(x).replace(/"/g,"&quot;")})'>Düzenle</button>
           <button class="btn sm danger" onclick="delMedia('${escStr(x.id)}')">Sil</button>
         </div>
+        ${pl.publicUrl?`<button class="btn sm" style="margin-top:6px;width:100%" onclick="copyPub('${escStr(pl.publicUrl)}')">Paylaşım bağlantısını kopyala</button>`:''}
         <button class="btn sm" style="margin-top:6px;width:100%" onclick="useAsCover('${escStr(x.url)}')">Habere kapak yap</button>
       </div>
-    </article>`).join('');
+    </article>`}).join('');
+}
+let vaultPlan={items:[]};
+/* Hedef secimi: kullanici oneriyi degistirebilir, secim kaydedilir. */
+async function toggleTarget(id,slug){
+  const it=(vaultPlan.items||[]).find(i=>i.id===id); if(!it)return;
+  const cur=new Set(it.secilen&&it.secilen.length?it.secilen:(it.onerilen||[]));
+  cur.has(slug)?cur.delete(slug):cur.add(slug);
+  await req('/api/media/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({routed:[...cur]})});
+  loadMedia();
+}
+async function copyPub(url){
+  try{await navigator.clipboard.writeText(url);alert('Bağlantı kopyalandı:\n'+url)}
+  catch{prompt('Bağlantı:',url)}
 }
 async function togglePub(id,p){await req('/api/media/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({published:!p})});loadMedia()}
 async function editMedia(id,x){
