@@ -14,6 +14,12 @@ enabled = true
 [assets]
 directory = "public"
 binding = "ASSETS"
+# Eşleşen bir statik dosya varsa Cloudflare Worker'ı hiç çalıştırmaz ve dosyayı
+# doğrudan sunar. Haber sayfaları için bu istenmiyor: panelden yapılan düzenleme
+# ve video kütüphanesi anahtarı ancak Worker çalışırsa geçerli olur. Bu yüzden
+# yalnızca /haberler/ altında Worker öne alınır; kayıt bulunamazsa Worker zaten
+# env.ASSETS.fetch ile statik sürüme düşüyor, yani yedek korunuyor.
+run_worker_first = ["/haberler/*"]
 
 # ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
 # Alan adı panelden Custom Domain olarak eklenir. Routes burada açılırsa
