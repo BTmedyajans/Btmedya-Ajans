@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
             <p>${escapeHtml(n.excerpt||'').substring(0,120)}${(n.excerpt||'').length>120?'…':''}</p>
             <span class="news-card-date">${escapeHtml(n.author||'')}${n.author&&n.published_at?' · ':''}${formatDate(n.published_at)}</span>
-            <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
+            <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}">HABERİ AÇ ↗</a>
           </div>
         </article>`).join('');
     }).catch(()=>{
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded',()=>{
               <small>${escapeHtml((n.category||'HABER').toUpperCase())}</small>
               <h3>${escapeHtml(n.title||'Başlıksız haber')}</h3>
               <p>${escapeHtml(n.excerpt||'').substring(0,120)}</p>
-              <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}.html">HABERİ AÇ ↗</a>
+              <a class="section-link" href="/haberler/${encodeURIComponent(n.slug)}">HABERİ AÇ ↗</a>
             </div>
           </article>`).join('');
       }).catch(()=>{});
