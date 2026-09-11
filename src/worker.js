@@ -137,33 +137,6 @@ async function contactApi(request, env, url, ctx){
   return null;
 }
 
-/* ---------- İletişim Formu API ---------- */
-async function contactApi(request, env, url){
-  if(url.pathname==='/api/contact' && request.method==='POST'){
-    if(!env.DB) return json({ok:false,error:'Veritabanı yapılandırılmadı'},503);
-    const b=await request.json().catch(()=>({}));
-    if(!b.name||!b.email||!b.message) return json({ok:false,error:'Ad, e-posta ve mesaj zorunludur'},400);
-    if(b.message.length>5000) return json({ok:false,error:'Mesaj çok uzun'},400);
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email)) return json({ok:false,error:'Geçersiz e-posta adresi'},400);
-    if(b._honey) return json({ok:true});
-    await env.DB.prepare('INSERT INTO contact_messages(name,email,phone,subject,message) VALUES(?,?,?,?,?)')
-      .bind(b.name,b.email,b.phone||'',b.subject||'',b.message).run();
-    return json({ok:true,message:'Mesajınız alındı, teşekkürler!'});
-  }
-  if(url.pathname==='/api/admin/contact' && request.method==='GET'){
-    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
-    const rows=await env.DB.prepare('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 200').all();
-    return json({ok:true,items:rows.results});
-  }
-  const markRead=url.pathname.match(/^\/api\/admin\/contact\/(\d+)$/);
-  if(markRead && request.method==='PATCH'){
-    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
-    await env.DB.prepare('UPDATE contact_messages SET read=1 WHERE id=?').bind(Number(markRead[1])).run();
-    return json({ok:true});
-  }
-  return null;
-}
-
 /* ---------- Medya Kasası API ---------- */
 async function mediaApi(request, env){
   const u=new URL(request.url); const path=u.pathname;
