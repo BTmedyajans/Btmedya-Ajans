@@ -169,6 +169,36 @@ async function mediaApi(request, env){
   const auth=aiRead || await validSession(request,env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD);
   if(!auth) return json({error:'Yetkisiz'},401);
 
+  /* DEPO PLANI — her dosyanin teknik ozelligi, onerilen hedefler, secilen
+     hedefler ve kalici public baglantisi tek listede. Sohbetten okunup
+     Metricool'a gonderim buradan planlanir. */
+  if(path==='/api/vault/plan' && request.method==='GET'){
+    const origin=new URL(request.url).origin;
+    const r=await env.DB.prepare('SELECT * FROM media ORDER BY created_at DESC LIMIT 300').all();
+    const items=(r.results||[]).map(x=>{
+      const plan=routePlan(x);
+      const routed=JSON.parse(x.routed||'[]');
+      return {
+        id:x.id, ad:x.title||x.original_name, tur:x.mime, mb:+(x.size/1048576).toFixed(2),
+        olcu:(x.width&&x.height)?`${x.width}x${x.height}`:'', enBoy:x.aspect||plan.aspect,
+        saniye:x.duration_s||0, sesVar:!!x.has_audio, yapayZeka:!!x.ai_generated,
+        kategori:x.category, yayinda:!!x.published, youtube:x.youtube_id||'',
+        onerilen:JSON.parse(x.suggested||'[]'),
+        secilen:routed,
+        hedef:routed.length?routed:JSON.parse(x.suggested||'[]'),
+        uygunsuz:plan.uygunsuz, siteUyarisi:plan.siteUyarisi,
+        gonderildi:JSON.parse(x.posted||'[]'),
+        publicUrl:x.published?`${origin}/pub/${encodeURIComponent(x.key)}`:null
+      };
+    });
+    const bekleyen=items.filter(i=>!i.gonderildi.length && i.hedef.length);
+    return json({
+      kurallar:PLATFORM_RULES.map(([slug,label,kind,aspects,maxS])=>({slug,label,tur:kind,enBoy:aspects,maxSaniye:maxS})),
+      ozet:{toplam:items.length,yayinda:items.filter(i=>i.yayinda).length,gonderimBekleyen:bekleyen.length},
+      items
+    });
+  }
+
   if(path==='/api/media' && request.method==='GET'){
     const q=u.searchParams.get('q')||''; const cat=u.searchParams.get('category')||''; const pub=u.searchParams.get('published');
     let sql='SELECT * FROM media WHERE 1=1'; const args=[];
@@ -184,9 +214,14 @@ async function mediaApi(request, env){
     const mime = ALLOWED_MIME.has(body.mime) ? body.mime : 'application/octet-stream';
     const id=crypto.randomUUID(); const now=new Date().toISOString();
     const key=`${body.category||'arsiv'}/${id}-${safeKey(body.original_name||('media.'+extFromMime(mime)))}`;
-    await env.DB.prepare('INSERT INTO media (id,key,original_name,mime,size,category,tags,title,description,alt_text,published,slot,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,key,body.original_name||key,mime,Number(body.size||0),body.category||'arsiv',JSON.stringify(body.tags||[]),body.title||'',body.description||'',body.alt_text||'',body.published?1:0,body.slot||'',Number(body.sort_order||0),now,now).run();
+    // Olculer tarayicida okundu; yonlendirme onerisi burada hesaplanir.
+    const plan=routePlan({mime,width:body.width,height:body.height,duration_s:body.duration_s,has_audio:body.has_audio});
+    await env.DB.prepare('INSERT INTO media (id,key,original_name,mime,size,category,tags,title,description,alt_text,published,slot,sort_order,created_at,updated_at,width,height,duration_s,has_audio,aspect,suggested,routed,posted,youtube_id,ai_generated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)')
+      .bind(id,key,body.original_name||key,mime,Number(body.size||0),body.category||'arsiv',JSON.stringify(body.tags||[]),body.title||'',body.description||'',body.alt_text||'',body.published?1:0,body.slot||'',Number(body.sort_order||0),now,now,
+            Number(body.width||0),Number(body.height||0),Number(body.duration_s||0),body.has_audio?1:0,
+            plan.aspect,JSON.stringify(plan.uygun),JSON.stringify(body.routed||[]),'[]',String(body.youtube_id||''),body.ai_generated?1:0).run();
     const m=await env.MEDIA.createMultipartUpload(key,{httpMetadata:{contentType:mime}});
-    return json({id,key,uploadId:m.uploadId});
+    return json({id,key,uploadId:m.uploadId,plan});
   }
   const mp=path.match(/^\/api\/upload\/([^/]+)\/part$/);
   if(mp && request.method==='PUT'){
@@ -208,7 +243,19 @@ async function mediaApi(request, env){
   if(upd && request.method==='PATCH'){
     if(aiRead) return json({error:'AI token salt okunur'},403);
     const id=upd[1], body=await request.json(), now=new Date().toISOString();
-    await env.DB.prepare('UPDATE media SET title=?,description=?,alt_text=?,category=?,tags=?,published=?,slot=?,sort_order=?,updated_at=? WHERE id=?').bind(body.title||'',body.description||'',body.alt_text||'',body.category||'arsiv',JSON.stringify(body.tags||[]),body.published?1:0,body.slot||'',Number(body.sort_order||0),now,id).run(); return json({ok:true});
+    const cur=await env.DB.prepare('SELECT * FROM media WHERE id=?').bind(id).first();
+    if(!cur) return json({error:'Bulunamadı'},404);
+    // Gonderilmeyen alan mevcut degerini korur: kismi guncelleme guvenli olsun.
+    const pick=(k,d)=>body[k]===undefined?d:body[k];
+    await env.DB.prepare('UPDATE media SET title=?,description=?,alt_text=?,category=?,tags=?,published=?,slot=?,sort_order=?,routed=?,posted=?,youtube_id=?,ai_generated=?,updated_at=? WHERE id=?')
+      .bind(pick('title',cur.title),pick('description',cur.description),pick('alt_text',cur.alt_text),
+            pick('category',cur.category),JSON.stringify(pick('tags',JSON.parse(cur.tags||'[]'))),
+            pick('published',cur.published)?1:0,pick('slot',cur.slot),Number(pick('sort_order',cur.sort_order)||0),
+            JSON.stringify(pick('routed',JSON.parse(cur.routed||'[]'))),
+            JSON.stringify(pick('posted',JSON.parse(cur.posted||'[]'))),
+            String(pick('youtube_id',cur.youtube_id)||''),pick('ai_generated',cur.ai_generated)?1:0,
+            now,id).run();
+    return json({ok:true});
   }
   if(path==='/api/export'){
     const cors={'access-control-allow-origin':'*','access-control-allow-methods':'GET,OPTIONS','access-control-allow-headers':'Content-Type, Authorization'};
@@ -217,6 +264,61 @@ async function mediaApi(request, env){
     return json({generated_at:new Date().toISOString(),brand:'BTMedya',items},200,cors);
   }
   return null;
+}
+
+
+/* ===================== AKILLI DEPO: YONLENDIRME =====================
+ * Yuklenen dosyanin olculeri tarayicida okunur, buraya gonderilir.
+ * Asagidaki kural tablosu platformlarin yayinlanmis sinirlarina dayanir.
+ * SINIRLAR DEGISIR: platform kuralini degistirdiginde yalnizca bu tabloyu
+ * guncelle, gerisi kendiliginden uyum saglar.
+ */
+const PLATFORM_RULES=[
+  // slug              etiket                 kind    en-boy        max sn   ses
+  ['instagram-reel',  'Instagram Reels',     'video', ['9:16'],      180,  true ],
+  ['instagram-story', 'Instagram Hikaye',    'both',  ['9:16'],       60,  false],
+  ['instagram-post',  'Instagram Gonderi',   'both',  ['1:1','4:5'],  60,  false],
+  ['tiktok',          'TikTok',              'video', ['9:16'],      600,  true ],
+  ['youtube-short',   'YouTube Shorts',      'video', ['9:16'],      180,  true ],
+  ['youtube',         'YouTube video',       'video', ['16:9','9:16',
+                                                       '1:1','4:5',
+                                                       'diger'],   86400,  true ],
+  ['facebook-reel',   'Facebook Reels',      'video', ['9:16'],       90,  true ],
+  ['site-showreel',   'Site / showreel',     'video', ['16:9'],       30,  false],
+  ['site-gorsel',     'Site / gorsel',       'image', ['16:9','1:1',
+                                                       '4:5','diger'],  0,  false],
+];
+
+function aspectOf(w,h){
+  if(!w||!h) return 'diger';
+  const r=w/h;
+  if(Math.abs(r-9/16) < 0.06) return '9:16';
+  if(Math.abs(r-16/9) < 0.10) return '16:9';
+  if(Math.abs(r-1)    < 0.05) return '1:1';
+  if(Math.abs(r-4/5)  < 0.05) return '4:5';
+  return 'diger';
+}
+
+/* Dosyanin gidebilecegi platformlari ve gidemedigi platformun nedenini dondurur. */
+function routePlan({mime='',width=0,height=0,duration_s=0,has_audio=0}){
+  const isVideo=String(mime).startsWith('video/');
+  const isImage=String(mime).startsWith('image/');
+  const aspect=aspectOf(Number(width),Number(height));
+  const dur=Number(duration_s)||0;
+  const uygun=[], uygunsuz=[];
+  for(const [slug,label,kind,aspects,maxS] of PLATFORM_RULES){
+    if(kind==='video' && !isVideo){ continue; }
+    if(kind==='image' && !isImage){ continue; }
+    if(kind==='both'  && !isVideo && !isImage){ continue; }
+    if(!aspects.includes(aspect)){ uygunsuz.push({slug,label,neden:`en-boy ${aspect||'bilinmiyor'} uymuyor`}); continue; }
+    if(isVideo && maxS>0 && dur>maxS){ uygunsuz.push({slug,label,neden:`${Math.round(dur)} sn > ${maxS} sn sinir`}); continue; }
+    uygun.push(slug);
+  }
+  // Siteye agir video koymamak icin acik kural.
+  const siteUyarisi = (isVideo && dur>180)
+    ? 'Uzun video: siteye yukleme. YouTube\'a yukle, sitede yalnizca kapak + baglanti goster.'
+    : (isVideo && dur>30 ? 'Site icin uzun sayilir; showreel yerine gomulu baglanti tercih et.' : '');
+  return {aspect,uygun,uygunsuz,siteUyarisi};
 }
 
 export default { async fetch(request, env, ctx){
@@ -231,6 +333,23 @@ export default { async fetch(request, env, ctx){
   if(url.pathname.startsWith('/haber/') && url.pathname.length > 7){
     const slug = url.pathname.slice('/haber/'.length).replace(/\/$/, '');
     return Response.redirect(`${url.origin}/haberler/${slug}.html${url.search}`, 301);
+  }
+
+  /* KALICI PUBLIC BAGLANTI — yalnizca "Siteye ekle" isaretli dosyalar.
+     Metricool gibi disaridan cagiran servisler imzali/suresi dolan baglantiyi
+     kullanamaz; yayindaki dosya icin sabit adres gerekir. Yayindan cikarilan
+     dosya aninda 404'e doner. */
+  if(url.pathname.startsWith('/pub/')){
+    const key=decodeURIComponent(url.pathname.slice('/pub/'.length));
+    if(!env.DB||!env.MEDIA) return text('Medya deposu yapılandırılmadı',503);
+    const row=await env.DB.prepare('SELECT key FROM media WHERE key=? AND published=1').bind(key).first();
+    if(!row) return text('Bu dosya yayında değil',404);
+    const obj=await env.MEDIA.get(key); if(!obj) return text('Medya bulunamadı',404);
+    return new Response(obj.body,{headers:{
+      'content-type':obj.httpMetadata?.contentType||'application/octet-stream',
+      'cache-control':'public, max-age=3600',
+      'access-control-allow-origin':'*'
+    }});
   }
 
   if(url.pathname.startsWith('/media/')){
