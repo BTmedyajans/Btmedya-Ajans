@@ -1,6 +1,7 @@
 /* BTMEDYA Worker — birleşik API
  * 1) Haber CMS  (D1 tablo: news)        — /api/news, /api/admin/news
  * 2) Medya Kasası (D1 tablo: media, R2) — /api/media*, /api/public/media, /api/export, /media/*, /api/login, /api/logout
+ * 3) İletişim    (D1 tablo: contact_messages) — /api/contact, /api/admin/contact
  * Statik dosyalar env.ASSETS üzerinden servis edilir.
  */
 
@@ -26,15 +27,45 @@ function safeKey(name){ return name.normalize('NFKD').replace(/[^\w.\-]+/g,'-').
 function extFromMime(mime){ const map={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','video/mp4':'mp4','video/webm':'webm','audio/mpeg':'mp3','audio/wav':'wav','audio/mp4':'m4a','application/pdf':'pdf'}; return map[mime]||'bin'; }
 const ALLOWED_MIME = new Set(['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm','audio/mpeg','audio/wav','audio/mp4','application/pdf']);
 
+/* ---------- E-posta bildirimi (Resend) ---------- */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+async function sendContactEmail(env, msg){
+  if(!env.RESEND_API_KEY) return;
+  const to=env.RESEND_TO||'busetuncay1029@gmail.com';
+  const from=env.RESEND_FROM||'BTMEDYA <noreply@btmedya.com.tr>';
+  const subject=`[BTMEDYA] Yeni mesaj: ${msg.subject||'İletişim Formu'}`;
+  const html=`<div style="font-family:sans-serif;max-width:600px;margin:auto"><h2 style="color:#111;border-bottom:2px solid #eee;padding-bottom:8px">Yeni İletişim Formu Mesajı</h2><table style="border-collapse:collapse;width:100%"><tr><th style="background:#f5f5f5;text-align:left;padding:8px 12px;width:110px">Ad Soyad</th><td style="padding:8px 12px;border-bottom:1px solid #eee">${esc(msg.name)}</td></tr><tr><th style="background:#f5f5f5;text-align:left;padding:8px 12px">E-posta</th><td style="padding:8px 12px;border-bottom:1px solid #eee"><a href="mailto:${esc(msg.email)}">${esc(msg.email)}</a></td></tr><tr><th style="background:#f5f5f5;text-align:left;padding:8px 12px">Telefon</th><td style="padding:8px 12px;border-bottom:1px solid #eee">${esc(msg.phone||'—')}</td></tr><tr><th style="background:#f5f5f5;text-align:left;padding:8px 12px">Konu</th><td style="padding:8px 12px;border-bottom:1px solid #eee">${esc(msg.subject||'—')}</td></tr><tr><th style="background:#f5f5f5;text-align:left;padding:8px 12px;vertical-align:top">Mesaj</th><td style="padding:8px 12px;white-space:pre-wrap">${esc(msg.message)}</td></tr></table><p style="margin-top:24px;font-size:12px;color:#999">btmedya.com.tr iletişim formu · ${new Date().toLocaleString('tr-TR',{timeZone:'Europe/Istanbul'})}</p></div>`;
+  try{
+    await fetch('https://api.resend.com/emails',{method:'POST',headers:{'Authorization':`Bearer ${env.RESEND_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify({from,to:[to],subject,html})});
+  }catch(e){}
+}
+
 /* ---------- Haber CMS API ---------- */
 async function newsApi(request, env, url){
   if(url.pathname==='/api/health') return json({ok:true,service:'btmedya',cms:!!env.DB,r2:!!env.MEDIA});
+
+  /* Public: haber listesi */
   if(url.pathname==='/api/news' && request.method==='GET'){
     if(!env.DB) return json({ok:true,source:'static',items:[]});
     const limit=Math.min(Number(url.searchParams.get('limit'))||100,100);
     const rows=await env.DB.prepare("SELECT id,slug,title,excerpt,body,category,author,cover_url,video_url,status,published_at,updated_at FROM news WHERE status='published' ORDER BY published_at DESC LIMIT ?").bind(limit).all();
     return json({ok:true,items:rows.results});
   }
+
+  /* Admin: haber listesi */
+  if(url.pathname==='/api/admin/news' && request.method==='GET'){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    if(!env.DB) return json({ok:false,error:'D1 not configured'},503);
+    const status=url.searchParams.get('status');
+    let sql='SELECT id,slug,title,excerpt,category,author,cover_url,status,published_at,updated_at FROM news';
+    const args=[];
+    if(status){sql+=' WHERE status=?';args.push(status);}
+    sql+=' ORDER BY updated_at DESC LIMIT 200';
+    const rows=args.length ? await env.DB.prepare(sql).bind(...args).all() : await env.DB.prepare(sql).all();
+    return json({ok:true,items:rows.results});
+  }
+
+  /* Admin: haber ekle / güncelle (slug ile upsert) */
   if(url.pathname==='/api/admin/news' && request.method==='POST'){
     if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
     if(!env.DB) return json({ok:false,error:'D1 not configured'},503);
@@ -46,6 +77,62 @@ async function newsApi(request, env, url){
       VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(slug) DO UPDATE SET title=excluded.title,excerpt=excluded.excerpt,body=excluded.body,category=excluded.category,author=excluded.author,cover_url=excluded.cover_url,video_url=excluded.video_url,status=excluded.status,published_at=excluded.published_at,updated_at=excluded.updated_at`)
       .bind(b.slug,b.title,b.excerpt||'',b.body||'',b.category||'',b.author||'',b.cover_url||'',b.video_url||'',status,status==='published'?(b.published_at||now):null,now).run();
     return json({ok:true,slug:b.slug,status});
+  }
+
+  /* Admin: haber güncelle / sil (ID ile) */
+  const newsById=url.pathname.match(/^\/api\/admin\/news\/(\d+)$/);
+  if(newsById){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    if(!env.DB) return json({ok:false,error:'D1 not configured'},503);
+    const id=Number(newsById[1]);
+    if(request.method==='GET'){
+      const row=await env.DB.prepare('SELECT * FROM news WHERE id=?').bind(id).first();
+      if(!row) return json({ok:false,error:'Bulunamadı'},404);
+      return json({ok:true,item:row});
+    }
+    if(request.method==='PATCH'){
+      const b=await request.json();
+      const now=new Date().toISOString();
+      const status=b.status==='published'?'published':'draft';
+      await env.DB.prepare('UPDATE news SET title=?,excerpt=?,body=?,category=?,author=?,cover_url=?,video_url=?,status=?,published_at=?,updated_at=? WHERE id=?')
+        .bind(b.title||'',b.excerpt||'',b.body||'',b.category||'',b.author||'',b.cover_url||'',b.video_url||'',status,status==='published'?(b.published_at||now):null,now,id).run();
+      return json({ok:true});
+    }
+    if(request.method==='DELETE'){
+      await env.DB.prepare('DELETE FROM news WHERE id=?').bind(id).run();
+      return json({ok:true});
+    }
+  }
+
+  return null;
+}
+
+/* ---------- İletişim Formu API ---------- */
+async function contactApi(request, env, url, ctx){
+  if(url.pathname==='/api/contact' && request.method==='POST'){
+    if(!env.DB) return json({ok:false,error:'Veritabanı yapılandırılmadı'},503);
+    const b=await request.json().catch(()=>({}));
+    if(!b.name||!b.email||!b.message) return json({ok:false,error:'Ad, e-posta ve mesaj zorunludur'},400);
+    if(b.message.length>5000) return json({ok:false,error:'Mesaj çok uzun'},400);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email)) return json({ok:false,error:'Geçersiz e-posta adresi'},400);
+    if(b._honey) return json({ok:true});
+    await env.DB.prepare('INSERT INTO contact_messages(name,email,phone,subject,message) VALUES(?,?,?,?,?)')
+      .bind(b.name,b.email,b.phone||'',b.subject||'',b.message).run();
+    const emailData={name:b.name,email:b.email,phone:b.phone||'',subject:b.subject||'',message:b.message};
+    if(ctx) ctx.waitUntil(sendContactEmail(env,emailData));
+    else sendContactEmail(env,emailData);
+    return json({ok:true,message:'Mesajınız alındı, teşekkürler!'});
+  }
+  if(url.pathname==='/api/admin/contact' && request.method==='GET'){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    const rows=await env.DB.prepare('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 200').all();
+    return json({ok:true,items:rows.results});
+  }
+  const markRead=url.pathname.match(/^\/api\/admin\/contact\/(\d+)$/);
+  if(markRead && request.method==='PATCH'){
+    if(!(await validSession(request, env.ADMIN_SESSION_SECRET||env.ADMIN_PASSWORD))) return json({ok:false,error:'Yetkisiz'},401);
+    await env.DB.prepare('UPDATE contact_messages SET read=1 WHERE id=?').bind(Number(markRead[1])).run();
+    return json({ok:true});
   }
   return null;
 }
@@ -159,7 +246,7 @@ async function mediaApi(request, env){
   return null;
 }
 
-export default { async fetch(request, env){
+export default { async fetch(request, env, ctx){
   const url = new URL(request.url);
 
   if(url.hostname.startsWith('www.')){
@@ -186,7 +273,7 @@ export default { async fetch(request, env){
     const r1 = await newsApi(request, env, url);
     if(r1) return r1;
     if(env.DB){
-      const rc = await contactApi(request, env, url);
+      const rc = await contactApi(request, env, url, ctx);
       if(rc) return rc;
     }
     if(env.DB && env.MEDIA){

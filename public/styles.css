@@ -1,4 +1,4 @@
-:root{--bg:#02070d;--bg2:#07111c;--ink:#eaf2f8;--muted:#8da0b2;--line:rgba(255,255,255,.13);--cyan:#35d6ff;--blue:#2a7fff;--gold:#d6a84a;--gold-dark:#b8860b;--champagne:#f2d27a}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,Inter,Arial,sans-serif;overflow-x:hidden;cursor:none}a{color:inherit}h1,h2,h3,.brand-word,.eyebrow,.wordmark{font-family:'Space Grotesk',Inter,Arial,sans-serif}@media(max-width:900px),(hover:none){body{cursor:auto}}
+:root{--bg:#02070d;--bg2:#07111c;--ink:#eaf2f8;--muted:#8da0b2;--line:rgba(255,255,255,.13);--cyan:#35d6ff;--blue:#2a7fff;--gold:#d6a84a;--gold-dark:#b8860b;--champagne:#f2d27a;--tshadow:0 1px 2px rgba(2,7,13,.95),0 3px 12px rgba(2,7,13,.78),0 10px 44px rgba(2,7,13,.8)}*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip}body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,Inter,Arial,sans-serif;overflow-x:hidden;overflow-x:clip;cursor:none}a{color:inherit}h1,h2,h3,.brand-word,.eyebrow,.wordmark{font-family:'Space Grotesk',Inter,Arial,sans-serif}@media(max-width:900px),(hover:none){body{cursor:auto}}
 /* CURSOR LOGO — mouse ile gezinen BT amblemi */
 .cursor-logo{position:fixed;z-index:999;top:0;left:0;width:38px;height:38px;border-radius:50%;border:1px solid rgba(53,214,255,.55);background:rgba(4,11,18,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:10px;letter-spacing:.04em;color:var(--cyan);pointer-events:none;transform:translate(-50%,-50%);transition:width .35s,height .35s,background .35s,border-color .35s,opacity .35s;opacity:0}
 .cursor-logo.show{opacity:1}
@@ -215,6 +215,41 @@
 .about-team-card p{color:#8da0b2;font-size:12px;line-height:1.6;margin:10px 0 0}
 @media(max-width:700px){.about-story{grid-template-columns:1fr}.about-values{grid-template-columns:1fr}.about-page{padding-top:110px}}
 
+/* =====================================================================
+   SİNEMATİK KALİTE TABANI — canlı footage üstünde okunabilirlik,
+   erişilebilirlik zemini ve hareket disiplini. (10k-websites standartları)
+   ===================================================================== */
+
+/* 1) OKUNABİLİRLİK — hero metni canlı video üstünde durur.
+   Global taban scrim + 3 katmanlı text-shadow ile hiçbir kare metnin
+   arkasında ham kalmaz. Köşeler canlı kalsın diye radial %100'de biter. */
+.hero-sticky::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 130% 95% at 32% 42%,rgba(2,7,13,0) 32%,rgba(2,7,13,.58) 100%)}
+.hero-copy h1,.hero-copy .hero-sub,.hero-copy .eyebrow{text-shadow:var(--tshadow)}
+.hero-copy .primary,.hero-copy .secondary,.hero-cards .hero-card{text-shadow:none}
+
+/* 2) ERİŞİLEBİLİRLİK ZEMİNİ */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:300;background:var(--cyan);color:#001017;padding:12px 18px;font-size:12px;font-weight:800;letter-spacing:.08em;text-decoration:none}
+.skip-link:focus{left:10px;top:10px}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px}
+main:focus{outline:none}
+
+/* 3) DOKUNMA HEDEFLERİ — coarse pointer altında en az 44px, hizayı bozmadan */
+@media(pointer:coarse){
+  .topbar nav a{min-height:44px;display:inline-flex;align-items:center}
+  .hero-card{min-height:44px}
+  .quote,.cta-row a,.package-summary .primary,.contact-form button,.floating-whatsapp{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+}
+
+/* 4) HAREKET DİSİPLİNİ — sekme gizliyken tüm animasyonlar duraklar (pil + kaynak) */
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+/* 5) REDUCED MOTION BÜTÜNLÜĞÜ — ::before/::after dahil, süreleri sıfırla.
+   Yapısal transform'lar üstteki mevcut blokta zaten korunuyor. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .hero-sticky::after{background:radial-gradient(ellipse 130% 95% at 32% 42%,rgba(2,7,13,0) 32%,rgba(2,7,13,.58) 100%)}
+}
+
 
 /* HIZMETLER RAYI: baslik sutunu ile kayan kartlarin cakismasini onler.
    Sutun esnek kutuda kuculmez, kartlar basligin arkasindan koyu bir
@@ -230,25 +265,6 @@
     pointer-events:none;
     background:linear-gradient(90deg,#07111c 0%,#07111c 74%,rgba(7,17,28,.92) 90%,rgba(7,17,28,0) 100%);
   }
-}
-
-
-/* ERISILEBILIRLIK: klavye odagi, icerige atla baglantisi ve dokunma hedefleri. */
-.skip-link{
-  position:absolute;left:-9999px;top:0;z-index:100;
-  background:var(--cyan);color:#001017;
-  padding:12px 18px;font-size:12px;font-weight:800;letter-spacing:.08em;
-  text-decoration:none;
-}
-.skip-link:focus{left:8px;top:8px}
-:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:2px}
-main:focus{outline:none}
-@media (pointer:coarse){
-  .quote,.cta-row a,.floating-whatsapp{
-    min-height:44px;display:inline-flex;align-items:center;justify-content:center;
-  }
-  .hero-card{min-height:44px}
-  .topbar nav a{padding:6px 0;display:inline-block}
 }
 
 

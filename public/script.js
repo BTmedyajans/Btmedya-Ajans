@@ -284,4 +284,32 @@ document.addEventListener('DOMContentLoaded',()=>{
   }));
 
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+
+  // SEKME GIZLIYKEN DURAKLAT.
+  // main dalindan gelen surum video[autoplay] seciyordu; bu dalda hicbir video
+  // artik autoplay tasimiyor (hepsi kapiya ve gorunurluge bagli indiriliyor),
+  // yani secim bos donuyor ve body.paused hic kurulmuyordu. Ekran disinda
+  // duraklatmayi zaten yukaridaki lazy gozlemcisi yapiyor, burada yalnizca
+  // sekme gizlenince duraklatma kaliyor. body.paused sinifi CSS tarafinda
+  // butun animasyonlari (::before ve ::after dahil) donduruyor.
+  (function(){
+    const inView=el=>{
+      const r=el.getBoundingClientRect();
+      return r.bottom>0 && r.top<innerHeight && r.right>0 && r.left<innerWidth;
+    };
+    const playable=()=>[...document.querySelectorAll('video')]
+      .filter(v=>v.dataset.loaded && !v.closest('.intro-overlay'));
+    document.addEventListener('visibilitychange',()=>{
+      const hidden=document.hidden;
+      document.body.classList.toggle('paused',hidden);
+      playable().forEach(v=>{
+        if(hidden){ v.pause(); return; }
+        if(v.classList.contains('hero-bg-video')){
+          if(!heavyMediaBlocked()) v.play().catch(()=>{});
+          return;
+        }
+        if(inView(v) && !matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(()=>{});
+      });
+    });
+  })();
 });
