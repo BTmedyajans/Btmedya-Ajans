@@ -1,3 +1,4 @@
+import { renderNewsPage } from "./news-page.js";
 /* BTMEDYA Worker — birleşik API
  * 1) Haber CMS  (D1 tablo: news)        — /api/news, /api/admin/news
  * 2) Medya Kasası (D1 tablo: media, R2) — /api/media*, /api/public/media, /api/export, /media/*, /api/login, /api/logout
@@ -418,6 +419,29 @@ export default { async fetch(request, env, ctx){
       if(r2) return r2;
     }
     return json({ok:false,error:'Not found'},404);
+  }
+
+  /* HABER SAYFASI — once statik dosya, yoksa D1'den uretim.
+     Depodaki 27 haber oldugu gibi kalir; panelden girilen yeni haberler
+     dosya olusturmadan kendi adresinde yayina girer. */
+  if(url.pathname.startsWith('/haberler/') && url.pathname !== '/haberler/'){
+    const res = await env.ASSETS.fetch(request);
+    if(res.status !== 404) return res;
+    if(env.DB){
+      const slug = decodeURIComponent(url.pathname.slice('/haberler/'.length).replace(/\.html$/,'').replace(/\/$/,''));
+      if(slug){
+        const n = await env.DB.prepare(
+          "SELECT * FROM news WHERE slug=? AND status='published'"
+        ).bind(slug).first();
+        if(n){
+          return new Response(renderNewsPage(n, url.origin), {
+            headers:{'content-type':'text/html; charset=utf-8',
+                     'cache-control':'public, max-age=300, s-maxage=600'}
+          });
+        }
+      }
+    }
+    return res;
   }
 
   return env.ASSETS.fetch(request);

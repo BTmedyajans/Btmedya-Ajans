@@ -178,7 +178,7 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
         <input id="nCoverUrl" style="width:100%" placeholder="https://... veya /assets/...">
         <img id="coverPreview" class="cover-preview" alt="Kapak önizleme">
         <label>VIDEO URL</label>
-        <input id="nVideoUrl" style="width:100%" placeholder="YouTube veya direkt video URL">
+        <input id="nVideoUrl" style="width:100%" placeholder="YouTube bağlantısı yapıştırın (watch, youtu.be, shorts)">
         <label>ÖZET</label>
         <textarea id="nExcerpt" style="width:100%;min-height:70px" placeholder="Kısa özet (anasayfada görünür)"></textarea>
         <label>İÇERİK</label>
@@ -499,6 +499,10 @@ async function saveNews(forceStatus){
       d=await r.json();
     }
     if(!r.ok||!d.ok){$('#nStatus2').textContent='Hata: '+(d.error||r.status);return}
+    // Haber artik kendi adresinde yayinda; dogrudan acilabilsin.
+    if(b.status==='published'){
+      $('#nStatus2').innerHTML='Yayınlandı ✓ <a href="/haberler/'+encodeURIComponent(b.slug)+'" target="_blank" style="color:#e8c06a">haberi aç ↗</a>';
+    }
     $('#nStatus2').textContent=status==='published'?'Yayınlandı ✓':'Taslak kaydedildi ✓';
     loadNewsList();
   }catch(e){$('#nStatus2').textContent='Hata: '+e.message}
