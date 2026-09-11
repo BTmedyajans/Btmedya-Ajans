@@ -152,17 +152,28 @@ kenarlardan kırpma bir şeyin tepesini kesmiyor.
 Sitede zaten yürürlükte olan tokenlar. Konsept bu paletten türetildi, yani
 görüntü ve sayfa aynı dünyada olacak. Onaylanan görüntüden sonra son ayar yapılır.
 
+Renk yönü kararı: **altın ajansın, camgöbeği makinenin.** Basılı katalog,
+wordmark, amblem ve uygulama simgesi altın olduğu için marka mobilyası
+(etiket, bağ, CTA, odak, kenarlık, başlık vurgusu) altına taşındı.
+Camgöbeği yalnızca yapay zekâ vurgusunda ve hero'nun atmosfer katmanlarında
+kaldı. Böylece iki renk de bir işe yarıyor.
+
 ```css
 :root{
-  --bg:#02070d;        /* zemin, saf siyah değil, görüntünün grade'ine çalıyor */
-  --bg2:#07111c;       /* kartlar ve yükseltilmiş yüzeyler */
-  --cyan:#35d6ff;      /* aksan: CTA, odak halkası, nadir vurgu */
-  --blue:#2a7fff;      /* derinlik ve ışık düzlemi */
-  --gold:#d6a84a;      /* tek sıcak nokta, amblem ve son karedeki vurgu */
-  --ink:#eaf2f8;       /* birincil metin */
-  --muted:#8da0b2;     /* ikincil metin */
+  --bg:#02070d;          /* zemin, saf siyah değil, görüntünün grade'ine çalıyor */
+  --bg2:#07111c;         /* kartlar ve yükseltilmiş yüzeyler */
+  --accent:#d6a84a;      /* marka aksanı: CTA dolgusu, odak, kenarlık */
+  --accent-text:#e8c06a;  /* küçük etiket ve başlık vurgusu, zeminde 11.72:1 */
+  --accent-ink:#120b00;  /* altın dolgu üstündeki koyu metin */
+  --cyan:#35d6ff;        /* YALNIZCA yapay zekâ vurgusu ve hero atmosferi */
+  --blue:#2a7fff;        /* derinlik ve ışık düzlemi */
+  --ink:#eaf2f8;         /* birincil metin */
+  --muted:#8da0b2;       /* ikincil metin */
 }
 ```
+
+Videonun paleti de bu karara uyar: hero'nun soğuk camgöbeği dünyası korunur,
+son karedeki tek sıcak nokta altındır. Makine soğuk, marka sıcak.
 
 ## 6. Tipografi
 
@@ -187,10 +198,10 @@ giriş ve çıkış.
 | 2 | 0.20 - 0.38 | Kamera iniyor, çizgiler yukarı doğru akıyor | "Her hafta gerçek haber." | Drift-down: kelimeler yukarıdan yerine iner |
 | 3 | 0.40 - 0.58 | Pus katmanı, lens parlaması ve bir an odak kaybı | "Çekim bizden. Kurgu bizden." | Blur-to-sharp: yumuşak kopya keskin kopyaya geçer, lens anıyla aynı beat |
 | 4 | 0.60 - 0.78 | Işık çizgileri hizalanmaya başlıyor | "Yapay zekâ süs değil, üretim hattı." | Grid snap-align: karakterler okuma sırasında yerine kayar |
-| 5 | 0.80 - 1.00 | Yatay ışık düzlemi oturur, altın nokta merkezde dinlenir | "Dijitalde Fikir Sizden, Gerisi Bizden." | Word-by-word rise, sonra alt satır, sonra CTA: üç varış, tek bant |
+| 5 | 0.80 - 1.00 | Yatay ışık düzlemi oturur, altın nokta merkezde dinlenir | "Hikâyeleri yaşatıyoruz." | Word-by-word rise, sonra alt satır, sonra CTA: üç varış, tek bant |
 
-**Bant 5 alt satır:** "Haber, prodüksiyon ve yapay zekâyı tek yaratıcı akışta
-buluşturan yeni nesil medya deneyimi."
+**Bant 5 alt satır:** "Dijitalde fikir sizden, gerisi bizden. Haber, prodüksiyon ve
+yapay zekâyı tek ekipte topluyoruz."
 
 **Bant 5 CTA:** "TEKLİF AL" (WhatsApp) ve "İŞLERİMİZ" (portföy çapası).
 
@@ -206,7 +217,7 @@ Telefon, dikey tablet, yan yatan telefon ve azaltılmış hareket tercihinde
 gösterilir. Bu bir mazeret değil, tasarlanmış bir düzen: son karenin poster hâli
 üzerine yerleşmiş metin.
 
-- **Başlık:** "Dijitalde Fikir Sizden, Gerisi Bizden."
+- **Başlık:** "Hikâyeleri yaşatıyoruz."
 - **Alt satır:** "Balıkesir'den yayında. Haber, prodüksiyon ve yapay zekâ, tek ekipten."
 - **CTA:** "TEKLİF AL"
 

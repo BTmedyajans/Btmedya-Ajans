@@ -354,3 +354,57 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     .faq-item::details-content{transition:none;opacity:1}
   }
 }
+
+
+/* =====================================================================
+   MARKA RENK YONU: ALTIN AJANSIN, CAMGOBEGI MAKINENIN.
+
+   Gerekce: basili katalog, wordmark, amblem ve uygulama simgesi altin.
+   Site ise camgobegi agirlikliydi ve camgobegi 62 ayri kuralda geciyordu,
+   yani aksan olmaktan cikmisti. Artik marka mobilyasi (etiket, bag, CTA,
+   odak, kenarlik, baslik vurgusu) altin; camgobegi yalnizca yapay zeka
+   vurgusunda ve hero'nun atmosfer katmanlarinda kaliyor. Boylece iki renk
+   de bir ise yariyor ve site basili islerle ayni dili konusuyor.
+
+   Kontrast olculdu: #d6a84a zeminde 9.20:1, kartta 7.94:1;
+   kucuk etiketler icin #e8c06a zeminde 11.72:1. Hepsi 4.5:1 esiginin
+   cok uzerinde.
+   ===================================================================== */
+:root{--accent:#d6a84a;--accent-text:#e8c06a;--accent-ink:#120b00}
+
+/* Kucuk etiketler, ust basliklar ve baglar */
+.eyebrow,.section-link,.hero-card .icon,.service-card em,.service-card>span,
+.about-data b,.about-value b,.about-team-card small,.news-card small,
+.portfolio-card small,.archive-card small,.category-cover .cc-copy small,
+.showreel-card .sr-tag,.article-back,.article-eyebrow,.article-source a,
+.contact-info-card h3,.contact-info-card a:hover,.package-summary strong,
+.cta>p:first-of-type,.admin-card h2{color:var(--accent-text)}
+
+/* Baslik vurgulari: markanin kendi sesi */
+.services-intro h2 span,.about-copy h2 span,.cta h2 span,.section-head h2 span,
+.archive-page h1 span,.contact-page h1 span,.about-page h1 span,
+.about-story-text h2 span,.about-team h2 span{color:var(--accent-text)}
+
+/* Dolgular ve odak */
+.primary,.contact-form button,.admin-card button{background:var(--accent);color:var(--accent-ink)}
+.skip-link{background:var(--accent);color:var(--accent-ink)}
+:focus-visible,.faq-item summary:focus-visible{outline-color:var(--accent)}
+.page-progress i,.preloader-line i,.scene-line i,.scroll-hint i,
+.hero-exit span{background:var(--accent)}
+
+/* Kenarliklar ve durumlar */
+.quote{border-color:rgba(214,168,74,.55)}
+.hero-card.active,.hero-card:hover{border-color:rgba(214,168,74,.6)}
+.news-card:hover,.archive-card:hover{border-color:rgba(214,168,74,.38)}
+.package-summary{border-color:rgba(214,168,74,.24)}
+.contact-form input:focus,.contact-form textarea:focus{border-color:rgba(214,168,74,.55)}
+.faq-item:hover,.faq-item[open]{border-color:rgba(214,168,74,.34)}
+.faq-item summary::after{border-right-color:var(--accent-text);border-bottom-color:var(--accent-text)}
+.cursor-logo{border-color:rgba(214,168,74,.55);color:var(--accent-text)}
+.cursor-logo.magnet{background:rgba(214,168,74,.12);border-color:var(--accent)}
+.about-team-card .avatar{color:var(--accent-text);background:linear-gradient(135deg,rgba(214,168,74,.2),rgba(184,134,11,.18))}
+
+/* CAMGOBEGI BURADA KALIYOR: yapay zeka vurgusu.
+   .ai-panel ve .ai-grid dokunulmadi, hero'nun atmosfer katmanlari
+   (.ambient, .beam, .grid-floor, .gate, .character-glow, .character-scan,
+   .focus-ring) da dokunulmadi. Sicak marka, soguk makine. */
