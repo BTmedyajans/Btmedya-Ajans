@@ -305,3 +305,52 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
    Genis ekranda dugmenin soluna alinir, dar ekranda gizlenir. */
 .scroll-hint{right:calc(5vw + 118px)}
 @media (max-width:900px){.scroll-hint{display:none}}
+
+
+/* SSS: yerli <details> kullanir, yani klavye ve ekran okuyucu destegi
+   tarayicidan gelir, ek JavaScript yok. */
+.faq-list{display:flex;flex-direction:column;gap:10px;max-width:860px}
+.faq-item{
+  background:linear-gradient(150deg,rgba(11,27,42,.9),rgba(4,11,18,.96));
+  border:1px solid rgba(255,255,255,.09);
+  transition:border-color .3s ease;
+}
+.faq-item:hover,.faq-item[open]{border-color:rgba(53,214,255,.32)}
+.faq-item summary{
+  list-style:none;cursor:pointer;
+  padding:20px 56px 20px 22px;position:relative;
+  font-family:'Space Grotesk',sans-serif;font-weight:500;
+  font-size:clamp(15px,1.6vw,18px);line-height:1.4;color:var(--ink);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:"";position:absolute;right:24px;top:50%;
+  width:9px;height:9px;margin-top:-6px;
+  border-right:1.5px solid var(--cyan);border-bottom:1.5px solid var(--cyan);
+  transform:rotate(45deg);transform-origin:center;
+  transition:transform .3s ease;
+}
+.faq-item[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.faq-item summary:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+
+.faq-body{padding:0 22px 22px}
+.faq-body p{color:#8da0b2;font-size:14px;line-height:1.75;margin:0 0 14px;max-width:64ch}
+.faq-body .section-link{font-size:10px;letter-spacing:.12em}
+
+@media (prefers-reduced-motion:reduce){
+  .faq-item,.faq-item summary::after{transition:none}
+}
+
+/* Acilis animasyonu ilerleyici zenginlestirme olarak eklenir. Destekleyen
+   tarayici yumusak acar, desteklemeyen aninda acar; ikisi de dogru calisir.
+   Azaltilmis harekette animasyon zaten devrede degil. */
+@supports selector(details::details-content){
+  .faq-item::details-content{
+    block-size:0;overflow:hidden;opacity:0;
+    transition:block-size .32s ease,content-visibility .32s allow-discrete,opacity .28s ease;
+  }
+  .faq-item[open]::details-content{block-size:auto;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .faq-item::details-content{transition:none;opacity:1}
+  }
+}
