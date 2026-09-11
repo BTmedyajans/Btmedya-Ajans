@@ -87,6 +87,18 @@ ${kanal?`<p class="video-credit">Video ${esc(kanal)} kanalında yayında. <a hre
   const kapakBlok = (kapak && !vid) ? `
 <img class="article-cover" src="${esc(kapak)}" alt="${esc(n.title)}" loading="lazy" decoding="async">` : '';
 
+  // Videolu haberler icin VideoObject: Google video aramasinda gorunur olur.
+  const videoLd = vid ? {
+    "@context":"https://schema.org","@type":"VideoObject",
+    name:n.title, description:ozet,
+    thumbnailUrl:[`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`],
+    ...(tarihIso?{uploadDate:tarihIso}:{}),
+    embedUrl:`https://www.youtube-nocookie.com/embed/${vid}`,
+    contentUrl:`https://www.youtube.com/watch?v=${vid}`,
+    publisher:{"@type":"Organization",name:"BTMEDYA"},
+    ...(kanal?{creditText:`${kanal} kanalında yayında`}:{})
+  } : null;
+
   return `<!doctype html>
 <html lang="tr">
 <head>
@@ -111,6 +123,9 @@ ${kanal?`<p class="video-credit">Video ${esc(kanal)} kanalında yayında. <a hre
 <script type="application/ld+json">
 ${JSON.stringify(ld,null,0)}
 </script>
+${videoLd?`<script type="application/ld+json">
+${JSON.stringify(videoLd,null,0)}
+</script>`:''}
 </head>
 <body>
 <a class="skip-link" href="#main">İçeriğe geç</a>
