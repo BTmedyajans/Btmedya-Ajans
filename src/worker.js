@@ -310,7 +310,12 @@ function routePlan({mime='',width=0,height=0,duration_s=0,has_audio=0}){
     if(kind==='video' && !isVideo){ continue; }
     if(kind==='image' && !isImage){ continue; }
     if(kind==='both'  && !isVideo && !isImage){ continue; }
-    if(!aspects.includes(aspect)){ uygunsuz.push({slug,label,neden:`en-boy ${aspect||'bilinmiyor'} uymuyor`}); continue; }
+    // Instagram gonderisi sabit oran degil, bir bant kabul eder (4:5 ile 1.91:1).
+    // Gercek fotograf makinesi kareleri (3:2, 4:3) bu banda girer; sabit oran
+    // listesiyle elenmeleri yanlis olurdu.
+    const oran=(Number(width)&&Number(height))?Number(width)/Number(height):0;
+    const bantta = slug==='instagram-post' && isImage && oran>=0.8 && oran<=1.91;
+    if(!bantta && !aspects.includes(aspect)){ uygunsuz.push({slug,label,neden:`en-boy ${aspect||'bilinmiyor'} uymuyor`}); continue; }
     if(isVideo && maxS>0 && dur>maxS){ uygunsuz.push({slug,label,neden:`${Math.round(dur)} sn > ${maxS} sn sinir`}); continue; }
     uygun.push(slug);
   }
