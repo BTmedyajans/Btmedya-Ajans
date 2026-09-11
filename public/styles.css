@@ -249,3 +249,162 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .hero-sticky::after{background:radial-gradient(ellipse 130% 95% at 32% 42%,rgba(2,7,13,0) 32%,rgba(2,7,13,.58) 100%)}
 }
+
+
+/* HIZMETLER RAYI: baslik sutunu ile kayan kartlarin cakismasini onler.
+   Sutun esnek kutuda kuculmez, kartlar basligin arkasindan koyu bir
+   perdenin ardinda gecer, boylece her kart okunur kalir. */
+@media (min-width:901px){
+  .services-intro{flex:0 0 auto}
+  .service-rail{flex:0 0 auto}
+  .services-intro::before{
+    content:"";
+    position:absolute;
+    top:-50vh;bottom:-50vh;left:-7vw;right:-4%;
+    z-index:-1;
+    pointer-events:none;
+    background:linear-gradient(90deg,#07111c 0%,#07111c 74%,rgba(7,17,28,.92) 90%,rgba(7,17,28,0) 100%);
+  }
+}
+
+
+/* ACILIS EKRANI: isaretlemesi vardi ama hicbir kurali yoktu, bu yuzden
+   "BT" ve "BTMEDYA YUKLENIYOR" metni sayfanin sol ust kosesinde kalici
+   olarak goruntuleniyordu. Tam ekran, kisa ve sessizce kaybolan hali. */
+.preloader{
+  position:fixed;inset:0;z-index:300;
+  background:#02070d;
+  display:grid;place-items:center;
+  transition:opacity .6s ease,visibility .6s ease;
+}
+.preloader-inner{display:flex;flex-direction:column;align-items:center;gap:14px}
+.preloader-mark{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;
+  font-size:clamp(34px,5vw,56px);letter-spacing:.04em;color:#fff;
+}
+.preloader-line{width:min(220px,46vw);height:1px;background:rgba(255,255,255,.16);overflow:hidden}
+.preloader-line i{
+  display:block;height:100%;width:40%;background:var(--cyan);
+  animation:preload-sweep 1.1s ease-in-out infinite;
+}
+.preloader-inner span{font-size:9px;letter-spacing:.24em;color:#7d91a2}
+.preloader.done{opacity:0;visibility:hidden;pointer-events:none}
+@keyframes preload-sweep{0%{transform:translateX(-110%)}100%{transform:translateX(300%)}}
+
+/* SAYFA ILERLEME CUBUGU: ust kenarda ince aksan cizgisi. */
+.page-progress{position:fixed;z-index:70;top:0;left:0;right:0;height:2px;background:transparent;pointer-events:none}
+.page-progress i{display:block;height:100%;width:0;background:var(--cyan);opacity:.85}
+
+@media (prefers-reduced-motion: reduce){
+  .preloader-line i{animation:none;width:100%}
+  .preloader{transition:none}
+}
+
+
+/* KAYDIR ipucu, sabit WhatsApp dugmesinin altinda kaliyordu.
+   Genis ekranda dugmenin soluna alinir, dar ekranda gizlenir. */
+.scroll-hint{right:calc(5vw + 118px)}
+@media (max-width:900px){.scroll-hint{display:none}}
+
+
+/* SSS: yerli <details> kullanir, yani klavye ve ekran okuyucu destegi
+   tarayicidan gelir, ek JavaScript yok. */
+.faq-list{display:flex;flex-direction:column;gap:10px;max-width:860px}
+.faq-item{
+  background:linear-gradient(150deg,rgba(11,27,42,.9),rgba(4,11,18,.96));
+  border:1px solid rgba(255,255,255,.09);
+  transition:border-color .3s ease;
+}
+.faq-item:hover,.faq-item[open]{border-color:rgba(53,214,255,.32)}
+.faq-item summary{
+  list-style:none;cursor:pointer;
+  padding:20px 56px 20px 22px;position:relative;
+  font-family:'Space Grotesk',sans-serif;font-weight:500;
+  font-size:clamp(15px,1.6vw,18px);line-height:1.4;color:var(--ink);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:"";position:absolute;right:24px;top:50%;
+  width:9px;height:9px;margin-top:-6px;
+  border-right:1.5px solid var(--cyan);border-bottom:1.5px solid var(--cyan);
+  transform:rotate(45deg);transform-origin:center;
+  transition:transform .3s ease;
+}
+.faq-item[open] summary::after{transform:rotate(-135deg);margin-top:-2px}
+.faq-item summary:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+
+.faq-body{padding:0 22px 22px}
+.faq-body p{color:#8da0b2;font-size:14px;line-height:1.75;margin:0 0 14px;max-width:64ch}
+.faq-body .section-link{font-size:10px;letter-spacing:.12em}
+
+@media (prefers-reduced-motion:reduce){
+  .faq-item,.faq-item summary::after{transition:none}
+}
+
+/* Acilis animasyonu ilerleyici zenginlestirme olarak eklenir. Destekleyen
+   tarayici yumusak acar, desteklemeyen aninda acar; ikisi de dogru calisir.
+   Azaltilmis harekette animasyon zaten devrede degil. */
+@supports selector(details::details-content){
+  .faq-item::details-content{
+    block-size:0;overflow:hidden;opacity:0;
+    transition:block-size .32s ease,content-visibility .32s allow-discrete,opacity .28s ease;
+  }
+  .faq-item[open]::details-content{block-size:auto;opacity:1}
+  @media (prefers-reduced-motion:reduce){
+    .faq-item::details-content{transition:none;opacity:1}
+  }
+}
+
+
+/* =====================================================================
+   MARKA RENK YONU: ALTIN AJANSIN, CAMGOBEGI MAKINENIN.
+
+   Gerekce: basili katalog, wordmark, amblem ve uygulama simgesi altin.
+   Site ise camgobegi agirlikliydi ve camgobegi 62 ayri kuralda geciyordu,
+   yani aksan olmaktan cikmisti. Artik marka mobilyasi (etiket, bag, CTA,
+   odak, kenarlik, baslik vurgusu) altin; camgobegi yalnizca yapay zeka
+   vurgusunda ve hero'nun atmosfer katmanlarinda kaliyor. Boylece iki renk
+   de bir ise yariyor ve site basili islerle ayni dili konusuyor.
+
+   Kontrast olculdu: #d6a84a zeminde 9.20:1, kartta 7.94:1;
+   kucuk etiketler icin #e8c06a zeminde 11.72:1. Hepsi 4.5:1 esiginin
+   cok uzerinde.
+   ===================================================================== */
+:root{--accent:#d6a84a;--accent-text:#e8c06a;--accent-ink:#120b00}
+
+/* Kucuk etiketler, ust basliklar ve baglar */
+.eyebrow,.section-link,.hero-card .icon,.service-card em,.service-card>span,
+.about-data b,.about-value b,.about-team-card small,.news-card small,
+.portfolio-card small,.archive-card small,.category-cover .cc-copy small,
+.showreel-card .sr-tag,.article-back,.article-eyebrow,.article-source a,
+.contact-info-card h3,.contact-info-card a:hover,.package-summary strong,
+.cta>p:first-of-type,.admin-card h2{color:var(--accent-text)}
+
+/* Baslik vurgulari: markanin kendi sesi */
+.services-intro h2 span,.about-copy h2 span,.cta h2 span,.section-head h2 span,
+.archive-page h1 span,.contact-page h1 span,.about-page h1 span,
+.about-story-text h2 span,.about-team h2 span{color:var(--accent-text)}
+
+/* Dolgular ve odak */
+.primary,.contact-form button,.admin-card button{background:var(--accent);color:var(--accent-ink)}
+.skip-link{background:var(--accent);color:var(--accent-ink)}
+:focus-visible,.faq-item summary:focus-visible{outline-color:var(--accent)}
+.page-progress i,.preloader-line i,.scene-line i,.scroll-hint i,
+.hero-exit span{background:var(--accent)}
+
+/* Kenarliklar ve durumlar */
+.quote{border-color:rgba(214,168,74,.55)}
+.hero-card.active,.hero-card:hover{border-color:rgba(214,168,74,.6)}
+.news-card:hover,.archive-card:hover{border-color:rgba(214,168,74,.38)}
+.package-summary{border-color:rgba(214,168,74,.24)}
+.contact-form input:focus,.contact-form textarea:focus{border-color:rgba(214,168,74,.55)}
+.faq-item:hover,.faq-item[open]{border-color:rgba(214,168,74,.34)}
+.faq-item summary::after{border-right-color:var(--accent-text);border-bottom-color:var(--accent-text)}
+.cursor-logo{border-color:rgba(214,168,74,.55);color:var(--accent-text)}
+.cursor-logo.magnet{background:rgba(214,168,74,.12);border-color:var(--accent)}
+.about-team-card .avatar{color:var(--accent-text);background:linear-gradient(135deg,rgba(214,168,74,.2),rgba(184,134,11,.18))}
+
+/* CAMGOBEGI BURADA KALIYOR: yapay zeka vurgusu.
+   .ai-panel ve .ai-grid dokunulmadi, hero'nun atmosfer katmanlari
+   (.ambient, .beam, .grid-floor, .gate, .character-glow, .character-scan,
+   .focus-ring) da dokunulmadi. Sicak marka, soguk makine. */

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#02070d"/>
   <link rel="canonical" href="https://btmedya.com.tr/"/>
   <meta property="og:title" content="BTMEDYA — Haber, Prodüksiyon, Yapay Zekâ"/>
-  <meta property="og:description" content="Dijitalde Fikir Sizden, Gerisi Bizden."/>
+  <meta property="og:description" content="Hikâyeleri yaşatıyoruz. Balıkesir merkezli haber, prodüksiyon ve yapay zekâ ajansı."/>
   <meta property="og:url" content="https://btmedya.com.tr/"/>
   <meta property="og:type" content="website"/>
   <meta name="twitter:card" content="summary_large_image"/>
@@ -18,9 +18,9 @@
   <meta property="og:image:height" content="630"/>
   <title>BTMEDYA — Haber, Medya, Prodüksiyon & AI</title>
   <meta name="description" content="BTMEDYA: haber, medya, prodüksiyon, yapay zekâ ve dönüşüm odaklı dijital deneyimler."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
   <link rel="icon" href="assets/favicon.png" type="image/png"/>
   <link rel="manifest" href="site.webmanifest"/>
   <link rel="stylesheet" href="styles.css"/>
@@ -44,6 +44,16 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"BTMEDYA","alternateName":"BT Medya","url":"https://btmedya.com.tr/","potentialAction":{"@type":"SearchAction","target":"https://btmedya.com.tr/haberler/?q={search_term_string}","query-input":"required name=search_term_string"}}
 </script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Fiyatı önceden net söylüyor musunuz?","acceptedAnswer":{"@type":"Answer","text":"Paket seçiciden ihtiyacınızı işaretliyorsunuz, seçtikleriniz WhatsApp mesajına yazılı olarak geçiyor. Teklif o yazının üstüne kuruluyor."}},
+{"@type":"Question","name":"Takipçi ya da viral olma garantisi veriyor musunuz?","acceptedAnswer":{"@type":"Answer","text":"Hayır. Garanti yerine yayınlanmış işimize bakmanızı öneririz: arşivde 27 haber var, hepsi imzalı ve her birinin kaynağı kendi sayfasında açık duruyor."}},
+{"@type":"Question","name":"Haberlerin kaynağı belli mi?","acceptedAnswer":{"@type":"Answer","text":"Evet. Arşivdeki her haberin altında yazarı ve orijinal yayın bağlantısı duruyor."}},
+{"@type":"Question","name":"Daha önce yaptığınız işleri görebilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Haber arşivi, portföy ve yapay zekâ ile üretilmiş kısa video örnekleri sitede açık duruyor."}},
+{"@type":"Question","name":"Nerede çalışıyorsunuz?","acceptedAnswer":{"@type":"Answer","text":"Balıkesir merkezliyiz. Haber tarafında yerel ve ulusal yayın, prodüksiyon ve dijital işlerde konum fark etmeksizin çalışıyoruz."}},
+{"@type":"Question","name":"Size nasıl ulaşırım?","acceptedAnswer":{"@type":"Answer","text":"İletişim formu, WhatsApp ya da doğrudan telefon. Formdan gelen mesajlar kaydediliyor ve bildirim olarak iletiliyor."}}
+]}
+</script>
 </head>
 <body>
   <a class="skip-link" href="#main">İçeriğe geç</a>
@@ -58,7 +68,7 @@
 
   <!-- GİRİŞ VİDEO ÖNİZLEME -->
   <div class="intro-overlay" id="introOverlay" aria-hidden="true">
-    <video src="assets/media/web/hero-bg.mp4" muted playsinline autoplay preload="auto"></video>
+    <video data-src="assets/media/web/hero-bg.mp4" muted playsinline preload="none"></video>
     <div class="intro-mark">BT<span style="color:var(--cyan)">MEDYA</span></div>
   </div>
 
@@ -89,9 +99,7 @@
     <section id="hero" class="hero-scroll">
       <div class="hero-sticky">
         <div class="ambient"></div>
-        <video class="hero-bg-video" autoplay muted loop playsinline poster="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" aria-hidden="true">
-          <source src="assets/media/web/hero-bg.mp4" type="video/mp4">
-        </video>
+        <video class="hero-bg-video" muted loop playsinline preload="none" data-src="assets/media/web/hero-bg.mp4" poster="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" aria-hidden="true" tabindex="-1"></video>
         <div class="scene-still scene-still-start" aria-hidden="true">
           <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA görseli">
           <div class="scene-still-shade"></div>
@@ -116,8 +124,8 @@
 
         <div class="hero-copy">
           <p class="eyebrow">BTMEDYA AJANS / YENİ NESİL MEDYA</p>
-          <h1>Dijitalde Fikir Sizden,<br><strong>Gerisi Bizden.</strong></h1>
-          <p class="hero-sub">Haber, prodüksiyon ve yapay zekâyı tek yaratıcı akışta buluşturan yeni nesil medya deneyimi.</p>
+          <h1>Hikâyeleri<br><strong>yaşatıyoruz.</strong></h1>
+          <p class="hero-sub">Dijitalde fikir sizden, gerisi bizden. Haber, prodüksiyon ve yapay zekâyı tek ekipte topluyoruz.</p>
         </div>
 
         <div class="character-wrap">
@@ -192,17 +200,17 @@
     <!-- CATEGORY COVERS -->
     <section id="categories" class="category-covers">
       <a class="category-cover" data-target="#news">
-        <video src="assets/media/web/state-haber.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-haber.mp4" muted loop playsinline poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 01</small><h3>Haber</h3><p>Balıkesir ve çevresinden doğrulanmış saha haberleri.</p></div>
       </a>
       <a class="category-cover" data-target="#portfolio">
-        <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay poster="assets/btmedya-ai-network_e70bec13_b99f79b3.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-medya.mp4" muted loop playsinline poster="assets/btmedya-ai-network_e70bec13_b99f79b3.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 02</small><h3>Medya</h3><p>Sosyal içerik, marka kimliği ve dijital üretim.</p></div>
       </a>
       <a class="category-cover" data-target="#services">
-        <video src="assets/media/web/state-produksiyon.mp4" muted loop playsinline autoplay poster="assets/btmedya-production-lab_529e6715_f6731a13.webp"></video>
+        <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-produksiyon.mp4" muted loop playsinline poster="assets/btmedya-production-lab_529e6715_f6731a13.webp"></video>
         <div class="shade"></div>
         <div class="cc-copy"><small>KATEGORİ 03</small><h3>Prodüksiyon</h3><p>Kamera, kurgu, renk ve final master akışı.</p></div>
       </a>
@@ -248,28 +256,28 @@
       <div class="section-head">
         <p class="eyebrow">AI LAB / SHOWREEL</p>
         <h2>Yapay zekâ ile <span>üretilmiş</span> sahneler.</h2>
-        <p>Konsept, prompt ve prodüksiyon disipliniyle üretilen kısa AI video örnekleri — reklam ve sosyal içerik referansı.</p>
+        <p>Konsept, prompt ve prodüksiyon disipliniyle üretilen kısa AI video örnekleri. Reklam ve sosyal içerik referansı.</p>
       </div>
       <div class="showreel-grid">
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-flying-reporter.mp4" muted loop playsinline autoplay poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-flying-reporter.mp4" muted loop playsinline poster="assets/btmedya-hero-woman-mobile_6f6210ed_f9d54a5d.webp"></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Balıkesir üzerinde uçuş</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-fantasy.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-fantasy.mp4" muted loop playsinline></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Sahne / karakter üretimi</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/showreel-action.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/showreel-action.mp4" muted loop playsinline></video>
           <span class="sr-tag">AI REKLAM</span>
           <span class="sr-label">Sinematik aksiyon kurgusu</span>
         </div>
         <div class="showreel-card">
-          <video src="assets/media/web/state-medya.mp4" muted loop playsinline autoplay></video>
+          <video class="lazy-video" preload="none" aria-hidden="true" tabindex="-1" data-src="assets/media/web/state-medya.mp4" muted loop playsinline></video>
           <span class="sr-tag">MARKA KARAKTERİ</span>
-          <span class="sr-label">BT — yapay zekâ kimliği</span>
+          <span class="sr-label">BT yapay zekâ kimliği</span>
         </div>
       </div>
     </section>
@@ -308,10 +316,10 @@
     <!-- PODCAST STRIP -->
     <section class="v10-section" style="padding-top:0">
       <div class="podcast-strip">
-        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast kapağı">
+        <img src="assets/btmedya-podcast_471e525f.jpg" alt="Siyah Oda podcast kapağı" loading="lazy" decoding="async">
         <div class="ps-copy">
           <p class="eyebrow">YOUTUBE / PODCAST</p>
-          <h3>Siyah Oda — sohbet ve röportaj serisi.</h3>
+          <h3>Siyah Oda: sohbet ve röportaj serisi.</h3>
           <p>Gündem, sektör ve şehir hikâyelerini konuk röportajlarıyla ekrana taşıyan BTMEDYA podcast serisi.</p>
           <a class="primary" style="display:inline-block;padding:12px 16px;text-decoration:none;font-size:11px;letter-spacing:.1em" href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YOUTUBE'DA İZLE ↗</a>
         </div>
@@ -376,6 +384,65 @@
       </div>
     </section>
 
+    <!-- SSS: arastirmada cikan gercek itirazlara dogrulanabilir cevaplar -->
+    <section id="sss" class="v10-section faq">
+      <div class="section-head">
+        <p class="eyebrow">SIKÇA SORULANLAR</p>
+        <h2>Çalışmadan önce <span>bilmek istedikleriniz.</span></h2>
+        <p>Kısa ve net cevaplar. Hepsinin karşılığı sitede duruyor, tıklayıp kendiniz bakabilirsiniz.</p>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Fiyatı önceden net söylüyor musunuz?</summary>
+          <div class="faq-body">
+            <p>Paket seçiciden ihtiyacınızı işaretliyorsunuz, seçtikleriniz WhatsApp mesajına yazılı olarak geçiyor. Teklif o yazının üstüne kuruluyor, yani konuşma baştan yazılı başlıyor.</p>
+            <a class="section-link" href="#packages">PAKET SEÇİCİYİ AÇ ↗</a>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Takipçi ya da viral olma garantisi veriyor musunuz?</summary>
+          <div class="faq-body">
+            <p>Hayır. Kimse bunu dürüstçe veremez. Garanti yerine yayınlanmış işimize bakmanızı öneririz: arşivde 27 haber var, hepsi imzalı ve her birinin kaynağı kendi sayfasında açık duruyor.</p>
+            <a class="section-link" href="/haberler/">HABER ARŞİVİNİ AÇ ↗</a>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Haberlerin kaynağı belli mi?</summary>
+          <div class="faq-body">
+            <p>Evet. Arşivdeki her haberin altında yazarı ve orijinal yayın bağlantısı duruyor. Arşiv sürümleri yeniden yazılmış olsa da orijinal yayın bilgileri korunuyor, bunu her haber sayfasında görebilirsiniz.</p>
+            <a class="section-link" href="/haberler/balikesir-in-en-kalabalik-pazari.html">ÖRNEK BİR HABERİ AÇ ↗</a>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Daha önce yaptığınız işleri görebilir miyim?</summary>
+          <div class="faq-body">
+            <p>Sunum beklemenize gerek yok, hepsi bu sayfada. Haber arşivi, portföy ve yapay zekâ ile üretilmiş kısa video örnekleri açık duruyor.</p>
+            <a class="section-link" href="#portfolio">PORTFÖYE GİT ↗</a>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Nerede çalışıyorsunuz?</summary>
+          <div class="faq-body">
+            <p>Balıkesir merkezliyiz. Haber tarafında yerel ve ulusal yayın, prodüksiyon ve dijital işlerde ise konum fark etmeksizin çalışıyoruz.</p>
+            <a class="section-link" href="/hakkimizda/">BTMEDYA HAKKINDA ↗</a>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Size nasıl ulaşırım?</summary>
+          <div class="faq-body">
+            <p>Üç yol var: iletişim formu, WhatsApp ya da doğrudan telefon. Formdan gelen mesajlar kaydediliyor ve bildirim olarak bize düşüyor, yani yazdığınız mesaj kaybolmuyor.</p>
+            <a class="section-link" href="/iletisim/">İLETİŞİM SAYFASI ↗</a>
+          </div>
+        </details>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section id="cta" class="cta">
       <div class="cta-glow"></div>
@@ -393,7 +460,7 @@
         <img src="assets/btmedya-emblem-derived.png" alt="BTMEDYA">
         <div>
           <strong>BTMEDYA</strong>
-          <span>Dijitalde Fikir Sizden, Gerisi Bizden.</span>
+          <span>Hikâyeleri yaşatıyoruz.</span>
         </div>
       </div>
 
@@ -416,8 +483,8 @@
     <span>WhatsApp</span><b>↗</b>
   </a>
 
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="assets/vendor/gsap.min.js"></script>
+  <script src="assets/vendor/ScrollTrigger.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

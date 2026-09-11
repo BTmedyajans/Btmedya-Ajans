@@ -2,16 +2,101 @@ document.addEventListener('DOMContentLoaded',()=>{
   const pre=document.getElementById('preloader');
   setTimeout(()=>pre&&pre.classList.add('done'),450);
 
-  // INTRO VIDEO ÖNİZLEME — sayfa girişinde kısa video, sonra hero'ya geçiş
+  // SAYFA ILERLEME CUBUGU: yalnizca deger degistiginde DOM'a yazar.
+  const progressBar=document.querySelector('.page-progress i');
+  if(progressBar){
+    let lastPct=-1, ticking=false;
+    const draw=()=>{
+      ticking=false;
+      const max=document.documentElement.scrollHeight-window.innerHeight;
+      const pct=max>0?Math.round((window.scrollY/max)*1000)/10:0;
+      if(pct===lastPct) return;
+      lastPct=pct;
+      progressBar.style.width=pct+'%';
+    };
+    addEventListener('scroll',()=>{
+      if(ticking) return;
+      ticking=true;
+      requestAnimationFrame(draw);
+    },{passive:true});
+    draw();
+  }
+
+  // AGIR MEDYA KAPISI: telefon, dikey tablet, yan yatan telefon ve azaltilmis
+  // hareket tercihinde hero videosu hic indirilmez, poster gorseli devralir.
+  const HEAVY_MEDIA_GATES=[
+    '(max-width: 720px)',
+    '(orientation: portrait) and (max-width: 1024px)',
+    '(orientation: portrait) and (pointer: coarse)',
+    '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
+    '(prefers-reduced-motion: reduce)'
+  ];
+  const heavyMediaBlocked=()=>HEAVY_MEDIA_GATES.some(q=>window.matchMedia(q).matches);
+
+  // Bir video etiketini yalnizca gercekten gerektiginde indirir.
+  function loadVideo(v){
+    if(!v || v.dataset.loaded) return false;
+    const src=v.dataset.src;
+    if(!src) return false;
+    v.dataset.loaded='1';
+    v.preload='auto';
+    v.src=src;
+    v.load();
+    return true;
+  }
+
+  // INTRO VIDEO ONIZLEME: sayfa girisinde kisa video, sonra hero'ya gecis.
   const intro=document.getElementById('introOverlay');
   if(intro){
     const dismiss=()=>intro.classList.add('done');
     const introVideo=intro.querySelector('video');
-    const t=setTimeout(dismiss,3200);
-    if(introVideo){
-      introVideo.addEventListener('ended',()=>{clearTimeout(t);dismiss();});
+    if(heavyMediaBlocked()){
+      dismiss();
+    }else{
+      const t=setTimeout(dismiss,3200);
+      if(introVideo){
+        introVideo.addEventListener('ended',()=>{clearTimeout(t);dismiss();});
+        introVideo.addEventListener('error',()=>{clearTimeout(t);dismiss();},{once:true});
+        if(loadVideo(introVideo)) introVideo.play().catch(()=>{});
+      }
+      intro.addEventListener('click',()=>{clearTimeout(t);dismiss();});
     }
-    intro.addEventListener('click',()=>{clearTimeout(t);dismiss();});
+  }
+
+  // HERO ARKA PLAN VIDEOSU: ayni kapidan gecer, poster her kosulda ayakta kalir.
+  const heroBg=document.querySelector('.hero-bg-video');
+  function applyHeroBgGate(){
+    if(!heroBg) return;
+    if(heavyMediaBlocked()){ heroBg.pause(); return; }
+    loadVideo(heroBg);
+    heroBg.play().catch(()=>{});
+  }
+  if(heroBg){
+    heroBg.addEventListener('error',()=>{heroBg.style.display='none';},{once:true});
+    HEAVY_MEDIA_GATES.map(q=>window.matchMedia(q))
+      .forEach(m=>m.addEventListener('change',applyHeroBgGate));
+    applyHeroBgGate();
+  }
+
+  // ALT BOLUM VIDEOLARI: gorunur olunca iner ve oynar, ekrandan cikinca durur.
+  const lazyVideos=[...document.querySelectorAll('video.lazy-video')];
+  if(lazyVideos.length){
+    if(!('IntersectionObserver' in window)){
+      lazyVideos.forEach(v=>{ if(loadVideo(v)) v.play().catch(()=>{}); });
+    }else{
+      const lazyIO=new IntersectionObserver(entries=>{
+        entries.forEach(en=>{
+          const v=en.target;
+          if(en.isIntersecting){
+            loadVideo(v);
+            if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(()=>{});
+          }else if(!v.paused){
+            v.pause();
+          }
+        });
+      },{rootMargin:'250px 0px'});
+      lazyVideos.forEach(v=>lazyIO.observe(v));
+    }
   }
 
   // CURSOR LOGO — fare ile sayfa başlıkları arasında gezinen BT amblemi
@@ -98,7 +183,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     card.addEventListener('touchstart',()=>setCategory(cat,false),{passive:true});
     card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();}});
   });
-  setCategory('medya',false);
+  // Acilista yalnizca aktif kart isaretlenir, kategori videosu ilk etkilesimde iner.
+  cards.forEach(c=>c.classList.toggle('active',c.dataset.category==='medya'));
+  document.documentElement.dataset.heroCategory='medya';
 
   const hero=document.querySelector('.hero-scroll');
   const sceneStart=document.querySelector('.scene-still-start');
@@ -198,26 +285,30 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
-  // PERF: döngüsel videoları ekran dışındayken ve sekme gizliyken duraklat.
-  // Sürekli oynayan arka plan/kategori/showreel videoları kaynak yakar; sadece
-  // görünür olanlar oynar. (10k-websites mühendislik tabanı)
+  // SEKME GIZLIYKEN DURAKLAT.
+  // main dalindan gelen surum video[autoplay] seciyordu; bu dalda hicbir video
+  // artik autoplay tasimiyor (hepsi kapiya ve gorunurluge bagli indiriliyor),
+  // yani secim bos donuyor ve body.paused hic kurulmuyordu. Ekran disinda
+  // duraklatmayi zaten yukaridaki lazy gozlemcisi yapiyor, burada yalnizca
+  // sekme gizlenince duraklatma kaliyor. body.paused sinifi CSS tarafinda
+  // butun animasyonlari (::before ve ::after dahil) donduruyor.
   (function(){
-    const vids=[...document.querySelectorAll('video[autoplay]')].filter(v=>!v.closest('.intro-overlay'));
-    if(!vids.length)return;
-    const visible=new WeakSet();
-    const io=('IntersectionObserver' in window)?new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){visible.add(e.target);if(!document.hidden)e.target.play().catch(()=>{});}
-        else{visible.delete(e.target);e.target.pause();}
-      });
-    },{rootMargin:'200px'}):null;
-    if(io){vids.forEach(v=>io.observe(v));}else{vids.forEach(v=>visible.add(v));}
+    const inView=el=>{
+      const r=el.getBoundingClientRect();
+      return r.bottom>0 && r.top<innerHeight && r.right>0 && r.left<innerWidth;
+    };
+    const playable=()=>[...document.querySelectorAll('video')]
+      .filter(v=>v.dataset.loaded && !v.closest('.intro-overlay'));
     document.addEventListener('visibilitychange',()=>{
       const hidden=document.hidden;
       document.body.classList.toggle('paused',hidden);
-      vids.forEach(v=>{
-        if(hidden)v.pause();
-        else if(!io||visible.has(v))v.play().catch(()=>{});
+      playable().forEach(v=>{
+        if(hidden){ v.pause(); return; }
+        if(v.classList.contains('hero-bg-video')){
+          if(!heavyMediaBlocked()) v.play().catch(()=>{});
+          return;
+        }
+        if(inView(v) && !matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(()=>{});
       });
     });
   })();
