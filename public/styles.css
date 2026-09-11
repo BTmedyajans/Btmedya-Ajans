@@ -105,8 +105,64 @@
 
 /* HERO VIDEO ARKA PLAN */
 .hero-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:saturate(.7) contrast(1.08)}
+
+/* ---- HERO HIKAYE VIDEOSU ----------------------------------------------
+   Video kaynakta zaten derecelendirildi; burada ek filtre uygulanmaz.
+   Yalnizca gercekten yuklendiginde .hero-story-on acilir, boylece video
+   engellendiginde ya da hata verdiginde eski sahne kurulumu ayakta kalir. */
+.hero-story-video{opacity:0;filter:none;transition:opacity .9s ease}
+.hero-story-on .hero-story-video{opacity:.95}
+.hero-story-scrim{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .9s ease;
+  background:
+    linear-gradient(90deg,rgba(2,7,13,.94) 0%,rgba(2,7,13,.74) 34%,rgba(2,7,13,.18) 62%,rgba(2,7,13,.5) 100%),
+    linear-gradient(to top,rgba(2,7,13,.92) 0%,rgba(2,7,13,.25) 26%,transparent 46%),
+    radial-gradient(125% 95% at 52% 42%,transparent 34%,rgba(2,7,13,.62) 100%)}
+.hero-story-on .hero-story-scrim{opacity:1}
+/* Video devredeyken rakip katmanlar cekilir: hikayenin kendisi karakterdir.
+   Robot gorseli, kapi cercevesi, isin ve odak halkasi video uzerinde ikinci
+   bir figur/cizim gibi okundugu icin tamamen kaldirilir; yalnizca derinlik
+   veren yumusak katmanlar kisilarak kalir. */
+.hero-story-on .scene-still{opacity:0!important}
+.hero-story-on .character-wrap,
+.hero-story-on .logo-gate,
+.hero-story-on .focus-ring,
+.hero-story-on .beam{opacity:0;transition:opacity .9s ease;pointer-events:none}
+.hero-story-on .fog{opacity:.06}
+.hero-story-on .grid-floor{opacity:.22}
+.hero-story-on .ambient{opacity:.45}
+
+.hero-chapter{margin-top:28px;display:flex;align-items:center;gap:14px;min-height:30px}
+.hero-chapter-idx{flex:0 0 auto;font-size:9px;letter-spacing:.2em;font-weight:800;color:var(--accent-text);
+  border:1px solid rgba(214,168,74,.45);padding:5px 8px;line-height:1}
+.hero-chapter-text{font-size:13.5px;letter-spacing:.03em;color:#cddae5;opacity:0;transform:translateY(9px);
+  transition:opacity .5s ease,transform .5s ease}
+.hero-chapter-text.in{opacity:1;transform:none}
+
+.hero-ai-credit{position:absolute;z-index:5;left:7vw;bottom:5.5vh;margin:0;
+  font-size:9px;letter-spacing:.14em;color:#7c90a1;text-transform:uppercase}
+.hero-ai-credit b{color:var(--accent-text);font-weight:800}
+
+@media (max-width:900px){
+  .hero-chapter{margin-top:20px;gap:11px}
+  .hero-chapter-text{font-size:12.5px}
+  .hero-ai-credit{left:6vw;right:6vw;bottom:3vh;font-size:8px;letter-spacing:.12em}
+  /* Metin blogu ustte durdugu icin perde ust yariyi agir kapatir; video orta
+     bantta acik kalir. Patlama gibi parlak karelerde slogan okunur kalsin. */
+  .hero-story-scrim{background:
+    linear-gradient(to bottom,rgba(2,7,13,.92) 0%,rgba(2,7,13,.86) 40%,rgba(2,7,13,.42) 60%,rgba(2,7,13,.58) 82%,rgba(2,7,13,.94) 100%),
+    radial-gradient(145% 85% at 50% 40%,transparent 26%,rgba(2,7,13,.5) 100%)}
+}
+@media (max-width:560px){
+  .hero-ai-credit span{display:none}
+}
+/* Hareket azaltilmisken video hic inmez; bolum metni sabit ve okunur kalir. */
+@media (prefers-reduced-motion: reduce){
+  .hero-chapter-text{opacity:1;transform:none;transition:none}
+  .hero-story-video{display:none}
+  .hero-story-scrim{display:none}
+}
 .intro-overlay{position:fixed;inset:0;z-index:200;background:#02070d;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s ease,visibility .8s}
-.intro-overlay video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
+.intro-overlay video,.intro-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.75}
 .intro-overlay .intro-mark{position:relative;z-index:2;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:clamp(30px,6vw,58px);letter-spacing:.02em;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6)}
 .intro-overlay.done{opacity:0;visibility:hidden;pointer-events:none}
 
@@ -224,7 +280,7 @@
    Global taban scrim + 3 katmanlı text-shadow ile hiçbir kare metnin
    arkasında ham kalmaz. Köşeler canlı kalsın diye radial %100'de biter. */
 .hero-sticky::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 130% 95% at 32% 42%,rgba(2,7,13,0) 32%,rgba(2,7,13,.58) 100%)}
-.hero-copy h1,.hero-copy .hero-sub,.hero-copy .eyebrow{text-shadow:var(--tshadow)}
+.hero-copy h1,.hero-copy .hero-sub,.hero-copy .eyebrow,.hero-chapter-text,.hero-ai-credit{text-shadow:var(--tshadow)}
 .hero-copy .primary,.hero-copy .secondary,.hero-cards .hero-card{text-shadow:none}
 
 /* 2) ERİŞİLEBİLİRLİK ZEMİNİ */
