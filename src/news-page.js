@@ -55,7 +55,7 @@ export function renderNewsPage(n, origin, vlib){
   const vid=(vlib&&(vlib.own_youtube_id||vlib.youtube_id))||kaynakVid;
   const kanal=vlib?(vlib.own_youtube_id?'BTMEDYA':(vlib.source_channel||'')):'';
   const kapak=n.cover_url||'';
-  const tarihTr=trTarih(n.published_at);
+  const tarihTr=n.original_date||trTarih(n.published_at);
   const tarihIso=isoTarih(n.published_at);
   const ozet=(n.excerpt||'').trim()||String(n.body||'').slice(0,155);
   // maxresdefault her videoda bulunmaz (kaynak dusuk cozunurlukse 404 doner);
@@ -135,6 +135,9 @@ ${videoBlok}${kapakBlok}
 <div class="article-body">
 ${govde(n.body)}
 </div>
+${(n.archive_note||n.source_url)?`<div class="article-note">${esc(n.archive_note||'')}${
+  n.source_url?`<p class="article-source">Kaynak: <a href="${esc(n.source_url)}" target="_blank" rel="noopener nofollow">${esc(n.source_url)}</a></p>`:''
+}</div>`:''}
 </article>
 </main>
 <footer class="final-footer">

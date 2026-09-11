@@ -460,8 +460,9 @@ export default { async fetch(request, env, ctx){
      Depodaki 27 haber oldugu gibi kalir; panelden girilen yeni haberler
      dosya olusturmadan kendi adresinde yayina girer. */
   if(url.pathname.startsWith('/haberler/') && url.pathname !== '/haberler/'){
-    const res = await env.ASSETS.fetch(request);
-    if(res.status !== 404) return res;
+    // Once veritabani, sonra statik dosya. Boylece panelden yapilan duzenleme
+    // ve video kutuphanesi anahtari 27 eski haberde de gecerli olur; D1'e
+    // ulasilamazsa depodaki statik surum yedek olarak devreye girer.
     if(env.DB){
       const slug = decodeURIComponent(url.pathname.slice('/haberler/'.length).replace(/\.html$/,'').replace(/\/$/,''));
       if(slug){
@@ -485,7 +486,7 @@ export default { async fetch(request, env, ctx){
         }
       }
     }
-    return res;
+    return env.ASSETS.fetch(request);
   }
 
   return env.ASSETS.fetch(request);
