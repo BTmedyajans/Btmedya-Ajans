@@ -76,6 +76,7 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
     <button class="tab active" data-tab="durum">Site Durumu</button>
     <button class="tab" data-tab="media">Medya Kasası</button>
     <button class="tab" data-tab="news">Haberler</button>
+    <button class="tab" data-tab="videos">Videolar</button>
     <button class="tab" data-tab="messages">Gelen Mesajlar <span class="badge hidden" id="unreadBadge">0</span></button>
   </div>
   <button class="btn" id="logoutBtn" style="display:none">Çıkış</button>
@@ -214,6 +215,15 @@ label{display:block;margin:10px 0 4px;color:#888;font-size:12px;font-weight:600;
   </div>
 
   <!-- TAB: GELEN MESAJLAR -->
+  <div class="tab-content" id="tab-videos">
+    <div class="panel">
+      <h2>Video kütüphanesi</h2>
+      <p class="status" id="vidOzet">Yükleniyor…</p>
+      <p class="status">Videolar şimdilik kaynak kanalda yayında. Kendi kanalınıza yeniden yüklediğinizde buraya kendi bağlantınızı yapıştırın; site o andan itibaren her yerde sizin kanalınıza yönlenir. Haberlere ayrıca dokunmanız gerekmez.</p>
+    </div>
+    <div class="panel"><div id="videoList"></div></div>
+  </div>
+
   <div class="tab-content" id="tab-messages">
     <div class="panel">
       <div class="row" style="margin-bottom:10px">
@@ -276,6 +286,7 @@ function showTab(name){
   document.querySelector(`.tab[data-tab="${name}"]`).classList.add('active');
   if(name==='durum'){loadSlots()}
   if(name==='news'){loadNewsList()}
+  if(name==='videos'){loadVideos()}
   if(name==='messages'){loadMessages()}
 }
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showTab(t.dataset.tab));
@@ -378,6 +389,43 @@ async function loadMedia(){
     </article>`}).join('');
 }
 let vaultPlan={items:[]};
+/* ---- Video kütüphanesi: kanal anahtarı ---- */
+async function loadVideos(){
+  const d=await req('/api/videos');
+  $('#vidOzet').innerHTML=`<b>${d.ozet.toplam}</b> video · <b style="color:#5fba8c">${d.ozet.kendiKanalda}</b> tanesi kendi kanalınızda · <b style="color:#e0a45c">${d.ozet.haberliOlmayan}</b> tanesinin haber metni yok.`;
+  $('#videoList').innerHTML=d.items.map(v=>`
+    <div style="display:grid;grid-template-columns:150px 1fr 300px;gap:14px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08);align-items:start">
+      <a href="${escStr(v.izle)}" target="_blank"><img src="${escStr(v.kapak)}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid rgba(255,255,255,.1)"></a>
+      <div>
+        <b style="font-size:14px;display:block">${escStr(v.title)}</b>
+        <div style="margin-top:6px;display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:9.5px;letter-spacing:.1em;padding:2px 7px;border:1px solid ${v.kendiKanalda?'rgba(95,186,140,.5)':'rgba(224,164,92,.5)'};color:${v.kendiKanalda?'#5fba8c':'#e0a45c'}">${v.kendiKanalda?'KENDİ KANALINIZDA':escStr(v.source_channel||'KAYNAK KANAL')}</span>
+          ${v.news_slug
+            ?`<a href="/haberler/${escStr(v.news_slug)}" target="_blank" class="muted" style="font-size:11px;color:#e8c06a">bağlı haber ↗</a>`
+            :'<span class="muted" style="font-size:11px">haber metni yok</span>'}
+        </div>
+        ${v.note?`<div class="muted" style="font-size:11.5px;margin-top:5px">${escStr(v.note)}</div>`:''}
+        <div class="muted" style="font-size:10.5px;margin-top:5px;font-family:ui-monospace,monospace">kaynak ${escStr(v.youtube_id)}${v.own_youtube_id?' → kendi '+escStr(v.own_youtube_id):''}</div>
+      </div>
+      <div>
+        <input id="own-${escStr(v.id)}" style="width:100%;margin-bottom:6px" placeholder="Kendi kanalınızdaki bağlantı" value="${escStr(v.own_youtube_id||'')}">
+        <button class="btn sm" style="width:100%" onclick="setOwnVideo('${escStr(v.id)}')">Kendi kanalıma yönlendir</button>
+        ${v.own_youtube_id?`<button class="btn sm" style="width:100%;margin-top:5px" onclick="clearOwnVideo('${escStr(v.id)}')">Kaynak kanala geri dön</button>`:''}
+      </div>
+    </div>`).join('');
+}
+async function setOwnVideo(id){
+  const val=$('#own-'+id).value.trim();
+  if(!val){alert('Kendi kanalınızdaki bağlantıyı yapıştırın');return}
+  const r=await fetch('/api/videos/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({own_youtube_id:val})});
+  const d=await r.json();
+  if(!r.ok||d.error){alert(d.error||'Kaydedilemedi');return}
+  loadVideos();
+}
+async function clearOwnVideo(id){
+  await req('/api/videos/'+id,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({own_youtube_id:''})});
+  loadVideos();
+}
 /* ---- Site Durumu: yuvalari ve eksikleri gosterir ---- */
 async function loadSlots(){
   const d=await req('/api/site/slots');

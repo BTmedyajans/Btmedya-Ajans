@@ -190,6 +190,41 @@ async function mediaApi(request, env){
     return json({ozet:{toplam:yuvalar.length,dolu:yuvalar.length-eksik.length,eksik:eksik.length},yuvalar});
   }
 
+  /* VIDEO KUTUPHANESI — tek anahtar noktasi.
+     own_youtube_id doldugu anda site o video icin kendi kanalimiza yonlenir;
+     haber kayitlarina dokunmaya gerek kalmaz. */
+  if(path==='/api/videos' && request.method==='GET'){
+    const r=await env.DB.prepare('SELECT * FROM video_library ORDER BY news_slug!="" DESC, title').all();
+    const items=(r.results||[]).map(v=>({
+      ...v,
+      etkinKimlik: v.own_youtube_id || v.youtube_id,
+      etkinKanal:  v.own_youtube_id ? 'BTMEDYA' : (v.source_channel||''),
+      kendiKanalda: !!v.own_youtube_id,
+      izle: `https://www.youtube.com/watch?v=${v.own_youtube_id||v.youtube_id}`,
+      kapak: `https://i.ytimg.com/vi/${v.own_youtube_id||v.youtube_id}/hqdefault.jpg`
+    }));
+    return json({ozet:{toplam:items.length,kendiKanalda:items.filter(i=>i.kendiKanalda).length,
+                       haberliOlmayan:items.filter(i=>!i.news_slug).length},items});
+  }
+  const vput=path.match(/^\/api\/videos\/([^/]+)$/);
+  if(vput && request.method==='PATCH'){
+    if(aiRead) return json({error:'AI token salt okunur'},403);
+    const id=vput[1], b=await request.json(), now=new Date().toISOString();
+    const cur=await env.DB.prepare('SELECT * FROM video_library WHERE id=?').bind(id).first();
+    if(!cur) return json({error:'Bulunamadı'},404);
+    // Kendi kanal baglantisi her bicimde girilebilir; kimlik cozumlenir.
+    let own=String(b.own_youtube_id ?? cur.own_youtube_id ?? '').trim();
+    if(own){
+      const m=own.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})|^([A-Za-z0-9_-]{11})$/);
+      if(!m) return json({error:'Geçerli bir YouTube bağlantısı değil'},400);
+      own=m[1]||m[2];
+    }
+    const pick=(k,d)=>b[k]===undefined?d:b[k];
+    await env.DB.prepare('UPDATE video_library SET own_youtube_id=?,title=?,news_slug=?,note=?,updated_at=? WHERE id=?')
+      .bind(own,pick('title',cur.title),pick('news_slug',cur.news_slug),pick('note',cur.note),now,id).run();
+    return json({ok:true,etkinKimlik:own||cur.youtube_id,etkinKanal:own?'BTMEDYA':cur.source_channel});
+  }
+
   if(path==='/api/vault/plan' && request.method==='GET'){
     const origin=new URL(request.url).origin;
     const r=await env.DB.prepare('SELECT * FROM media ORDER BY created_at DESC LIMIT 300').all();
@@ -434,7 +469,16 @@ export default { async fetch(request, env, ctx){
           "SELECT * FROM news WHERE slug=? AND status='published'"
         ).bind(slug).first();
         if(n){
-          return new Response(renderNewsPage(n, url.origin), {
+          // Video kutuphanesi kaydi: kendi kanalimiza tasinmissa oraya yonlenir.
+          let vlib=null;
+          const vsrc=String(n.video_url||'');
+          if(vsrc){
+            const m=vsrc.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})|^([A-Za-z0-9_-]{11})$/);
+            const yid=m?(m[1]||m[2]):'';
+            if(yid) vlib=await env.DB.prepare('SELECT * FROM video_library WHERE youtube_id=?').bind(yid).first();
+          }
+          if(!vlib) vlib=await env.DB.prepare('SELECT * FROM video_library WHERE news_slug=?').bind(slug).first();
+          return new Response(renderNewsPage(n, url.origin, vlib), {
             headers:{'content-type':'text/html; charset=utf-8',
                      'cache-control':'public, max-age=300, s-maxage=600'}
           });

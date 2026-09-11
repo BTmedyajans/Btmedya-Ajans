@@ -596,3 +596,5 @@ body>*:not(.env){position:relative;z-index:1}
 .article-cover{width:100%;height:auto;display:block;margin:26px 0;
   border:1px solid var(--line);background:#050d15}
 @media (max-width:600px){ .yt-play{width:52px;height:52px;font-size:17px} }
+.video-credit{margin:10px 0 22px;font-size:11.5px;color:#7e92a3;letter-spacing:.02em}
+.video-credit a{color:var(--accent-text)}

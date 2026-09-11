@@ -47,9 +47,13 @@ function govde(body){
   return t.split(/\n{2,}/).map(p=>`<p>${esc(p.trim()).replace(/\n/g,'<br>')}</p>`).join('');
 }
 
-export function renderNewsPage(n, origin){
+export function renderNewsPage(n, origin, vlib){
   const url=`${origin}/haberler/${encodeURIComponent(n.slug)}`;
-  const vid=youtubeId(n.video_url);
+  // Kutuphane kaydi varsa etkin kimlik oradan gelir: video kendi kanalimiza
+  // tasindiginda haber kaydina dokunmadan yonlendirme degisir.
+  const kaynakVid=youtubeId(n.video_url);
+  const vid=(vlib&&(vlib.own_youtube_id||vlib.youtube_id))||kaynakVid;
+  const kanal=vlib?(vlib.own_youtube_id?'BTMEDYA':(vlib.source_channel||'')):'';
   const kapak=n.cover_url||'';
   const tarihTr=trTarih(n.published_at);
   const tarihIso=isoTarih(n.published_at);
@@ -77,7 +81,8 @@ export function renderNewsPage(n, origin){
   <img src="https://i.ytimg.com/vi/${esc(vid)}/hqdefault.jpg" alt="${esc(n.title)} — video kapağı" loading="lazy" width="480" height="360">
   <button type="button" class="yt-play" aria-label="Videoyu oynat">▶</button>
   <noscript><a href="https://www.youtube.com/watch?v=${esc(vid)}" target="_blank" rel="noopener">Videoyu YouTube'da izleyin ↗</a></noscript>
-</div>` : '';
+</div>
+${kanal?`<p class="video-credit">Video ${esc(kanal)} kanalında yayında. <a href="https://www.youtube.com/watch?v=${esc(vid)}" target="_blank" rel="noopener">YouTube'da aç ↗</a></p>`:''}` : '';
 
   const kapakBlok = (kapak && !vid) ? `
 <img class="article-cover" src="${esc(kapak)}" alt="${esc(n.title)}" loading="lazy" decoding="async">` : '';
