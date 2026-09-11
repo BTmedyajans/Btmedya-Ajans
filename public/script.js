@@ -283,6 +283,116 @@ document.addEventListener('DOMContentLoaded',()=>{
     try{window.dispatchEvent(new CustomEvent('btmedya:whatsapp_intent',{detail:{category:active}}));}catch(e){}
   }));
 
+  // ETKILESIMLI AN: basili tut, hikaye canlansin.
+  // Ilerleme basili tutarken artar, birakinca geri soner, aniden sifirlanmaz.
+  // Tamamlaninca alttaki icerik acilir. Azaltilmis harekette beklemeden
+  // dogrudan son hal gosterilir.
+  (function(){
+    const sec=document.getElementById('canlandir');
+    if(!sec) return;
+    const stage=sec.querySelector('.revive-stage');
+    const head=sec.querySelector('.revive-headline');
+    const btn=sec.querySelector('.revive-btn');
+    const label=sec.querySelector('.revive-label');
+    const text=sec.querySelector('.revive-sr').textContent.trim();
+    const reducedQ=window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Tohumlu rastgelelik: dagilma her acilista ayni, yani tasarim tekrarlanabilir.
+    let seed=20260911>>>0;
+    const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+
+    // Harfler kelime kutularinin icine giriyor, yoksa satir sonu kelimeyi ortadan boler.
+    head.innerHTML='';
+    const words=text.split(' ');
+    let idx=0;
+    const total=text.length;
+    words.forEach((word,wi)=>{
+      const w=document.createElement('span');
+      w.className='w';
+      [...word].forEach(ch=>{
+        const sp=document.createElement('span');
+        sp.className='c';
+        sp.textContent=ch;
+        sp.style.setProperty('--th', (idx/total*0.55 + rnd()*0.12).toFixed(3));
+        sp.style.setProperty('--jx', ((rnd()-0.5)*140).toFixed(1)+'px');
+        sp.style.setProperty('--jy', ((rnd()-0.5)*90).toFixed(1)+'px');
+        sp.style.setProperty('--jr', ((rnd()-0.5)*44).toFixed(1)+'deg');
+        w.appendChild(sp);
+        idx++;
+      });
+      head.appendChild(w);
+      if(wi<words.length-1){ head.appendChild(document.createTextNode(' ')); idx++; }
+    });
+    const spans=[...head.querySelectorAll('.c')];
+
+    let p=0, target=0, raf=null, last=0, done=false;
+    const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+    function paint(){
+      stage.style.setProperty('--p', p.toFixed(4));
+      spans.forEach(sp=>{
+        const th=parseFloat(sp.style.getPropertyValue('--th'))||0;
+        sp.style.setProperty('--kc', clamp((p-th)*2.6,0,1).toFixed(3));
+      });
+      stage.style.setProperty('--after', clamp((p-0.82)*5.5,0,1).toFixed(3));
+      if(p>=1 && !done){
+        done=true;
+        sec.classList.add('done');
+        label.textContent='CANLANDI';
+      }else if(p<1 && done){
+        done=false;
+        sec.classList.remove('done');
+        label.textContent='BASILI TUTUN';
+      }
+    }
+
+    function tick(now){
+      const dt=Math.min(100, now-(last||now));
+      last=now;
+      // Dolus yaklasik 1,6 saniye, geri sonme biraz daha yavas.
+      const rate = target>p ? dt/1600 : -dt/2200;
+      p=clamp(p+rate,0,1);
+      paint();
+      if((target>p && p<1)||(target<p && p>0)){
+        raf=requestAnimationFrame(tick);
+      }else{
+        raf=null; last=0;
+      }
+    }
+    function drive(t){
+      target=t;
+      if(raf===null){ last=0; raf=requestAnimationFrame(tick); }
+    }
+
+    const hold=e=>{ if(e && e.cancelable) e.preventDefault(); drive(1); };
+    const release=()=>drive(0);
+
+    btn.addEventListener('mousedown',hold);
+    btn.addEventListener('touchstart',hold,{passive:false});
+    addEventListener('mouseup',release);
+    addEventListener('touchend',release);
+    addEventListener('touchcancel',release);
+    btn.addEventListener('mouseleave',release);
+    btn.addEventListener('blur',release);
+    btn.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); hold(); }});
+    btn.addEventListener('keyup',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); release(); }});
+
+    function applyReduced(){
+      if(reducedQ.matches){
+        if(raf!==null){ cancelAnimationFrame(raf); raf=null; }
+        p=1; paint();
+        btn.setAttribute('disabled','');
+        btn.style.display='none';
+      }else{
+        btn.removeAttribute('disabled');
+        btn.style.display='';
+      }
+    }
+    reducedQ.addEventListener('change',applyReduced);
+    applyReduced();
+    if(!reducedQ.matches) paint();
+  })();
+
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
   // SEKME GIZLIYKEN DURAKLAT.

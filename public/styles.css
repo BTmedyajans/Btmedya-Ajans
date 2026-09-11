@@ -408,3 +408,80 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
    .ai-panel ve .ai-grid dokunulmadi, hero'nun atmosfer katmanlari
    (.ambient, .beam, .grid-floor, .gate, .character-glow, .character-scan,
    .focus-ring) da dokunulmadi. Sicak marka, soguk makine. */
+
+
+/* =====================================================================
+   SABIT ORTAM KATMANI
+   Sayfanin arkasinda tek bir yavas dunya. Kaydirmak, ust uste dizilmis
+   bolumlerin yanindan gecmek yerine bir mekanin icinde ilerlemek gibi
+   hissettirir. Uc leke, hepsi 70 saniye ve uzeri, negatif gecikmeyle
+   basliyor, yani ilk boyamada hepsi dongunun ortasinda.
+   ===================================================================== */
+.env{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.env i{position:absolute;display:block;border-radius:50%;filter:blur(90px);opacity:.16}
+.env-a{width:60vw;height:45vw;left:-12vw;top:-10vw;background:#1a86ff;animation:env-drift-a 84s ease-in-out infinite;animation-delay:-31s}
+.env-b{width:46vw;height:38vw;right:-10vw;top:28vh;background:#24d7d7;animation:env-drift-b 96s ease-in-out infinite;animation-delay:-47s}
+.env-c{width:34vw;height:30vw;left:22vw;bottom:-12vw;background:#d6a84a;opacity:.07;animation:env-drift-c 110s ease-in-out infinite;animation-delay:-19s}
+@keyframes env-drift-a{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(6vw,4vh,0) scale(1.12)}}
+@keyframes env-drift-b{0%,100%{transform:translate3d(0,0,0) scale(1.08)}50%{transform:translate3d(-5vw,-6vh,0) scale(1)}}
+@keyframes env-drift-c{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(4vw,-5vh,0) scale(1.18)}}
+body>*:not(.env){position:relative;z-index:1}
+
+/* =====================================================================
+   ETKILESIMLI AN
+   "Hikayeleri yasatiyoruz" cumlesini ziyaretci kendi eliyle yapiyor.
+   Basili tutar, dagilmis harfler toplanir ve hikaye canlanir. Birakirsa
+   geri soner, aniden sifirlanmaz. Tamamlaninca altindaki icerik acilir.
+   Butun hareket transform ve opacity uzerinde.
+   ===================================================================== */
+.revive-stage{position:relative;max-width:760px;margin:0 auto;text-align:center;padding:10px 0 0}
+.revive-line{display:block;width:100%;height:2px;margin:0 auto 42px;overflow:visible}
+.revive-line line{
+  stroke:var(--accent);stroke-width:2;
+  stroke-dasharray:600;
+  stroke-dashoffset:calc(600 - 600 * var(--p,0));
+  opacity:calc(.25 + .75 * var(--p,0));
+}
+.revive-headline{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;
+  font-size:clamp(26px,4.4vw,46px);line-height:1.15;letter-spacing:-.02em;
+  margin:0 0 26px;min-height:2.3em;color:var(--ink);
+}
+.revive-headline .w{display:inline-block;white-space:nowrap}
+.revive-headline .c{
+  display:inline-block;
+  opacity:var(--kc,0);
+  transform:translate(calc((1 - var(--kc,0)) * var(--jx,0px)),calc((1 - var(--kc,0)) * var(--jy,0px)))
+            rotate(calc((1 - var(--kc,0)) * var(--jr,0deg)));
+}
+.revive-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.revive-after{
+  opacity:var(--after,0);
+  transform:translateY(calc((1 - var(--after,0)) * 14px));
+  transition:opacity .5s ease,transform .5s ease;
+}
+.revive-after p{color:#8da0b2;font-size:14px;line-height:1.7;margin:0 0 12px}
+
+.revive-btn{
+  position:relative;margin:34px auto 0;display:block;
+  min-width:230px;padding:16px 28px;
+  background:transparent;color:var(--ink);
+  border:1px solid rgba(214,168,74,.45);
+  font:inherit;font-size:11px;letter-spacing:.16em;font-weight:700;
+  cursor:pointer;overflow:hidden;
+  transition:border-color .3s ease;
+}
+.revive-btn:hover{border-color:rgba(214,168,74,.8)}
+.revive-fill{
+  position:absolute;inset:0;transform-origin:left center;
+  transform:scaleX(var(--p,0));
+  background:linear-gradient(90deg,rgba(214,168,74,.22),rgba(214,168,74,.38));
+}
+.revive-label{position:relative}
+.revive-hint{color:#7d91a2;font-size:11px;line-height:1.6;margin:16px auto 0;max-width:44ch}
+.revive.done .revive-btn{border-color:rgba(214,168,74,.8)}
+
+@media (prefers-reduced-motion:reduce){
+  .env i{animation:none}
+  .revive-after{transition:none}
+}
