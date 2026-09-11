@@ -15,11 +15,17 @@ enabled = true
 directory = "public"
 binding = "ASSETS"
 # Eşleşen bir statik dosya varsa Cloudflare Worker'ı hiç çalıştırmaz ve dosyayı
-# doğrudan sunar. Haber sayfaları için bu istenmiyor: panelden yapılan düzenleme
-# ve video kütüphanesi anahtarı ancak Worker çalışırsa geçerli olur. Bu yüzden
-# yalnızca /haberler/ altında Worker öne alınır; kayıt bulunamazsa Worker zaten
-# env.ASSETS.fetch ile statik sürüme düşüyor, yani yedek korunuyor.
-run_worker_first = ["/haberler/*"]
+# doğrudan sunar. Bu, indekslenen HTML sayfalarında iki soruna yol açıyordu:
+#   1. /haberler/ — panelden yapılan düzenleme ve video kütüphanesi anahtarı
+#      ancak Worker çalışırsa geçerli olur.
+#   2. www.btmedya.com.tr — Worker'daki www -> apex 301 yönlendirmesi hiç
+#      çalışmıyordu, çünkü statik dosya Worker'dan önce servis ediliyordu. Sonuç:
+#      her sayfa iki ayrı adreste 200 dönüyordu (yinelenen içerik).
+# Bu yüzden yalnızca indekslenen HTML adreslerinde Worker öne alınır. Görseller,
+# styles.css, script.js ve /assets/* eskisi gibi doğrudan servis edilmeye devam
+# eder. Kayıt bulunamazsa Worker zaten env.ASSETS.fetch ile statik sürüme
+# düşüyor, yani yedek korunuyor.
+run_worker_first = ["/", "/haberler/*", "/hakkimizda*", "/iletisim*"]
 
 # ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
 # Alan adı panelden Custom Domain olarak eklenir. Routes burada açılırsa
