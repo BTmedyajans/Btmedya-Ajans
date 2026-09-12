@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   }
 
   const menu=document.querySelector('.menu-toggle');
-  const nav=document.querySelector('.topbar nav');
+  const nav=document.querySelector('.site-menu');
   if(menu&&nav){
     menu.addEventListener('click',()=>{
       const open=nav.classList.toggle('open');
@@ -545,3 +545,101 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   })();
 });
+
+/* =====================================================================
+   SİNEMATİK KATMAN
+   Tam ekran menünün gövde kilidi, başlık açılışları ve bölüm parallax'ı.
+   Mevcut menü kodu .open sınıfını ve aria durumunu zaten yönetiyor; bu
+   blok yalnızca onun bıraktığı yerden devam eder, ikinci bir aç/kapa
+   mantığı kurmaz.
+   ===================================================================== */
+(function(){
+  var azHareket = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* --- Menü: gövde kaydırma kilidi ve Escape --- */
+  var dugme = document.querySelector('.menu-toggle');
+  var menu  = document.querySelector('.site-menu');
+  if(dugme && menu){
+    var esitle = function(){
+      document.body.classList.toggle('menu-acik', menu.classList.contains('open'));
+    };
+    /* Tıklama dinleyicisiyle senkron olmak dinleyici kayıt sırasına bağlı
+       kalırdı: mevcut menü kodu DOMContentLoaded içinde kaydoluyor, bu blok
+       ise hemen çalışıyor, yani bizimki önce tetiklenip .open'ı eski haliyle
+       okuyordu. Sınıfın kendisi izleniyor; sıra artık önemsiz. */
+    new MutationObserver(esitle).observe(menu, { attributes:true, attributeFilter:['class'] });
+    esitle();
+    menu.addEventListener('click', function(ev){
+      if(ev.target.tagName === 'A') { menu.classList.remove('open'); esitle(); }
+    });
+    document.addEventListener('keydown', function(ev){
+      if(ev.key === 'Escape' && menu.classList.contains('open')){
+        menu.classList.remove('open');
+        dugme.setAttribute('aria-expanded','false');
+        dugme.setAttribute('aria-label','Menüyü aç');
+        esitle();
+        dugme.focus();
+      }
+    });
+  }
+
+  if(azHareket.matches || !('IntersectionObserver' in window)) return;
+
+  /* --- Başlık açılışları ---
+     Öğeler görünür halde duruyor; sınıf ancak JS çalışıyorsa ekleniyor.
+     Böylece script hiç yüklenmezse içerik yine okunur kalır. */
+  var hedefler = [];
+  document.querySelectorAll('.section-head, .bh, .cta, .about-copy').forEach(function(blok){
+    var bas = blok.querySelector('h2, h1');
+    var ust = blok.querySelector('.eyebrow, .mono');
+    var alt = blok.querySelector('p:not(.eyebrow)');
+    if(ust) hedefler.push([ust, '']);
+    if(bas) hedefler.push([bas, 'cine-gecik-1']);
+    if(alt) hedefler.push([alt, 'cine-gecik-2']);
+  });
+  hedefler.forEach(function(c){ c[0].classList.add('cine-hazir'); if(c[1]) c[0].classList.add(c[1]); });
+
+  var gozcu = new IntersectionObserver(function(girisler){
+    girisler.forEach(function(g){
+      if(g.isIntersecting){
+        g.target.classList.remove('cine-hazir');
+        g.target.classList.add('cine-ac');
+        gozcu.unobserve(g.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  hedefler.forEach(function(c){ gozcu.observe(c[0]); });
+
+  /* Güvenlik ağı: gözcü herhangi bir nedenle tetiklenmezse 2.5 sn sonra
+     hepsi açılır. Gizli kalmış içerik bırakmayalım. */
+  setTimeout(function(){
+    document.querySelectorAll('.cine-hazir').forEach(function(e){
+      e.classList.remove('cine-hazir'); e.classList.add('cine-ac');
+    });
+  }, 2500);
+
+  /* --- Parallax ---
+     Yalnızca görünür alandaki öğeler hesaplanır; transform ile yapılır,
+     düzen tetiklenmez. */
+  var katmanlar = [];
+  document.querySelectorAll('.portfolio-card img, .category-cover img, .archive-card img').forEach(function(img){
+    img.classList.add('par-katman');
+    katmanlar.push(img);
+  });
+  if(!katmanlar.length) return;
+
+  var raf = null, pencereY = window.innerHeight;
+  function ciz(){
+    raf = null;
+    for(var i=0;i<katmanlar.length;i++){
+      var e = katmanlar[i], r = e.getBoundingClientRect();
+      if(r.bottom < -80 || r.top > pencereY + 80) continue;
+      var oran = (r.top + r.height/2 - pencereY/2) / pencereY;  /* -1 … 1 */
+      e.style.transform = 'translate3d(0,' + (oran * -14).toFixed(2) + 'px,0) scale(1.06)';
+    }
+  }
+  function plan(){ if(raf === null) raf = requestAnimationFrame(ciz); }
+  window.addEventListener('scroll', plan, { passive:true });
+  window.addEventListener('resize', function(){ pencereY = window.innerHeight; plan(); }, { passive:true });
+  ciz();
+})();

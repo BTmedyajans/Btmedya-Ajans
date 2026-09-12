@@ -266,21 +266,34 @@
       <span class="brand-mark">BT</span><span class="brand-word">MEDYA</span>
     </a>
 
-    <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false">☰</button>
-    <nav>
-      <a href="#hero">Ana Sayfa</a>
-      <a href="#services">Hizmetler</a>
-      <a href="#sahadan">Sahadan</a>
-      <a href="#portfolio">Portföy</a>
-      <a href="#ai-lab">AI LAB</a>
-      <a href="#packages">Paketler</a>
-      <a href="/haberler/">Haberler</a>
-      <a href="/hakkimizda/">Hakkımızda</a>
-      <a href="/iletisim/">İletişim</a>
-    </nav>
+    <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="anaMenu">☰</button>
 
     <a class="quote" href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">TEKLİF AL ↗</a>
   </header>
+
+  <!-- MENÜ — .topbar'ın DIŞINDA duruyor ve bu bilinçli.
+       .topbar üzerindeki backdrop-filter, içindeki position:fixed
+       öğeler için kuşatan blok oluşturuyor; menü header'ın içindeyken
+       72px'lik şeride hapsoluyor ve z-index'i de header'ın yığınına
+       sıkışıp WhatsApp düğmesinin altında kalıyordu. -->
+  <nav id="anaMenu" class="site-menu" aria-label="Ana menü">
+    <a href="#hero">Ana Sayfa</a>
+    <a href="#services">Hizmetler</a>
+    <a href="#sahadan">Sahadan</a>
+    <a href="#portfolio">Portföy</a>
+    <a href="#ai-lab">AI LAB</a>
+    <a href="#packages">Paketler</a>
+    <a href="/haberler/">Haberler</a>
+    <a href="/hakkimizda/">Hakkımızda</a>
+    <a href="/iletisim/">İletişim</a>
+    <div class="site-menu-alt">
+      <a href="tel:+905416401029">+90 541 640 10 29</a>
+      <a href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://www.instagram.com/btmedya10/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YouTube</a>
+      <span>Balıkesir · Türkiye</span>
+    </div>
+  </nav>
 
   <main id="main" tabindex="-1">
     <!-- CINEMATIC HERO / 620vh -->
@@ -566,17 +579,20 @@
         <p>BTMEDYA'nın kendi marka dili: hizmet kataloğu, görsel kimlik ve sunum yüzü. Bu bölümdeki sahne görselleri yapay zekâ ile üretildi.</p>
       </div>
       <div class="portfolio-grid">
+        <!-- Kurucunun gerçek stüdyo portresi geniş kart olarak öne alındı:
+             ajansın en güçlü ve doğrulanabilir görseli bu; yapay zekâ ile
+             üretilmiş sahne kareleri arkasında kalmamalı. -->
         <article class="portfolio-card portfolio-wide">
+          <img src="assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp" alt="Buse Tuncay — gazeteci ve BTMEDYA kurucusu, haber stüdyosunda" loading="lazy">
+          <div><small>01 / KURUCU — GAZETECİ / SUNUCU</small><h3>Buse Tuncay</h3></div>
+        </article>
+        <article class="portfolio-card">
           <img src="assets/hizmetler-katalog.webp" alt="BTMEDYA 8 hizmet kataloğu" loading="lazy">
-          <div><small>01 / HİZMET KATALOĞU</small><h3>BTMEDYA prodüksiyon kataloğu</h3></div>
+          <div><small>02 / HİZMET KATALOĞU</small><h3>BTMEDYA prodüksiyon kataloğu</h3></div>
         </article>
         <article class="portfolio-card">
-          <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA sinematik marka görseli" loading="lazy">
-          <div><small>02 / GÖRSEL KİMLİK</small><h3>Sinematik marka dili</h3></div>
-        </article>
-        <article class="portfolio-card">
-          <img src="assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp" alt="Buse Tuncay medya kapağı" loading="lazy">
-          <div><small>03 / MUHABİR / SUNUCU</small><h3>Buse Tuncay</h3></div>
+          <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA sinematik marka görseli — yapay zekâ ile üretildi" loading="lazy">
+          <div><small>03 / GÖRSEL KİMLİK — YAPAY ZEKÂ ÜRETİMİ</small><h3>Sinematik marka dili</h3></div>
         </article>
         <!-- VIDEO KARTI — izgaranin tamamini kaplar. Otomatik oynatma yok:
              mobil veri ve pil icin preload yalnizca metadata, oynatma
