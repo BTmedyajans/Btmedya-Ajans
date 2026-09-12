@@ -135,8 +135,31 @@ ${JSON.stringify(videoLd,null,0)}
     <img src="/assets/btmedya-emblem-derived.png" alt="BTMEDYA" class="brand-emblem">
     <span class="brand-mark">BT</span><span class="brand-word">MEDYA</span>
   </a>
+  <button class="menu-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="anaMenu">☰</button>
   <a class="quote" href="/haberler/">HABER ARŞİVİ ↗</a>
 </header>
+
+<!-- Menü .topbar'ın DIŞINDA: header üzerindeki backdrop-filter, içindeki
+     position:fixed öğeler için kuşatan blok oluşturuyor ve menüyü 72px'lik
+     şeride hapsediyor. Panelden yayımlanan haberlerde daha önce hiç menü
+     yoktu; okuyucu siteye geri dönemiyordu. -->
+<nav id="anaMenu" class="site-menu" aria-label="Ana menü">
+  <a href="/">Ana Sayfa</a>
+  <a href="/#services">Hizmetler</a>
+  <a href="/#portfolio">Portföy</a>
+  <a href="/#ai-lab">AI LAB</a>
+  <a href="/#packages">Paketler</a>
+  <a href="/haberler/">Haberler</a>
+  <a href="/hakkimizda/">Hakkımızda</a>
+  <a href="/iletisim/">İletişim</a>
+  <div class="site-menu-alt">
+    <a href="tel:+905416401029">+90 541 640 10 29</a>
+    <a href="https://wa.me/905416401029?text=Merhaba%20BTMEDYA%2C%20bir%20proje%20i%C3%A7in%20teklif%20almak%20istiyorum." target="_blank" rel="noopener">WhatsApp</a>
+    <a href="https://www.instagram.com/btmedya10/" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.youtube.com/@BTmedyaAjans" target="_blank" rel="noopener">YouTube</a>
+    <span>Balıkesir · Türkiye</span>
+  </div>
+</nav>
 <main id="main" tabindex="-1">
 <article class="article-page">
 <a class="article-back" href="/haberler/">← HABER ARŞİVİ</a>
@@ -164,6 +187,24 @@ ${(n.archive_note||n.source_url)?`<div class="article-note">${esc(n.archive_note
   <div class="footer-legal">© ${new Date().getUTCFullYear()} BTMEDYA</div>
 </footer>
 <script>
+/* MENU — bu sayfa script.js yuklemiyor; anasayfanin tum davranisini buraya
+   tasimak gereksiz agirlik olurdu. Menunun ihtiyaci olan kadari burada. */
+(function(){
+  var d=document.querySelector('.menu-toggle'), m=document.getElementById('anaMenu');
+  if(!d||!m)return;
+  function ayarla(acik){
+    m.classList.toggle('open',acik);
+    d.setAttribute('aria-expanded',acik?'true':'false');
+    d.setAttribute('aria-label',acik?'Menüyü kapat':'Menüyü aç');
+    document.body.classList.toggle('menu-acik',acik);
+  }
+  d.addEventListener('click',function(){ ayarla(!m.classList.contains('open')); });
+  m.addEventListener('click',function(e){ if(e.target.tagName==='A') ayarla(false); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&m.classList.contains('open')){ ayarla(false); d.focus(); }
+  });
+})();
+
 /* Kapak karesine dokununca gercek oynatici gelir; oncesinde YouTube'dan
    hicbir sey inmez. autoplay=1 yalnizca kullanici tikladigi icin verilir. */
 document.querySelectorAll('.yt-lite').forEach(function(el){
