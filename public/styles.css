@@ -760,3 +760,25 @@ body.menu-acik .topbar .quote{opacity:0; pointer-events:none}
   .topbar .brand{min-height:44px; align-items:center}
   .cta-row a,.primary,.secondary{min-height:44px; display:inline-flex; align-items:center; justify-content:center}
 }
+
+/* =====================================================================
+   PERDE GÜVENLİK AĞI
+   .preloader ve .intro-overlay yalnızca JS'in eklediği .done sınıfıyla
+   kalkıyordu. script.js yüklenemezse (ağ kesintisi, eklenti, kurumsal
+   proxy) ikisi de opacity:1 ve z-index 300/200 ile ekranda kalıcı olarak
+   takılı kalıyor ve site tamamen kullanılamaz hale geliyordu — ölçüldü.
+
+   Çözüm CSS tarafında: gecikmeli bir animasyon perdeleri kendiliğinden
+   kaldırır. `both` dolgusu sayesinde animasyon bittiğinde öğe gizli
+   KALIR. JS çalışıyorsa perde zaten ~0,7 sn'de kalkıyor, yani normal
+   durumda görünen hiçbir şey değişmez; bu yalnızca yedek.
+   ===================================================================== */
+@keyframes perdeKalk{to{opacity:0; visibility:hidden}}
+.preloader{animation:perdeKalk .6s ease 3s both}
+.intro-overlay{animation:perdeKalk .8s ease 3.6s both}
+
+/* Azaltılmış hareket tercihinde perde beklemeden, animasyonsuz kalkar. */
+@media (prefers-reduced-motion:reduce){
+  .preloader{animation:perdeKalk 1ms linear 1.2s both}
+  .intro-overlay{animation:perdeKalk 1ms linear 1.4s both}
+}
