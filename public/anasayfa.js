@@ -716,10 +716,21 @@
     return yazar && t ? yazar + ' · ' + t : (yazar || t);
   }
 
+  /* Uretilmis kapak plakalari. Haber kaydinda cover_url yoksa, o haber icin
+     tasarlanmis plaka varsa o kullanilir. Listeye bakilir, dogrudan dosya
+     denenmez: olmayan slug icin kirik gorsel cikmasin. */
+  var KAPAKLAR = null;
+  function kapakYolu(slug) {
+    if (!KAPAKLAR || !slug) return '';
+    return KAPAKLAR.sluglar.indexOf(slug) === -1
+      ? '' : KAPAKLAR.taban + slug + KAPAKLAR.uzanti;
+  }
+
   function haberKarti(n) {
     var slug = n.slug ? '/haberler/' + encodeURIComponent(n.slug) + '.html' : '/haberler/';
-    var kapak = n.cover_url
-      ? '<img class="news-cover" src="' + esc(n.cover_url) + '" alt="" aria-hidden="true" loading="lazy">'
+    var kaynak = n.cover_url || kapakYolu(n.slug);
+    var kapak = kaynak
+      ? '<img class="news-cover" src="' + esc(kaynak) + '" alt="" aria-hidden="true" loading="lazy" width="1200" height="675">'
       : '';
     return '<a class="news-item' + (kapak ? ' has-cover' : '') + ' rise" href="' + slug + '">' +
            kapak +
@@ -744,6 +755,17 @@
     var sec = $('#haber'), grid = $('#news-grid');
     if (!sec || !grid) return;
 
+    /* Once kapak listesi, sonra haberler. Liste gelmezse kartlar kapaksiz
+       cikar, bolum yine calisir. */
+    fetch('data/haber-kapaklari.json')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.sluglar) KAPAKLAR = j; })
+      .catch(function () { })
+      .then(haberleriGetir);
+  }
+
+  function haberleriGetir() {
+    var sec = $('#haber'), grid = $('#news-grid');
     fetch('/api/news?limit=6')
       .then(function (r) { if (!r.ok) throw new Error('news'); return r.json(); })
       .then(function (j) {
