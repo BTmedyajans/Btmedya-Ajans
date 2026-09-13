@@ -140,9 +140,18 @@ button{font:inherit;color:inherit}
 
 /* Alt şerit: gömülü yazı orta yükseklikte olduğu için metin aşağı iner */
 .band-bottom{left:var(--pad);right:var(--pad);bottom:15vh;text-align:left;max-width:min(900px,74vw)}
-.band-bottom::before{left:-16%;right:-14%;bottom:-160%;top:-240%;
+/* Perde bandin kutusuna degil ekrana gore olculur.
+   Band max-width:900px oldugu icin perde de 900px'te bitiyordu ve dikey
+   gradyan yatayda hic yumusamadigi icin karenin ortasinda sert bir dikey
+   cizgi olusuyordu (1440'te tam 1112px'te). Genislik viewport'a baglandi,
+   sag kenar da maskeyle sonlandirildi: metnin altinda tam koyuluk kalir,
+   sag tarafta goruntu nefes alir, hicbir yerde kesik kenar olmaz. */
+.band-bottom::before{left:calc(-1 * var(--pad) - 6vw);width:118vw;right:auto;
+  bottom:-160%;top:-240%;
   background:linear-gradient(to top,rgba(4,7,12,.90) 0%,rgba(4,7,12,.84) 40%,rgba(4,7,12,.62) 66%,
-    rgba(4,7,12,.24) 84%,rgba(4,7,12,0) 100%)}
+    rgba(4,7,12,.24) 84%,rgba(4,7,12,0) 100%);
+  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 58%,rgba(0,0,0,.35) 84%,rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to right,#000 0%,#000 58%,rgba(0,0,0,.35) 84%,rgba(0,0,0,0) 100%)}
 
 /* Oturma bandı: temiz stüdyo karesi, özne tam ortada, metin alta yaslanır */
 .band-settle{left:var(--pad);right:var(--pad);bottom:11vh;text-align:center}
