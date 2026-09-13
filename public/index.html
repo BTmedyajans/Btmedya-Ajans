@@ -579,32 +579,61 @@
         <p>BTMEDYA'nın kendi marka dili: hizmet kataloğu, görsel kimlik ve sunum yüzü. Bu bölümdeki sahne görselleri yapay zekâ ile üretildi.</p>
       </div>
       <div class="portfolio-grid">
-        <!-- Kurucunun gerçek stüdyo portresi geniş kart olarak öne alındı:
-             ajansın en güçlü ve doğrulanabilir görseli bu; yapay zekâ ile
-             üretilmiş sahne kareleri arkasında kalmamalı. -->
+        <!-- Sıralama bilinçli: önce doğrulanabilir saha işi, sonra katalog,
+             en sonda yapay zekâ ile üretilmiş marka görseli. Ajansın en güçlü
+             kanıtı gerçekten çekilmiş haber ve prodüksiyon görüntüsü; üretilmiş
+             sahneler onun önüne geçmemeli. -->
         <article class="portfolio-card portfolio-wide">
           <img src="assets/buse-tuncay-media-cover_3a69cc91_73da5bee.webp" alt="Buse Tuncay — gazeteci ve BTMEDYA kurucusu, haber stüdyosunda" loading="lazy">
           <div><small>01 / KURUCU — GAZETECİ / SUNUCU</small><h3>Buse Tuncay</h3></div>
         </article>
+
+        <!-- Kart içi videolar: künye ÜSTTE duruyor çünkü alttaki oynatma
+             çubuğunun üzerine binmemeli. preload="none" + poster ile sayfa
+             açılışında tek bayt video inmiyor; ziyaretçi basınca yükleniyor. -->
+        <article class="portfolio-card pf-video">
+          <video controls preload="none" playsinline poster="assets/media/portfoy/saha-gaziler-toreni.jpg">
+            <source src="assets/media/portfoy/saha-gaziler-toreni.mp4" type="video/mp4">
+            Tarayıcınız video oynatmayı desteklemiyor.
+            <a href="assets/media/portfoy/saha-gaziler-toreni.mp4">Videoyu indirin.</a>
+          </video>
+          <div class="pf-kunye"><small>02 / SAHA — HABER ÇEKİMİ</small><h3>Gaziler töreni</h3></div>
+        </article>
+
+        <article class="portfolio-card pf-video">
+          <video controls preload="none" playsinline poster="assets/media/portfoy/saha-pazar-roportaji.jpg">
+            <source src="assets/media/portfoy/saha-pazar-roportaji.mp4" type="video/mp4">
+            Tarayıcınız video oynatmayı desteklemiyor.
+            <a href="assets/media/portfoy/saha-pazar-roportaji.mp4">Videoyu indirin.</a>
+          </video>
+          <div class="pf-kunye"><small>03 / SAHA — SOKAK RÖPORTAJI</small><h3>Semt pazarı</h3></div>
+        </article>
+
+        <article class="portfolio-card pf-video pf-dikey">
+          <video controls preload="none" playsinline poster="assets/media/portfoy/produksiyon-kamera-cekim.jpg">
+            <source src="assets/media/portfoy/produksiyon-kamera-cekim.mp4" type="video/mp4">
+            Tarayıcınız video oynatmayı desteklemiyor.
+            <a href="assets/media/portfoy/produksiyon-kamera-cekim.mp4">Videoyu indirin.</a>
+          </video>
+          <div class="pf-kunye"><small>04 / PRODÜKSİYON — ETKİNLİK</small><h3>Kamera başında</h3></div>
+        </article>
+
+        <article class="portfolio-card pf-video pf-dikey">
+          <video controls preload="none" playsinline poster="assets/media/portfoy/produksiyon-saha-fotograf.jpg">
+            <source src="assets/media/portfoy/produksiyon-saha-fotograf.mp4" type="video/mp4">
+            Tarayıcınız video oynatmayı desteklemiyor.
+            <a href="assets/media/portfoy/produksiyon-saha-fotograf.mp4">Videoyu indirin.</a>
+          </video>
+          <div class="pf-kunye"><small>05 / PRODÜKSİYON — FOTOĞRAF</small><h3>Sahada çekim</h3></div>
+        </article>
+
         <article class="portfolio-card">
           <img src="assets/hizmetler-katalog.webp" alt="BTMEDYA 8 hizmet kataloğu" loading="lazy">
-          <div><small>02 / HİZMET KATALOĞU</small><h3>BTMEDYA prodüksiyon kataloğu</h3></div>
+          <div><small>06 / HİZMET KATALOĞU</small><h3>BTMEDYA prodüksiyon kataloğu</h3></div>
         </article>
         <article class="portfolio-card">
           <img src="assets/btmedya-hero-woman-desktop_3c8c8f08_9ad5a0f9.webp" alt="BTMEDYA sinematik marka görseli — yapay zekâ ile üretildi" loading="lazy">
-          <div><small>03 / GÖRSEL KİMLİK — YAPAY ZEKÂ ÜRETİMİ</small><h3>Sinematik marka dili</h3></div>
-        </article>
-        <!-- VIDEO KARTI — izgaranin tamamini kaplar. Otomatik oynatma yok:
-             mobil veri ve pil icin preload yalnizca metadata, oynatma
-             ziyaretcinin kararina birakiliyor. Kunye videonun altinda durur;
-             ustune bindirilirse oynatma kontrollerini kapatirdi. -->
-        <article class="portfolio-card portfolio-video">
-          <video controls preload="metadata" playsinline>
-            <source src="assets/media/portfoy/portfoy-video-01.mp4" type="video/mp4">
-            Tarayıcınız video oynatmayı desteklemiyor.
-            <a href="assets/media/portfoy/portfoy-video-01.mp4">Videoyu indirin.</a>
-          </video>
-          <div class="pv-kunye"><small>04 / VİDEO — YAPAY ZEKÂ ÜRETİMİ</small><h3>Sinematik sahne çalışması</h3></div>
+          <div><small>07 / GÖRSEL KİMLİK — YAPAY ZEKÂ ÜRETİMİ</small><h3>Sinematik marka dili</h3></div>
         </article>
       </div>
     </section>
