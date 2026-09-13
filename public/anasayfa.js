@@ -298,6 +298,46 @@
     stage.classList.add('video-failed');
   }
 
+  /* ---------------- Mobil sinematik arka plan ----------------
+     Sabit hero devredeyken calisir. Kaynak JS ile takilir, yani asagidaki
+     kosullardan biri varsa video hic indirilmez:
+       - azaltilmis hareket istegi
+       - tarayici veri tasarrufu (Save-Data)
+       - yavas baglanti (2g / slow-2g)
+     Bu ucu sabit gorselle kalir; sayfa yine eksiksiz. */
+  function mobilVideo() {
+    var sh = $('#static-hero'), v = $('#sh-video');
+    if (!sh || !v || v.dataset.kuruldu) return;
+
+    var mobilMi = MQLS.slice(0, 4).some(function (m) { return m.matches; });
+    if (!mobilMi) return;                                   /* masaustunde gerek yok */
+    if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+    var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (c && (c.saveData === true ||
+        /(^|-)2g$/.test(String(c.effectiveType || '')))) return;
+
+    v.dataset.kuruldu = '1';
+    [['assets/hero-mobil.webm', 'video/webm'],
+     ['assets/hero-mobil.mp4',  'video/mp4']].forEach(function (k) {
+      var src = document.createElement('source');
+      src.src = k[0]; src.type = k[1]; v.appendChild(src);
+    });
+    v.addEventListener('playing', function () { sh.classList.add('video-hazir'); }, { once: true });
+    v.addEventListener('error', function () { sh.classList.remove('video-hazir'); });
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function () { /* otomatik oynatma reddedildi: gorsel kalir */ });
+  }
+
+  /* Sekme gizliyken bosuna kare cozme */
+  document.addEventListener('visibilitychange', function () {
+    var v = $('#sh-video');
+    if (!v || !v.dataset.kuruldu) return;
+    if (document.hidden) v.pause();
+    else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+  });
+
   /* ---------------- Beş kapı, canlı ---------------- */
   var scrubOn = false;
   var MQLS = GATES.map(function (q) { return window.matchMedia(q); });
@@ -320,7 +360,7 @@
   }
   function applyHeroMode() {
     var gated = MQLS.some(function (m) { return m.matches; });
-    if (gated) disableScrub(); else enableScrub();
+    if (gated) { disableScrub(); mobilVideo(); } else enableScrub();
   }
   MQLS.forEach(function (m) {
     if (m.addEventListener) m.addEventListener('change', applyHeroMode);
@@ -527,7 +567,7 @@
       var v = $('video', fig);
       if (!v) return;
       v.pause();
-      fig.classList.remove('playing');
+      fig.classList.remove('playing', 'onizleme');
       var b = $('.reel-btn', fig);
       if (b) b.setAttribute('aria-label', b.getAttribute('aria-label').replace('durdur', 'oynat'));
     }
@@ -542,6 +582,40 @@
           fig.classList.add('playing');
           btn.setAttribute('aria-label', btn.getAttribute('aria-label').replace('oynat', 'durdur'));
         }).catch(function () { /* oynatma engellendi: kart sessizce durur */ });
+      });
+    });
+
+    /* Fare uzerine gelince sessiz onizleme.
+       Yalnizca gercek imlecli cihazda: dokunmatikte hover yok, tiklama
+       zaten calisiyor. Azaltilmis hareket istegi varsa hic baslamaz.
+       Tiklayarak baslatilmis oynatma onizlemeden etkilenmez. */
+    var imlecVar = window.matchMedia('(hover:hover) and (pointer:fine)');
+    var rmOnizleme = window.matchMedia('(prefers-reduced-motion:reduce)');
+
+    reels.forEach(function (fig) {
+      var v = $('video', fig);
+      if (!v) return;
+      var zaman = null;
+
+      fig.addEventListener('pointerenter', function () {
+        if (!imlecVar.matches || rmOnizleme.matches) return;
+        if (fig.classList.contains('playing')) return;      /* zaten tam oynatimda */
+        clearTimeout(zaman);
+        /* Kisa gecikme: imlec sadece uzerinden gecerken video baslamasin */
+        zaman = setTimeout(function () {
+          reels.forEach(function (o) { if (o !== fig && !o.classList.contains('playing')) o.classList.remove('onizleme'); });
+          fig.classList.add('onizleme');
+          var p = v.play();
+          if (p && p.catch) p.catch(function () { fig.classList.remove('onizleme'); });
+        }, 130);
+      });
+
+      fig.addEventListener('pointerleave', function () {
+        clearTimeout(zaman);
+        if (fig.classList.contains('playing')) return;      /* tiklamayla acilmisi kapatma */
+        fig.classList.remove('onizleme');
+        v.pause();
+        try { v.currentTime = 0; } catch (e) { }
       });
     });
 
@@ -781,6 +855,49 @@
       });
   }
 
+  /* ---------------- Kaydirma izi: menude bulundugun bolum ----------------
+     Sayfa asagi indikce ust menudeki kategori kendini isaretler. Olcut,
+     ekranin ust ucte birine en yakin bolum: kullanicinin "okudugu" yer
+     orasi, ekranin ortasi degil. */
+  function setupIz() {
+    var nav = $('#ana-menu');
+    if (!nav) return;
+    var baglar = $$('a[href^="#"]', nav).filter(function (a) {
+      return document.getElementById(a.getAttribute('href').slice(1));
+    });
+    if (!baglar.length) return;
+    var bolumler = baglar.map(function (a) {
+      return document.getElementById(a.getAttribute('href').slice(1));
+    });
+
+    var sonAktif = null;
+    function isaretle() {
+      var cizgi = innerHeight * 0.34, en = null, enFark = Infinity;
+      for (var i = 0; i < bolumler.length; i++) {
+        var r = bolumler[i].getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) continue;   /* ekran disi */
+        var fark = Math.abs(r.top - cizgi);
+        if (r.top <= cizgi && r.bottom > cizgi) fark = -1;    /* cizgiyi kesen kazanir */
+        if (fark < enFark) { enFark = fark; en = i; }
+      }
+      var hedef = en === null ? null : baglar[en];
+      if (hedef === sonAktif) return;                         /* degisim yoksa DOM'a yazma */
+      if (sonAktif) { sonAktif.classList.remove('aktif'); sonAktif.removeAttribute('aria-current'); }
+      if (hedef) { hedef.classList.add('aktif'); hedef.setAttribute('aria-current', 'true'); }
+      sonAktif = hedef;
+    }
+
+    var bekleyen = false;
+    function tetik() {
+      if (bekleyen) return;
+      bekleyen = true;
+      requestAnimationFrame(function () { bekleyen = false; isaretle(); });
+    }
+    addEventListener('scroll', tetik, { passive: true });
+    addEventListener('resize', tetik);
+    isaretle();
+  }
+
   /* ---------------- Menü ---------------- */
   function setupMenu() {
     var btn = $('.menu-btn'), nav = $('#ana-menu');
@@ -815,6 +932,7 @@
   setupForm();
   if (!rmq.matches) parallaxAc();
   setupMenu();
+  setupIz();
   applyHeroMode();
   if (rmq.matches) pinToFinalStates();
 })();

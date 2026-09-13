@@ -88,6 +88,18 @@ button{font:inherit;color:inherit}
 .topbar nav a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
   text-decoration:none;color:var(--text-secondary);transition:color .3s var(--ease)}
 .topbar nav a:hover{color:var(--text-primary)}
+
+/* Kaydirma izi: bulundugun bolum menude isaretlenir. Alt cizgi ortadan
+   disa acilir, renk degisimiyle ayni anda; hareket sessiz kalsin. */
+.topbar nav a{position:relative}
+.topbar nav a::after{content:"";position:absolute;left:50%;right:50%;bottom:-6px;
+  height:2px;background:var(--accent);opacity:0;
+  transition:left .45s var(--ease),right .45s var(--ease),opacity .3s var(--ease)}
+.topbar nav a.aktif{color:var(--text-primary)}
+.topbar nav a.aktif::after{left:0;right:0;opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .topbar nav a::after{transition:none}
+}
 .nav-cta{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-decoration:none;
   border:1px solid var(--line-strong);padding:10px 15px;transition:border-color .3s var(--ease),color .3s var(--ease)}
 .nav-cta:hover{border-color:var(--accent);color:var(--accent)}
@@ -315,7 +327,15 @@ section.sec.alt{background:var(--panel)}
 .work img{width:100%;height:100%;min-height:210px;object-fit:cover;opacity:.78;
   transition:opacity .6s var(--ease),transform .8s var(--ease)}
 .work video{width:100%;height:100%;min-height:210px;object-fit:cover;opacity:.82;display:block}
-.work:hover img{opacity:1;transform:scale(1.035)}
+.work:hover img{opacity:1;transform:scale(1.06)}
+/* Uzerine gelince vurgu cercevesi icerden acilir. */
+.work::after{content:"";position:absolute;inset:0;pointer-events:none;
+  border:1px solid transparent;transition:border-color .45s var(--ease)}
+.work:hover::after{border-color:var(--accent-muted)}
+@media (prefers-reduced-motion:reduce){
+  .work:hover img{transform:none}
+  .reel.onizleme video{transform:none}
+}
 .work-cap{position:absolute;left:0;right:0;bottom:0;padding:44px 20px 18px;
   background:linear-gradient(transparent,rgba(7,12,18,.92))}
 .work-cap h4{font-size:19px;margin-bottom:6px}
@@ -329,6 +349,13 @@ section.sec.alt{background:var(--panel)}
 .reel video{width:100%;aspect-ratio:9/14;object-fit:cover;display:block;background:#050A10;
   opacity:.86;transition:opacity .5s var(--ease)}
 .reel.playing video{opacity:1}
+/* Fare onizlemesi: video acilir, kare hafifce yakinlasir, oynat dugmesi
+   geri cekilir. Tiklamayla acilan tam oynatimdan ayri bir durum. */
+.reel video{transition:opacity .5s var(--ease),transform .9s var(--ease)}
+.reel.onizleme video{opacity:1;transform:scale(1.05)}
+.reel.onizleme{border-color:var(--accent-muted)}
+.reel.onizleme .reel-btn .tri{opacity:.28;transform:scale(.82)}
+.reel-btn .tri{transition:opacity .4s var(--ease),transform .4s var(--ease)}
 .reel-btn{position:absolute;inset:0;width:100%;border:0;background:transparent;cursor:pointer;
   display:grid;place-items:center;transition:background .4s var(--ease)}
 .reel-btn:hover{background:rgba(7,12,18,.22)}
@@ -537,8 +564,25 @@ footer{position:relative;z-index:2;padding:52px var(--pad) 40px;border-top:1px s
 .static-hero h1{font-size:clamp(34px,8vw,64px);line-height:1.03;text-shadow:var(--tshadow)}
 .static-hero .sub{margin-top:20px;color:var(--text-secondary);font-size:16px;text-shadow:var(--tshadow)}
 .static-hero .band-cta{justify-content:flex-start;margin-top:30px}
+/* Mobil sinematik arka plan videosu. Sabit gorsel yerinde kalir; video
+   gelirse ustune biner, gelmezse gorsel gorunmeye devam eder. */
+.static-hero .sh-video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:-2;opacity:0;transition:opacity 1.1s var(--ease);
+  pointer-events:none}
+.static-hero.video-hazir .sh-video{opacity:1}
 .static-hero .sh-scrim{position:absolute;inset:0;z-index:-1;
   background:linear-gradient(180deg,rgba(7,12,18,.86),rgba(7,12,18,.62) 55%,rgba(7,12,18,.94))}
+/* Video oynarken metnin altindaki perde guclenir: hareketli goruntu
+   uzerinde sabit gorsele gore daha fazla koruma gerekir. */
+.static-hero.video-hazir .sh-scrim{
+  background:linear-gradient(180deg,rgba(7,12,18,.90),rgba(7,12,18,.70) 46%,rgba(7,12,18,.97))}
+/* Genel perdeyi daha da koyultmak goruntuyu oldururdu; onun yerine yalnizca
+   metin blogunun arkasina hedefli bir perde konur. Olcum: alt satir video
+   uzerinde 2.9:1'e dusuyordu, esik 3.5. */
+.static-hero.video-hazir .inner::before{content:"";position:absolute;
+  left:-6vw;right:-6vw;top:-28px;bottom:-28px;z-index:-1;pointer-events:none;
+  background:radial-gradient(120% 100% at 30% 55%,
+    rgba(4,7,12,.90) 0%,rgba(4,7,12,.74) 52%,rgba(4,7,12,0) 100%)}
 
 @media (max-width:720px),
        (orientation:portrait) and (max-width:1024px),
