@@ -415,8 +415,10 @@ Yeniden yazılmayacak, mevcut olan kullanılacak.
 | `/iletisim/` | Yayında | 6.7'nin uzun hali |
 
 **Ayrıca not, kapatıldı:** `migrations/` altında iki dosya da `0003` numarasını
-taşıyordu. `0003_social_posts.sql` dosyası `0004_social_posts.sql` olarak
-yeniden numaralandırıldı.
+taşıyordu. `0003_social_posts.sql` dosyası `0006_social_posts.sql` olarak
+yeniden numaralandırıldı. (Önce `0004` seçilmişti; `main` bu arada
+`0004_vault_routing.sql` ve `0005_video_library.sql` eklediği için birleştirme
+sırasında `0006`ya çekildi.)
 
 Üretim veritabanındaki `d1_migrations` kaydı yalnızca `0001` ve `0002`'yi
 uygulanmış gösteriyor, yani `social_posts` ve `contact_messages` tabloları

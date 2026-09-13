@@ -51,8 +51,20 @@ yapıldığında site otomatik güncellenir.
 
 `btmedya.com.tr` alan adı şu an `btmedya-db` Worker'ına bağlı ve canlı.
 
-`www.btmedya.com.tr` ile gelen istekler Worker tarafından otomatik olarak
-`btmedya.com.tr` adresine 301 yönlendirilir.
+`www.btmedya.com.tr` ile gelen istekler Worker tarafından `btmedya.com.tr`
+adresine 301 yönlendirilir. Bu yönlendirme yalnızca Worker çalıştığında devreye
+girer; statik dosyalar Worker'dan önce servis edildiği için `wrangler.toml`
+içindeki `run_worker_first` listesi indekslenen tüm HTML adreslerini kapsar
+(`/`, `/haberler/*`, `/hakkimizda*`, `/iletisim*`). Yeni bir üst düzey sayfa
+eklendiğinde bu listeye de eklenmelidir, aksi halde o sayfa hem `www` hem apex
+adresinde 200 döner (yinelenen içerik).
+
+Görseller, `styles.css` ve `script.js` gibi statik dosyalar bu listede değildir;
+`www` üzerinden de servis edilirler. Arama motoru açısından sorun değildir, ancak
+alan adı genelinde tek adımda çözüm isteniyorsa Cloudflare panelinde zone
+seviyesinde bir **Redirect Rule** tanımlanabilir (Rules > Redirect Rules;
+`http.host eq "www.btmedya.com.tr"` -> `concat("https://btmedya.com.tr", http.request.uri.path)`,
+301). Bu kural Worker'dan önce çalışır ve hiç Worker çağrısı üretmez.
 
 ## Yayına almadan önce
 

@@ -15,6 +15,28 @@ enabled = true
 directory = "public"
 binding = "ASSETS"
 
+# Eşleşmeyen adreslerde public/404.html doğru 404 koduyla sunulur.
+# Worker'daki servisEt() de özel 404 veriyor, ama o yalnızca aşağıdaki
+# run_worker_first desenlerinde çalışıyor; siteye rastgele bir adres
+# girildiğinde Worker hiç devreye girmiyordu ve çıplak 404 dönüyordu.
+# Bu ayar o boşluğu kapatır. Karşılığında bu yoldan gelen 404 sayfası
+# statik katmandan geldiği için Worker'ın güvenlik başlıklarını taşımaz;
+# başlıkları her istekte uygulamak run_worker_first = true gerektirir,
+# bu da her isteği ücretli Worker çağrısına çevirir. Bilinçli tercih.
+not_found_handling = "404-page"
+# Eşleşen bir statik dosya varsa Cloudflare Worker'ı hiç çalıştırmaz ve dosyayı
+# doğrudan sunar. Bu, indekslenen HTML sayfalarında iki soruna yol açıyordu:
+#   1. /haberler/ — panelden yapılan düzenleme ve video kütüphanesi anahtarı
+#      ancak Worker çalışırsa geçerli olur.
+#   2. www.btmedya.com.tr — Worker'daki www -> apex 301 yönlendirmesi hiç
+#      çalışmıyordu, çünkü statik dosya Worker'dan önce servis ediliyordu. Sonuç:
+#      her sayfa iki ayrı adreste 200 dönüyordu (yinelenen içerik).
+# Bu yüzden yalnızca indekslenen HTML adreslerinde Worker öne alınır. Görseller,
+# styles.css, script.js ve /assets/* eskisi gibi doğrudan servis edilmeye devam
+# eder. Kayıt bulunamazsa Worker zaten env.ASSETS.fetch ile statik sürüme
+# düşüyor, yani yedek korunuyor.
+run_worker_first = ["/", "/haberler/*", "/hakkimizda*", "/iletisim*"]
+
 # ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
 # Alan adı panelden Custom Domain olarak eklenir. Routes burada açılırsa
 # wrangler paneldeki alan adı bağlantılarının tek yetkilisi olur ve mevcut
@@ -40,3 +62,6 @@ MEDIA_PUBLIC_TTL = "86400"
 #   ADMIN_SESSION_SECRET  -> oturum çerezi imzalama anahtarı
 #   MEDIA_SIGNING_SECRET  -> /media/ imzalı bağlantı anahtarı
 #   AI_READ_TOKEN         -> (opsiyonel) salt-okunur AI erişim token'ı
+#   RESEND_API_KEY        -> (opsiyonel) Resend e-posta bildirimi API anahtarı
+#   RESEND_TO             -> (opsiyonel) bildirim alıcı adresi (varsayılan: busetuncay1029@gmail.com)
+#   RESEND_FROM           -> (opsiyonel) gönderici adresi (varsayılan: BTMEDYA <noreply@btmedya.com.tr>)
