@@ -77,3 +77,20 @@ ya da `wrangler secret put`):
 - `MEDIA_SIGNING_SECRET` — medya bağlantısı imzalama anahtarı (rastgele uzun dizi)
 
 Detaylı adımlar: `docs/CANLIYA-ALMA.md`
+
+
+## Tek elden yönetim
+
+Günlük içerik yönetimi için tek giriş noktası:
+
+**https://btmedya.com.tr/admin/**
+
+Kod ve içerik ayrımı bilinçlidir:
+
+- **Admin paneli:** haber, medya, video ve gelen mesaj yönetimi
+- **R2:** fotoğraf/video/ses/belge
+- **D1:** içerik ve kayıt verileri
+- **GitHub:** yalnızca kod ve sürüm geçmişi
+- **Cloudflare Builds:** main → npx wrangler deploy → btmedya-db
+
+Detaylı akış ve mimari şema: docs/TEK-ELDEN-YONETIM.md ve docs/BTMEDYA-TEK-ELDEN.svg.
