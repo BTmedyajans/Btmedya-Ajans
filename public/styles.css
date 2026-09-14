@@ -787,3 +787,218 @@ body.menu-acik .topbar .quote{opacity:0; pointer-events:none}
   .preloader{animation:perdeKalk 1ms linear 1.2s both}
   .intro-overlay{animation:perdeKalk 1ms linear 1.4s both}
 }
+
+/* =====================================================================
+   BTMEDYA MOBILE STABILIZATOR v1
+   Ana hedef: 360-430px telefonlarda yatay taşma, hero çakışması,
+   viewport yüksekliği, sabit menü ve yatay kartların kullanılabilirliği.
+   ===================================================================== */
+html,body{width:100%;max-width:100%;overflow-x:clip}
+*,*::before,*::after{max-width:100%}
+img,video,svg,canvas,iframe{max-width:100%}
+button,a{touch-action:manipulation}
+
+@media (max-width:900px){
+  :root{--mobile-gutter:clamp(16px,6vw,26px)}
+  body{overflow-x:clip}
+
+  .topbar{
+    height:64px;
+    padding:0 var(--mobile-gutter);
+    gap:10px;
+  }
+  .topbar .brand{min-width:0;flex:1}
+  .topbar .brand-mark,.topbar .brand-word{
+    white-space:nowrap;
+  }
+  .topbar .menu-toggle{
+    flex:0 0 44px;
+    width:44px;height:44px;
+  }
+  .topbar .quote{
+    flex:0 0 auto;
+    max-width:34vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .site-menu{
+    padding:84px var(--mobile-gutter) 32px;
+    justify-content:flex-start;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .site-menu a{
+    max-width:none;
+    font-size:clamp(22px,7vw,34px);
+    padding:14px 0;
+  }
+  .site-menu-alt{max-width:none}
+
+  .hero-scroll{height:auto}
+  .hero-sticky{
+    position:relative;
+    top:auto;
+    height:100svh;
+    min-height:620px;
+    max-height:none;
+  }
+  .hero-copy{
+    top:78px;
+    left:var(--mobile-gutter);
+    right:var(--mobile-gutter);
+    max-width:none;
+  }
+  .hero-copy h1{
+    font-size:clamp(40px,12vw,56px);
+    line-height:.94;
+    margin:16px 0;
+    max-width:9.5ch;
+  }
+  .hero-sub{
+    max-width:36ch;
+    font-size:14px;
+    line-height:1.55;
+  }
+  .hero-copy::before{
+    inset:-16px -10px -22px;
+  }
+  .character-wrap{
+    inset:auto 0 9% 0;
+    height:44%;
+    max-height:360px;
+    opacity:.64;
+  }
+  .character-video{height:100%;width:100%;object-fit:contain}
+  .focus-ring,.character-scan,.character-glow{display:none}
+
+  .hero-cards{
+    left:var(--mobile-gutter);
+    right:var(--mobile-gutter);
+    bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:2px 0 4px;
+    gap:8px;
+  }
+  .hero-cards::-webkit-scrollbar{display:none}
+  .hero-card{
+    flex:0 0 min(72vw,230px);
+    min-width:min(72vw,230px);
+    min-height:52px;
+    padding:11px 12px;
+  }
+
+  .services-stage{
+    min-height:0;
+    padding:82px 0 64px;
+  }
+  .services-intro{
+    padding:0 var(--mobile-gutter) 30px;
+  }
+  .services-intro h2{
+    font-size:clamp(40px,11vw,58px);
+  }
+  .service-rail{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding:0 var(--mobile-gutter) 12px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .service-rail::-webkit-scrollbar{display:none}
+  .service-card{
+    flex:0 0 min(82vw,310px);
+    min-width:min(82vw,310px);
+    width:min(82vw,310px);
+    height:auto;
+    min-height:360px;
+  }
+
+  .v10-section,
+  .archive-page,
+  .article-page,
+  .admin-page{
+    padding-left:var(--mobile-gutter);
+    padding-right:var(--mobile-gutter);
+  }
+  .section-head h2,
+  .archive-page h1,
+  .article-page h1{
+    overflow-wrap:anywhere;
+  }
+  .news-grid,
+  .portfolio-grid,
+  .ai-panel,
+  .package-layout,
+  .about-story,
+  .about-values{
+    width:100%;
+  }
+  .news-card h3,.portfolio-card h3{overflow-wrap:anywhere}
+  .portfolio-card,
+  .portfolio-card img{
+    min-height:0;
+  }
+  .portfolio-card>div{
+    left:14px;right:14px;bottom:14px;
+  }
+  .portfolio-grid .portfolio-video video{
+    width:100%;height:auto;max-height:none;
+  }
+
+  .final-footer{
+    padding-left:var(--mobile-gutter);
+    padding-right:var(--mobile-gutter);
+    gap:18px;
+  }
+  .floating-whatsapp{
+    right:14px;
+    bottom:calc(14px + env(safe-area-inset-bottom,0px));
+    max-width:calc(100vw - 28px);
+  }
+}
+
+@media (max-width:560px){
+  .topbar .brand-word{letter-spacing:.1em}
+  .topbar .quote{font-size:9px;padding:9px 10px;max-width:31vw}
+  .hero-sticky{min-height:580px}
+  .hero-copy{top:76px}
+  .hero-sub{max-width:31ch}
+  .character-wrap{
+    height:39%;
+    bottom:13%;
+  }
+  .hero-card{
+    flex-basis:min(78vw,250px);
+    min-width:min(78vw,250px);
+  }
+}
+
+@media (max-width:380px){
+  .topbar .brand-word{display:none}
+  .topbar .quote{max-width:29vw}
+  .hero-copy h1{font-size:40px}
+  .character-wrap{height:36%;bottom:14%}
+  .hero-cards{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .hero-card{flex-basis:82vw;min-width:82vw}
+}
+
+/* Dokunmatik cihazlarda hover dönüşümleri mobilde layout zıplatmasın. */
+@media (hover:none){
+  .hero-card:hover,
+  .service-card:hover,
+  .news-card:hover,
+  .archive-card:hover,
+  .portfolio-card:hover img,
+  .saha-thumb:hover img,
+  .yt-lite:hover img{
+    transform:none;
+  }
+}
+
