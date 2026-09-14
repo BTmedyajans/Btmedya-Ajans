@@ -480,14 +480,90 @@ export default { async fetch(request, env, ctx){
           }
           if(!vlib) vlib=await env.DB.prepare('SELECT * FROM video_library WHERE news_slug=?').bind(slug).first();
           return new Response(renderNewsPage(n, url.origin, vlib), {
-            headers:{'content-type':'text/html; charset=utf-8',
+            headers:{...guvenlikBasliklari(url.pathname),
+                     'content-type':'text/html; charset=utf-8',
                      'cache-control':'public, max-age=300, s-maxage=600'}
           });
         }
       }
     }
-    return env.ASSETS.fetch(request);
+    return servisEt(request, env);
   }
 
-  return env.ASSETS.fetch(request);
+  return servisEt(request, env);
 } };
+
+/* ---------- Statik servis: güvenlik başlıkları ve özel 404 ---------- */
+
+/* Sitenin ihtiyacı olan kaynaklar dışında hiçbir şeye izin verilmez.
+   Google Fonts stil ve font dosyaları, kendi medya alan adımız ve
+   WhatsApp bağlantıları açık; başka her şey kapalı. */
+/* Politika yola göre kurulur, çünkü sitenin iki ayrı ihtiyacı var.
+
+   Kamuya açık sayfalar satır içi script kullanmıyor, bu yüzden orada
+   script-src 'self' kalıyor. Yönetici paneli ise satır içi script ve
+   on* öznitelikleriyle yazılmış; ona aynı kuralı uygularsak panel
+   sessizce çalışmaz hale gelir, o yüzden yalnızca /admin/ altında
+   'unsafe-inline' açılıyor.
+
+   i.ytimg.com haber sayfalarındaki video kapak görselleri için,
+   youtube-nocookie.com ise tıklayınca oluşturulan gömülü oynatıcı için
+   gerekli. İkisi de src/news-page.js içinde kullanılıyor. */
+function cspKur(pathname) {
+  const panel = pathname.startsWith('/admin');
+  return [
+    "default-src 'self'",
+    panel ? "script-src 'self' 'unsafe-inline'" : "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
+    "img-src 'self' data: blob: https://i.ytimg.com",
+    "media-src 'self' blob:",
+    "frame-src https://www.youtube-nocookie.com",
+    "connect-src 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "upgrade-insecure-requests"
+  ].join('; ');
+}
+
+function guvenlikBasliklari(pathname) {
+  return {
+    'content-security-policy': cspKur(pathname),
+    'x-content-type-options': 'nosniff',
+    'referrer-policy': 'strict-origin-when-cross-origin',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains',
+    'cross-origin-opener-policy': 'same-origin'
+  };
+}
+
+/* Uzun ömürlü varlıklar uzun önbelleğe, HTML kısa önbelleğe.
+   HTML kısa tutulur ki içerik güncellemesi hemen görünsün. */
+function onbellek(pathname) {
+  if (/\.(?:mp4|webm|jpg|jpeg|png|webp|gif|svg|woff2?|ico)$/i.test(pathname))
+    return 'public, max-age=31536000, immutable';
+  if (/\.(?:css|js)$/i.test(pathname))
+    return 'public, max-age=3600, must-revalidate';
+  return 'public, max-age=300, must-revalidate';
+}
+
+async function servisEt(request, env) {
+  const url = new URL(request.url);
+  let res = await env.ASSETS.fetch(request);
+
+  /* Bilinmeyen adres: kendi 404 sayfamızı, doğru durum koduyla ver */
+  if (res.status === 404 && request.method === 'GET' &&
+      (request.headers.get('accept') || '').includes('text/html')) {
+    const ozel = await env.ASSETS.fetch(new Request(new URL('/404.html', url), request));
+    if (ozel.ok) res = new Response(ozel.body, { status: 404, headers: ozel.headers });
+  }
+
+  const h = new Headers(res.headers);
+  for (const [k, v] of Object.entries(guvenlikBasliklari(url.pathname))) h.set(k, v);
+  if (!h.has('cache-control') || res.status === 404) h.set('cache-control', onbellek(url.pathname));
+  else h.set('cache-control', onbellek(url.pathname));
+
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}

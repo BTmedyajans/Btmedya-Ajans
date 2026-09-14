@@ -60,7 +60,10 @@ export function renderNewsPage(n, origin, vlib){
   const ozet=(n.excerpt||'').trim()||String(n.body||'').slice(0,155);
   // maxresdefault her videoda bulunmaz (kaynak dusuk cozunurlukse 404 doner);
   // hqdefault her zaman vardir, paylasim kapagi bos kalmasin.
-  const ogImg = kapak || (vid?`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`:`${origin}/assets/btmedya-social-profile.png`);
+  // Paylasim kapagi sirasi: haberin kendi kapagi > video kucuk resmi >
+  // o haber icin uretilmis plaka > kurumsal jenerik gorsel.
+  const plaka = `${origin}/assets/haber-kapak/${n.slug}.webp`;
+  const ogImg = kapak || (vid?`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`:plaka);
 
   const ld={
     "@context":"https://schema.org","@type":"NewsArticle",

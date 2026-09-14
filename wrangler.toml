@@ -14,6 +14,16 @@ enabled = true
 [assets]
 directory = "public"
 binding = "ASSETS"
+
+# Eşleşmeyen adreslerde public/404.html doğru 404 koduyla sunulur.
+# Worker'daki servisEt() de özel 404 veriyor, ama o yalnızca aşağıdaki
+# run_worker_first desenlerinde çalışıyor; siteye rastgele bir adres
+# girildiğinde Worker hiç devreye girmiyordu ve çıplak 404 dönüyordu.
+# Bu ayar o boşluğu kapatır. Karşılığında bu yoldan gelen 404 sayfası
+# statik katmandan geldiği için Worker'ın güvenlik başlıklarını taşımaz;
+# başlıkları her istekte uygulamak run_worker_first = true gerektirir,
+# bu da her isteği ücretli Worker çağrısına çevirir. Bilinçli tercih.
+not_found_handling = "404-page"
 # Eşleşen bir statik dosya varsa Cloudflare Worker'ı hiç çalıştırmaz ve dosyayı
 # doğrudan sunar. Bu, indekslenen HTML sayfalarında iki soruna yol açıyordu:
 #   1. /haberler/ — panelden yapılan düzenleme ve video kütüphanesi anahtarı
