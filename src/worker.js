@@ -514,8 +514,8 @@ function cspKur(pathname) {
   return [
     "default-src 'self'",
     panel ? "script-src 'self' 'unsafe-inline'" : "script-src 'self'",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
     "img-src 'self' data: blob: https://i.ytimg.com",
     "media-src 'self' blob:",
     "frame-src https://www.youtube-nocookie.com",
