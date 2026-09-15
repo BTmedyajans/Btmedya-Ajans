@@ -7,6 +7,8 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Validate V11 source files
         run: |
           test -s public/v11/index.html
