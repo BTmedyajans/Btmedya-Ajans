@@ -1,6 +1,5 @@
-# Cloudflare Workers Builds bu adı yok sayar ve daima bağlı olduğu servise
-# (btmedya-db) deploy eder. Alan adı bu Worker'a taşındığında push'lar doğrudan
-# canlı siteyi günceller.
+# Cloudflare Workers Builds bu Worker'ı otomatik deploy eder.
+# Alan adı bağlantıları da bu dosyada tutulur: GitHub = kaynak gerçek.
 name = "btmedya-db"
 main = "src/worker.js"
 compatibility_date = "2026-09-02"
@@ -8,42 +7,23 @@ compatibility_date = "2026-09-02"
 [observability]
 enabled = true
 
-# Statik dosyalar public/ altında tutulur. Böylece wrangler.toml, src/ ve
-# migrations/ gibi backend dosyaları hiçbir koşulda herkese açık servis edilmez
-# (.assetsignore'a gerek kalmaz).
 [assets]
 directory = "public"
 binding = "ASSETS"
 
-# Eşleşmeyen adreslerde public/404.html doğru 404 koduyla sunulur.
-# Worker'daki servisEt() de özel 404 veriyor, ama o yalnızca aşağıdaki
-# run_worker_first desenlerinde çalışıyor; siteye rastgele bir adres
-# girildiğinde Worker hiç devreye girmiyordu ve çıplak 404 dönüyordu.
-# Bu ayar o boşluğu kapatır. Karşılığında bu yoldan gelen 404 sayfası
-# statik katmandan geldiği için Worker'ın güvenlik başlıklarını taşımaz;
-# başlıkları her istekte uygulamak run_worker_first = true gerektirir,
-# bu da her isteği ücretli Worker çağrısına çevirir. Bilinçli tercih.
 not_found_handling = "404-page"
-# Eşleşen bir statik dosya varsa Cloudflare Worker'ı hiç çalıştırmaz ve dosyayı
-# doğrudan sunar. Bu, indekslenen HTML sayfalarında iki soruna yol açıyordu:
-#   1. /haberler/ — panelden yapılan düzenleme ve video kütüphanesi anahtarı
-#      ancak Worker çalışırsa geçerli olur.
-#   2. www.btmedya.com.tr — Worker'daki www -> apex 301 yönlendirmesi hiç
-#      çalışmıyordu, çünkü statik dosya Worker'dan önce servis ediliyordu. Sonuç:
-#      her sayfa iki ayrı adreste 200 dönüyordu (yinelenen içerik).
-# Bu yüzden yalnızca indekslenen HTML adreslerinde Worker öne alınır. Görseller,
-# styles.css, script.js ve /assets/* eskisi gibi doğrudan servis edilmeye devam
-# eder. Kayıt bulunamazsa Worker zaten env.ASSETS.fetch ile statik sürüme
-# düşüyor, yani yedek korunuyor.
 run_worker_first = ["/", "/haberler/*", "/hakkimizda*", "/iletisim*"]
 
-# ALAN ADI YÖNLENDİRMESİ — routes bloğu bilerek KAPALI.
-# Alan adı panelden Custom Domain olarak eklenir. Routes burada açılırsa
-# wrangler paneldeki alan adı bağlantılarının tek yetkilisi olur ve mevcut
-# ayarları EZER — gereksiz risk.
-#
-# Custom Domain eklemek için:
-# Workers & Pages > btmedya-db > Settings > Domains & Routes > Add > Custom Domain
+# BTMEDYA ana alan adı ve www sürümü doğrudan bu Worker'a bağlanır.
+# Cloudflare Custom Domain modeli DNS ve SSL bağlantısını Cloudflare tarafında yönetir.
+# www isteği Worker içinde ana domaine 301 yönlendirilir.
+[[routes]]
+pattern = "btmedya.com.tr"
+custom_domain = true
+
+[[routes]]
+pattern = "www.btmedya.com.tr"
+custom_domain = true
 
 [[r2_buckets]]
 binding = "MEDIA"
@@ -63,5 +43,5 @@ MEDIA_PUBLIC_TTL = "86400"
 #   MEDIA_SIGNING_SECRET  -> /media/ imzalı bağlantı anahtarı
 #   AI_READ_TOKEN         -> (opsiyonel) salt-okunur AI erişim token'ı
 #   RESEND_API_KEY        -> (opsiyonel) Resend e-posta bildirimi API anahtarı
-#   RESEND_TO             -> (opsiyonel) bildirim alıcı adresi (varsayılan: busetuncay1029@gmail.com)
-#   RESEND_FROM           -> (opsiyonel) gönderici adresi (varsayılan: BTMEDYA <noreply@btmedya.com.tr>)
+#   RESEND_TO             -> (opsiyonel) bildirim alıcı adresi
+#   RESEND_FROM           -> (opsiyonel) gönderici adresi
