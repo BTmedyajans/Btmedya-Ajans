@@ -1,0 +1,15 @@
+name: BTMEDYA V11 Preview Smoke
+on:
+  push:
+    branches: [v11-award-experience]
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for preview deployment
+        run: sleep 25
+      - name: Check preview route
+        run: curl -fsS -o /dev/null -w '%{http_code}\n' https://btmedya.com.tr/v11/
+      - name: Check health endpoint
+        run: curl -fsS https://btmedya.com.tr/api/health
