@@ -656,3 +656,9 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   .disclosure{font-size:13px}
   .topbar nav a,.nav-cta{font-size:12px}
 }
+
+/* BTMedya navigation icon system */
+.bt-icon{width:15px;height:15px;flex:0 0 15px;display:inline-block;fill:none;stroke:currentColor;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s var(--ease),color .25s var(--ease)}
+.topbar nav a,.nav-cta{display:inline-flex;align-items:center;gap:8px}
+.topbar nav a:hover .bt-icon,.nav-cta:hover .bt-icon{transform:translateY(-1px) scale(1.08)}
+@media (max-width:720px){.bt-icon{width:18px;height:18px;flex-basis:18px}.topbar nav a{gap:10px}}
