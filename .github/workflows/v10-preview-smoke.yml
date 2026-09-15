@@ -1,0 +1,23 @@
+name: V10 Preview Smoke
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for deployment
+        run: sleep 25
+      - name: Check V10 preview
+        run: |
+          set -e
+          for url in \
+            https://btmedya.com.tr/v10/ \
+            https://btmedya.com.tr/v10/index.html \
+            https://btmedya.com.tr/api/health
+          do
+            echo "Checking $url"
+            curl -fsSL --retry 5 --retry-delay 5 --max-time 20 "$url" >/dev/null
+          done
