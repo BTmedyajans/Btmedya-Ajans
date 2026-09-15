@@ -45,3 +45,11 @@ jobs:
           done
           echo "Production API health 5 dakika içinde hazır olmadı."
           exit 1
+
+      - name: Check core navigation assets
+        run: |
+          set -eu
+          curl -fsS --max-time 20 https://btmedya.com.tr/anasayfa.css > /tmp/home.css
+          curl -fsS --max-time 20 https://btmedya.com.tr/anasayfa.js > /tmp/home.js
+          grep -Fq 'hero-scrub.mp4' /tmp/home.js
+          grep -Fq 'hero-mobil.mp4' /tmp/home.js
