@@ -17,5 +17,13 @@ jobs:
       - name: Check production API health
         run: |
           set -eu
-          curl -fsS --max-time 20 https://btmedya.com.tr/api/health > /tmp/health.json
-          cat /tmp/health.json
+          for attempt in $(seq 1 20); do
+            if curl -fsS --max-time 20 https://btmedya.com.tr/api/health > /tmp/health.json; then
+              cat /tmp/health.json
+              exit 0
+            fi
+            echo "API health hazır değil; deneme ${attempt}/20. 15 saniye sonra tekrar denenecek."
+            sleep 15
+          done
+          echo "Production API health 5 dakika içinde hazır olmadı."
+          exit 1
