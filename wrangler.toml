@@ -11,8 +11,11 @@ enabled = true
 directory = "public"
 binding = "ASSETS"
 
+# API ve medya istekleri önce Worker'a gitmeli; aksi halde Static Assets
+# katmanı mevcut olmayan /api/* yollarını 404 olarak keser.
+run_worker_first = ["/api/*", "/media/*", "/pub/*", "/", "/haberler/*", "/hakkimizda*", "/iletisim*"]
+
 not_found_handling = "404-page"
-run_worker_first = ["/", "/haberler/*", "/hakkimizda*", "/iletisim*"]
 
 # BTMEDYA ana alan adı ve www sürümü doğrudan bu Worker'a bağlanır.
 # Cloudflare Custom Domain modeli DNS ve SSL bağlantısını Cloudflare tarafında yönetir.
@@ -41,7 +44,7 @@ MEDIA_PUBLIC_TTL = "86400"
 #   ADMIN_PASSWORD        -> /admin/ giriş şifresi
 #   ADMIN_SESSION_SECRET  -> oturum çerezi imzalama anahtarı
 #   MEDIA_SIGNING_SECRET  -> /media/ imzalı bağlantı anahtarı
-#   AI_READ_TOKEN         -> (opsiyonel) salt-okunur AI erişim token'ı
+#   AI_READ_TOKEN         -> (opsiyonel) salt-okur AI erişim token'ı
 #   RESEND_API_KEY        -> (opsiyonel) Resend e-posta bildirimi API anahtarı
 #   RESEND_TO             -> (opsiyonel) bildirim alıcı adresi
 #   RESEND_FROM           -> (opsiyonel) gönderici adresi
