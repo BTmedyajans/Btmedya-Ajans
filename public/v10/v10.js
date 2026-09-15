@@ -1,5 +1,6 @@
 const work=document.querySelector('#media-work');
 const news=document.querySelector('#news-list');
+const sourceGrid=document.querySelector('#source-grid');
 const hero=document.querySelector('.hero');
 const nav=document.querySelector('#nav');
 const menu=document.querySelector('.menu');
@@ -9,7 +10,7 @@ function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;'
 menu?.addEventListener('click',()=>{nav.classList.toggle('open');if(nav.classList.contains('open')){nav.querySelector('nav').style.display='flex';nav.querySelector('nav').style.position='absolute';nav.querySelector('nav').style.top='68px';nav.querySelector('nav').style.left='0';nav.querySelector('nav').style.right='0';nav.querySelector('nav').style.padding='25px';nav.querySelector('nav').style.background='#080808';nav.querySelector('nav').style.flexDirection='column';nav.querySelector('nav').style.gap='18px';}else nav.querySelector('nav').removeAttribute('style');});
 
 const reveal=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-in');reveal.unobserve(e.target)}}),{threshold:.12});
-document.querySelectorAll('.statement,.services,.work,.editorial,.blackroom,.ailab,.founder,.contact').forEach(x=>reveal.observe(x));
+document.querySelectorAll('.statement,.services,.work,.editorial,.sources,.blackroom,.ailab,.founder,.contact').forEach(x=>reveal.observe(x));
 
 const portfolioFallback=[
   {type:'image',url:'../assets/btmedya-production-lab_529e6715_f6731a13.webp',title:'Prodüksiyon Laboratuvarı',category:'PRODÜKSİYON',description:'Kamera, kurgu ve görsel üretim süreçlerinden seçilmiş BTMEDYA çalışma alanı.'},
@@ -74,6 +75,16 @@ async function loadNews(){
   renderNews(newsFallback);
 }
 
-loadMedia();loadNews();
+async function loadSources(){
+  if(!sourceGrid) return;
+  try{
+    const r=await fetch('../data/portfolio-sources.json');
+    if(!r.ok) throw new Error('source registry '+r.status);
+    const data=await r.json();
+    sourceGrid.innerHTML=(data.sources||[]).map(s=>`<a class="source-card" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><span class="source-platform">${esc(s.platform)}</span><div><h3>${esc(s.label)}</h3><p>${esc(s.role)}</p></div><span class="source-link">KAYNAĞI AÇ ↗</span></a>`).join('');
+  }catch(e){sourceGrid.innerHTML='<div class="work-loading">YAYIN KAYNAKLARI ŞU ANDA YÜKLENEMİYOR.</div>';}
+}
+
+loadMedia();loadNews();loadSources();
 
 window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>40);},{passive:true});
