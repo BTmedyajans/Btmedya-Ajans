@@ -1,0 +1,22 @@
+name: BTMEDYA V11 Quality Gate
+on:
+  push:
+    branches: [v11-award-experience]
+  workflow_dispatch:
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate V11 source files
+        run: |
+          test -s public/v11/index.html
+          test -s public/v11/v11.css
+          test -s public/v11/v11.js
+          grep -q 'hero-scrub.mp4' public/v11/index.html
+          grep -q 'AI GENERATED / EXPERIMENTAL' public/v11/index.html
+          grep -q '/api/public/media' public/v11/v11.js
+          grep -q '/api/news' public/v11/v11.js
+      - name: Validate production health
+        run: curl -fsS https://btmedya.com.tr/api/health
