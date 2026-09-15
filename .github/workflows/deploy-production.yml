@@ -1,0 +1,54 @@
+name: BTMEDYA production deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Preflight source validation
+        run: |
+          set -eu
+          test -s src/worker.js
+          test -s wrangler.toml
+          test -s public/index.html
+          node --check src/worker.js
+          grep -q 'main = "src/worker.js"' wrangler.toml
+          test -d public
+
+      - name: Cloudflare dry-run validation
+        run: npx --yes wrangler@latest deploy --dry-run --config wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy Worker + Assets
+        run: npx --yes wrangler@latest deploy --config wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Production smoke test
+        run: |
+          set -eu
+          curl -fsS --max-time 30 https://btmedya.com.tr/api/health
+          echo
+          curl -fsS --max-time 30 https://btmedya.com.tr/api/news?limit=1
+          echo
+          status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 https://btmedya.com.tr/api/admin/news)
+          test "$status" = "401"
+          curl -fsSIL --max-time 30 https://btmedya.com.tr/ | head -n 20

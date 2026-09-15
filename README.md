@@ -9,7 +9,7 @@ wrangler.toml        Worker config (D1 / R2 / Assets binding'leri)
 src/worker.js        Birleşik API: haber CMS + medya kasası + statik servis
 migrations/          D1 şeması (news, media, social_posts)
 public/              Yayınlanan her şey (assets binding bu klasörü servis eder)
-  index.html         Anasayfa (V10.2 sinematik tema)
+  index.html         Anasayfa (V11 sinematik/editorial tema)
   styles.css, script.js
   assets/            Görseller + videolar (logo, hero, showreel, portfolyo)
   haberler/          27 haberin statik HTML sayfası + arşiv listesi
@@ -17,7 +17,7 @@ public/              Yayınlanan her şey (assets binding bu klasörü servis ed
   admin/             Media Vault yönetim paneli (/admin/)
   social-studio/     İçerik → sosyal video üretim sayfası
   robots.txt, sitemap.xml, rss.xml, site.webmanifest
-docs/                Yayına alma ve Media Vault kılavuzları
+docs/                Yayına alma, Media Vault ve kaynak/provenance kılavuzları
 ```
 
 Backend dosyaları `public/` dışında tutulur; bu yüzden `wrangler.toml`, `src/` ve
@@ -51,8 +51,18 @@ yapıldığında site otomatik güncellenir.
 
 `btmedya.com.tr` alan adı şu an `btmedya-db` Worker'ına bağlı ve canlı.
 
-`www.btmedya.com.tr` ile gelen istekler Worker tarafından otomatik olarak
-`btmedya.com.tr` adresine 301 yönlendirilir.
+`www.btmedya.com.tr` ile gelen istekler Worker tarafından `btmedya.com.tr`
+adresine 301 yönlendirilir. Bu yönlendirme yalnızca Worker çalıştığında devreye
+girer; statik dosyalar Worker'dan önce servis edildiği için `wrangler.toml`
+içindeki `run_worker_first` listesi indekslenen tüm HTML adreslerini kapsar
+(`/`, `/haberler/*`, `/hakkimizda*`, `/iletisim*`). Yeni bir üst düzey sayfa
+eklendiğinde bu listeye de eklenmelidir, aksi halde o sayfa hem `www` hem apex
+adresinde 200 döner (yinelenen içerik).
+
+Görseller, `styles.css` ve `script.js` gibi statik dosyalar bu listede değildir;
+`www` üzerinden de servis edilirler. Arama motoru açısından sorun değildir, ancak
+alan adı genelinde tek adımda çözüm isteniyorsa Cloudflare panelinde zone
+seviyesinde bir **Redirect Rule** tanımlanabilir.
 
 ## Yayına almadan önce
 
@@ -65,3 +75,20 @@ ya da `wrangler secret put`):
 - `MEDIA_SIGNING_SECRET` — medya bağlantısı imzalama anahtarı (rastgele uzun dizi)
 
 Detaylı adımlar: `docs/CANLIYA-ALMA.md`
+
+## Tek elden yönetim
+
+Günlük içerik yönetimi için tek giriş noktası:
+
+**https://btmedya.com.tr/admin/**
+
+Kod ve içerik ayrımı bilinçlidir:
+
+- **Admin paneli:** haber, medya, video ve gelen mesaj yönetimi
+- **R2:** fotoğraf/video/ses/belge
+- **D1:** içerik ve kayıt verileri
+- **GitHub:** kod ve sürüm geçmişi
+- **Cloudflare Builds:** main → npx wrangler deploy → btmedya-db
+
+Kaynak ve medya provenansı: `docs/KAYNAK-VE-MEDYA-REHBERI.md`.
+Detaylı akış ve mimari şema: docs/TEK-ELDEN-YONETIM.md ve docs/BTMEDYA-TEK-ELDEN.svg.
