@@ -1,0 +1,21 @@
+name: BTMEDYA production smoke test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check production homepage
+        run: |
+          set -eu
+          curl -fsSIL --max-time 20 https://btmedya.com.tr/ | head -n 20
+
+      - name: Check production API health
+        run: |
+          set -eu
+          curl -fsS --max-time 20 https://btmedya.com.tr/api/health > /tmp/health.json
+          cat /tmp/health.json
