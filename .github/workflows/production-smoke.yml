@@ -14,6 +14,24 @@ jobs:
           set -eu
           curl -fsSIL --max-time 20 https://btmedya.com.tr/ | head -n 20
 
+      - name: Check crawl discovery files
+        run: |
+          set -eu
+          curl -fsS --max-time 20 https://btmedya.com.tr/robots.txt | tee /tmp/robots.txt
+          grep -Fq 'Allow: /' /tmp/robots.txt
+          grep -Fq 'Sitemap: https://btmedya.com.tr/sitemap.xml' /tmp/robots.txt
+          curl -fsS --max-time 20 https://btmedya.com.tr/sitemap.xml > /tmp/sitemap.xml
+          grep -Fq '<urlset' /tmp/sitemap.xml
+          grep -Fq 'https://btmedya.com.tr/' /tmp/sitemap.xml
+
+      - name: Check homepage indexing signals
+        run: |
+          set -eu
+          curl -fsS --max-time 20 https://btmedya.com.tr/ > /tmp/home.html
+          grep -Fq 'rel="canonical" href="https://btmedya.com.tr/"' /tmp/home.html
+          grep -Fq 'name="robots" content="index, follow' /tmp/home.html
+          ! grep -Eiq 'name="robots"[^>]+content="[^"]*noindex' /tmp/home.html
+
       - name: Check production API health
         run: |
           set -eu
